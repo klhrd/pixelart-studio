@@ -2,7 +2,7 @@ import { Component, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
-import { ControlPanel } from './components/controls/ControlPanel';
+import { TuneSheet } from './components/controls/TuneSheet';
 import { EngineSheet } from './components/controls/EngineSheet';
 import { ExportSheet } from './components/controls/ExportSheet';
 import { BottomBar } from './components/layout/BottomBar';
@@ -119,7 +119,7 @@ function Studio() {
         />
       </Sheet>
       <Sheet open={sheet === 'adjust'} title="Tune" onClose={closeSheet}>
-        <ControlPanel />
+        <TuneSheet />
       </Sheet>
       <Sheet open={sheet === 'export'} title="Export" onClose={closeSheet}>
         <ExportSheet

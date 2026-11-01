@@ -1,87 +1,36 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
-import { Collapsible } from './Collapsible';
-import { PalettePicker } from './PalettePicker';
+import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
 
-function PanelSection({
-  title,
-  children,
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <section className="panel p-4">
-      <h3 className="mb-3 font-mono text-[11px] uppercase tracking-widest text-zinc-500">
-        {title}
-      </h3>
-      <div className="space-y-4">{children}</div>
-    </section>
-  );
-}
-
-export function ControlPanel() {
-  const { engine, settings, update, reset, palette } = useSettings();
+export function EnginePanel() {
+  const { engine, settings, update, reset } = useSettings();
   const meta = engineMeta(engine);
 
   return (
-    <div className="space-y-3">
+    <>
       <div className="flex items-center justify-between">
-        <div>
-          <div className="font-mono text-[10px] uppercase tracking-widest text-emerald-500">
-            Module {meta.code}
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 font-mono text-xs font-bold text-zinc-950">
+            {meta.code}
+          </span>
+          <div>
+            <div className="text-sm font-semibold text-zinc-100">
+              {meta.name}
+            </div>
+            <div className="text-[11px] text-zinc-500">{meta.tagline}</div>
           </div>
-          <h2 className="text-sm font-semibold text-zinc-200">{meta.name}</h2>
         </div>
         <button
           type="button"
           onClick={reset}
-          className="rounded-md border border-zinc-700 px-2 py-1 font-mono text-[10px] uppercase tracking-wider text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200"
+          className="rounded-md border border-zinc-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200"
         >
           Reset
         </button>
       </div>
-
-      <PanelSection title="Global">
-        <Slider
-          label="Cell Size"
-          min={3}
-          max={48}
-          value={settings.cellSize}
-          onChange={(v) => update({ cellSize: v })}
-          display={`${settings.cellSize}px`}
-        />
-        <PalettePicker
-          value={settings.paletteId}
-          onChange={(id) => update({ paletteId: id })}
-        />
-        <Collapsible title="Image Adjustments">
-          <Slider
-            label="Brightness"
-            min={-100}
-            max={100}
-            value={settings.brightness}
-            onChange={(v) => update({ brightness: v })}
-          />
-          <Slider
-            label="Contrast"
-            min={-100}
-            max={100}
-            value={settings.contrast}
-            onChange={(v) => update({ contrast: v })}
-          />
-          <Slider
-            label="Saturation"
-            min={-100}
-            max={100}
-            value={settings.saturation}
-            onChange={(v) => update({ saturation: v })}
-          />
-        </Collapsible>
-      </PanelSection>
 
       {engine === 'moon' && (
         <PanelSection title="Moon Phase">
@@ -236,11 +185,10 @@ export function ControlPanel() {
           <p className="text-[11px] leading-relaxed text-zinc-500">
             Quantization error is diffused to neighboring pixels with weights
             7/16, 3/16, 5/16 and 1/16. Cell Size controls the pixel scale for
-            chunkier output. The selected palette defines the target colors (
-            {palette.length} colors).
+            chunkier output.
           </p>
         </PanelSection>
       )}
-    </div>
+    </>
   );
 }
