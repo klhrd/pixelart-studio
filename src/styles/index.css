@@ -13,6 +13,13 @@
     @apply bg-zinc-950 text-zinc-200 antialiased;
   }
 
+  @supports (padding: env(safe-area-inset-top)) {
+    body {
+      padding: env(safe-area-inset-top) env(safe-area-inset-right)
+        env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+  }
+
   ::selection {
     @apply bg-emerald-400/30;
   }
@@ -29,11 +36,11 @@
   }
 
   .btn {
-    @apply inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 text-sm font-medium text-zinc-200 transition hover:border-emerald-500/60 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex touch-manipulation select-none items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-800/80 px-3 py-1.5 text-sm font-medium text-zinc-200 transition hover:border-emerald-500/60 hover:text-emerald-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-primary {
-    @apply inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex touch-manipulation select-none items-center gap-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
   }
 }
 
@@ -47,6 +54,30 @@ input[type='range']::-webkit-slider-thumb {
 
 input[type='range']::-moz-range-thumb {
   @apply h-4 w-4 rounded-full border-0 bg-emerald-400;
+}
+
+@media (pointer: coarse) {
+  input[type='range'] {
+    @apply h-2;
+  }
+
+  input[type='range']::-webkit-slider-thumb {
+    @apply h-6 w-6;
+  }
+
+  input[type='range']::-moz-range-thumb {
+    @apply h-6 w-6;
+  }
+
+  button,
+  select,
+  input[type='number'] {
+    min-height: 40px;
+  }
+
+  button {
+    min-width: 40px;
+  }
 }
 
 input[type='number'] {

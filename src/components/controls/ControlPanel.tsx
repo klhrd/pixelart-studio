@@ -27,7 +27,7 @@ export function ControlPanel() {
   const meta = engineMeta(engine);
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-4 p-4 pb-10 lg:pb-4">
       <div className="flex items-center justify-between">
         <div>
           <div className="font-mono text-[10px] uppercase tracking-widest text-emerald-500">

@@ -29,7 +29,7 @@ function Studio() {
   };
 
   return (
-    <div className="flex h-full bg-zinc-950 text-zinc-200">
+    <div className="flex min-h-full bg-zinc-950 text-zinc-200 lg:h-full">
       <input
         ref={fileInputRef}
         type="file"
@@ -54,7 +54,7 @@ function Studio() {
         />
         <MobileEngineNav />
         <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          <section className="relative flex min-h-0 flex-1 items-center justify-center p-4">
+          <section className="relative flex h-[52vh] min-h-[300px] shrink-0 items-center justify-center p-4 sm:h-[56vh] lg:h-auto lg:min-h-0 lg:flex-1 lg:shrink">
             {source ? (
               <PreviewCanvas
                 source={source}
@@ -68,7 +68,7 @@ function Studio() {
               <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
             )}
           </section>
-          <aside className="w-full shrink-0 overflow-y-auto border-t border-zinc-800 bg-zinc-900/40 lg:w-96 lg:border-l lg:border-t-0 xl:w-[26rem]">
+          <aside className="w-full border-t border-zinc-800 bg-zinc-900/40 lg:w-96 lg:shrink-0 lg:overflow-y-auto lg:border-l lg:border-t-0 xl:w-[26rem]">
             <ControlPanel />
           </aside>
         </main>
