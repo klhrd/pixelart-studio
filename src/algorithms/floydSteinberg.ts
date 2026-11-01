@@ -9,7 +9,7 @@ export function ditherImage(
   s: Settings,
   paletteHex: string[],
 ): DitherResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast);
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const pal = paletteHex.map(hexToRgb);
   if (pal.length === 0) pal.push([0, 0, 0]);
 

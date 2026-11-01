@@ -1,9 +1,13 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import type { EngineId } from '../../types';
+import { Collapsible } from './Collapsible';
 import { PalettePicker } from './PalettePicker';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
+
+const CELL_SIZE_ENGINES: readonly EngineId[] = ['moon', 'truchet', 'braille'];
 
 function PanelSection({
   title,
@@ -45,32 +49,43 @@ export function ControlPanel() {
       </div>
 
       <PanelSection title="Global">
-        <Slider
-          label="Cell Size"
-          min={3}
-          max={48}
-          value={settings.cellSize}
-          onChange={(v) => update({ cellSize: v })}
-          display={`${settings.cellSize}px`}
-        />
-        <Slider
-          label="Contrast"
-          min={-100}
-          max={100}
-          value={settings.contrast}
-          onChange={(v) => update({ contrast: v })}
-        />
-        <Slider
-          label="Brightness"
-          min={-100}
-          max={100}
-          value={settings.brightness}
-          onChange={(v) => update({ brightness: v })}
-        />
+        {CELL_SIZE_ENGINES.includes(engine) && (
+          <Slider
+            label="Cell Size"
+            min={3}
+            max={48}
+            value={settings.cellSize}
+            onChange={(v) => update({ cellSize: v })}
+            display={`${settings.cellSize}px`}
+          />
+        )}
         <PalettePicker
           value={settings.paletteId}
           onChange={(id) => update({ paletteId: id })}
         />
+        <Collapsible title="Image Adjustments">
+          <Slider
+            label="Brightness"
+            min={-100}
+            max={100}
+            value={settings.brightness}
+            onChange={(v) => update({ brightness: v })}
+          />
+          <Slider
+            label="Contrast"
+            min={-100}
+            max={100}
+            value={settings.contrast}
+            onChange={(v) => update({ contrast: v })}
+          />
+          <Slider
+            label="Saturation"
+            min={-100}
+            max={100}
+            value={settings.saturation}
+            onChange={(v) => update({ saturation: v })}
+          />
+        </Collapsible>
       </PanelSection>
 
       {engine === 'moon' && (

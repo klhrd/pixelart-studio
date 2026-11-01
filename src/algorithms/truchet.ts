@@ -19,7 +19,7 @@ export function computeTruchetField(
   h: number,
   s: Settings,
 ): TruchetResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast);
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const lum = grayscale(tone);
   const grid = makeGrid(w, h, s.cellSize);
   const cells = cellLuminance(lum, w, h, grid);

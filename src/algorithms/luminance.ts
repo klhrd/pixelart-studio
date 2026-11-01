@@ -2,14 +2,20 @@ export function applyTone(
   bytes: Uint8ClampedArray,
   brightness: number,
   contrast: number,
+  saturation: number,
 ): Uint8ClampedArray {
   const out = new Uint8ClampedArray(bytes.length);
   const b = brightness * 1.28;
   const c = (259 * (contrast * 2.55 + 255)) / (255 * (259 - contrast * 2.55));
+  const s = 1 + saturation / 100;
   for (let i = 0; i < bytes.length; i += 4) {
-    out[i] = (bytes[i] - 128) * c + 128 + b;
-    out[i + 1] = (bytes[i + 1] - 128) * c + 128 + b;
-    out[i + 2] = (bytes[i + 2] - 128) * c + 128 + b;
+    const r = (bytes[i] - 128) * c + 128 + b;
+    const g = (bytes[i + 1] - 128) * c + 128 + b;
+    const bl = (bytes[i + 2] - 128) * c + 128 + b;
+    const l = 0.299 * r + 0.587 * g + 0.114 * bl;
+    out[i] = l + (r - l) * s;
+    out[i + 1] = l + (g - l) * s;
+    out[i + 2] = l + (bl - l) * s;
     out[i + 3] = bytes[i + 3];
   }
   return out;

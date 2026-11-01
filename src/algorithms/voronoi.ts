@@ -19,7 +19,7 @@ export function computeVoronoi(
   h: number,
   s: Settings,
 ): VoronoiResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast);
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const lum = grayscale(tone);
   const sob = sobel(lum, w, h);
   const rand = mulberry32(Math.imul(s.seed, 2654435761));

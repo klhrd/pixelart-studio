@@ -12,7 +12,7 @@ export function computeBraille(
   h: number,
   s: Settings,
 ): BrailleResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast);
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const lum = grayscale(tone);
   const charW = Math.max(2, Math.round(s.cellSize));
   const charH = charW * 2;

@@ -6,6 +6,7 @@ export interface Settings {
   cellSize: number;
   contrast: number;
   brightness: number;
+  saturation: number;
   paletteId: string;
   edgeSensitivity: number;
   animOffset: number;

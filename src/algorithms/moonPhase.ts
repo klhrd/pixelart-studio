@@ -9,7 +9,7 @@ export function computeMoonField(
   h: number,
   s: Settings,
 ): MoonResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast);
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const lum = grayscale(tone);
   const sob = sobel(lum, w, h);
   const grid = makeGrid(w, h, s.cellSize);

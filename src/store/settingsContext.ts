@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS: Settings = {
   cellSize: 14,
   contrast: 15,
   brightness: 0,
+  saturation: 0,
   paletteId: 'mono',
   edgeSensitivity: 0.7,
   animOffset: 0,
