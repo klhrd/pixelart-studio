@@ -84,3 +84,5 @@ export type WorkerResponse =
   | { id: number; ok: false; error: string };
 
 export type ProcessorStatus = 'idle' | 'processing' | 'ready' | 'error';
+
+export type SheetId = 'engines' | 'adjust' | 'export' | null;

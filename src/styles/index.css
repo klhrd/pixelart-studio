@@ -83,3 +83,31 @@ input[type='range']::-moz-range-thumb {
 input[type='number'] {
   @apply w-24 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 font-mono text-sm text-zinc-200 outline-none focus:border-emerald-500;
 }
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(14%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-sheet {
+  animation: sheet-up 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-fade {
+  animation: fade-in 0.15s ease-out;
+}

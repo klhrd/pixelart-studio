@@ -1,83 +1,19 @@
 import { Component, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Header } from './components/layout/Header';
-import { MobileEngineNav, Sidebar } from './components/layout/Sidebar';
-import { DropZone } from './components/canvas/DropZone';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
+import { DropZone } from './components/canvas/DropZone';
 import { ControlPanel } from './components/controls/ControlPanel';
-import { SettingsProvider } from './store/settings';
-import { useSettings } from './store/settingsContext';
+import { EngineSheet } from './components/controls/EngineSheet';
+import { ExportSheet } from './components/controls/ExportSheet';
+import { BottomBar } from './components/layout/BottomBar';
+import { Sheet } from './components/layout/Sheet';
+import { TopBar } from './components/layout/TopBar';
 import { useImageProcessor } from './hooks/useImageProcessor';
 import { useSourceImage } from './hooks/useSourceImage';
+import { SettingsProvider } from './store/settings';
+import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
-
-function Studio() {
-  const { engine, settings, palette } = useSettings();
-  const { source, error: loadError, loadFile, loadSample } = useSourceImage();
-  const { result, resultEngine, status, error } = useImageProcessor(
-    source,
-    engine,
-    settings,
-    palette,
-  );
-  const [exportScale, setExportScale] = useState(2);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleExport = () => {
-    if (source && result && status === 'ready') {
-      void exportPng(source, engine, result, settings, palette, exportScale);
-    }
-  };
-
-  return (
-    <div className="flex min-h-full bg-zinc-950 text-zinc-200 lg:h-full">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) void loadFile(file);
-          e.target.value = '';
-        }}
-      />
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header
-          status={status}
-          error={loadError ?? error}
-          canExport={Boolean(source) && status === 'ready'}
-          exportScale={exportScale}
-          onExportScaleChange={setExportScale}
-          onUpload={() => fileInputRef.current?.click()}
-          onExport={handleExport}
-        />
-        <MobileEngineNav />
-        <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
-          <section className="relative flex h-[52vh] min-h-[300px] shrink-0 items-center justify-center p-4 sm:h-[56vh] lg:h-auto lg:min-h-0 lg:flex-1 lg:shrink">
-            {source ? (
-              <PreviewCanvas
-                source={source}
-                engine={engine}
-                resultEngine={resultEngine}
-                result={result}
-                status={status}
-                settings={settings}
-                palette={palette}
-              />
-            ) : (
-              <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
-            )}
-          </section>
-          <aside className="w-full border-t border-zinc-800 bg-zinc-900/40 lg:w-96 lg:shrink-0 lg:overflow-y-auto lg:border-l lg:border-t-0 xl:w-[26rem]">
-            <ControlPanel />
-          </aside>
-        </main>
-      </div>
-    </div>
-  );
-}
+import type { SheetId } from './types';
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -110,6 +46,93 @@ class ErrorBoundary extends Component<
     }
     return this.props.children;
   }
+}
+
+function Studio() {
+  const { engine, setEngine, settings, palette } = useSettings();
+  const { source, error: loadError, loadFile, loadSample } = useSourceImage();
+  const { result, resultEngine, status, error } = useImageProcessor(
+    source,
+    engine,
+    settings,
+    palette,
+  );
+  const [exportScale, setExportScale] = useState(2);
+  const [sheet, setSheet] = useState<SheetId>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const closeSheet = () => setSheet(null);
+
+  const handleExport = () => {
+    if (source && result && status === 'ready') {
+      void exportPng(source, engine, result, settings, palette, exportScale);
+    }
+  };
+
+  return (
+    <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void loadFile(file);
+          e.target.value = '';
+        }}
+      />
+      <TopBar
+        status={status}
+        error={loadError ?? error}
+        onUpload={() => fileInputRef.current?.click()}
+      />
+      <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
+        {source ? (
+          <PreviewCanvas
+            source={source}
+            engine={engine}
+            resultEngine={resultEngine}
+            result={result}
+            status={status}
+            settings={settings}
+            palette={palette}
+          />
+        ) : (
+          <DropZone
+            onFile={(f) => void loadFile(f)}
+            onSample={loadSample}
+          />
+        )}
+      </main>
+      <BottomBar active={sheet} onSelect={(id) => setSheet(id)} />
+      <Sheet
+        open={sheet === 'engines'}
+        title="Algorithms"
+        onClose={closeSheet}
+      >
+        <EngineSheet
+          onPick={(id) => {
+            setEngine(id);
+            closeSheet();
+          }}
+        />
+      </Sheet>
+      <Sheet open={sheet === 'adjust'} title="Tune" onClose={closeSheet}>
+        <ControlPanel />
+      </Sheet>
+      <Sheet open={sheet === 'export'} title="Export" onClose={closeSheet}>
+        <ExportSheet
+          scale={exportScale}
+          onScale={setExportScale}
+          onExport={handleExport}
+          disabled={!source || !result || status !== 'ready'}
+          outputWidth={(source?.width ?? 0) * exportScale}
+          outputHeight={(source?.height ?? 0) * exportScale}
+        />
+      </Sheet>
+    </div>
+  );
 }
 
 export default function App() {
