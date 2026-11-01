@@ -11,6 +11,7 @@ import { renderResult } from '../../renderers';
 interface PreviewCanvasProps {
   source: SourceImage;
   engine: EngineId;
+  resultEngine: EngineId | null;
   result: EngineResult | null;
   status: ProcessorStatus;
   settings: Settings;
@@ -20,6 +21,7 @@ interface PreviewCanvasProps {
 export function PreviewCanvas({
   source,
   engine,
+  resultEngine,
   result,
   status,
   settings,
@@ -37,13 +39,13 @@ export function PreviewCanvas({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    if (!result) {
+    if (!result || !resultEngine) {
       ctx.fillStyle = '#0b0b0f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       return;
     }
     renderResult(
-      engine,
+      resultEngine,
       ctx,
       result,
       settingsRef.current,
@@ -51,14 +53,15 @@ export function PreviewCanvas({
       source.width,
       source.height,
     );
-  }, [engine, result, palette, source]);
+  }, [resultEngine, result, palette, source]);
 
   useEffect(() => {
     draw();
   }, [draw]);
 
   useEffect(() => {
-    if (engine !== 'moon' || !settings.animate) return;
+    if (engine !== 'moon' || resultEngine !== 'moon' || !settings.animate)
+      return;
     let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
@@ -74,7 +77,7 @@ export function PreviewCanvas({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [engine, settings.animate, draw]);
+  }, [engine, resultEngine, settings.animate, draw]);
 
   const pixelated = engine === 'dither' || engine === 'braille';
 

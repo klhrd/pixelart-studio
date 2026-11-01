@@ -14,7 +14,10 @@ export function useImageProcessor(
   settings: Settings,
   palette: string[],
 ) {
-  const [result, setResult] = useState<EngineResult | null>(null);
+  const [result, setResult] = useState<{
+    engine: EngineId;
+    data: EngineResult;
+  } | null>(null);
   const [status, setStatus] = useState<ProcessorStatus>('idle');
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +58,7 @@ export function useImageProcessor(
       })
       .then((res) => {
         if (jobRef.current === jobId) {
-          setResult(res);
+          setResult({ engine, data: res });
           setStatus('ready');
         }
       })
@@ -69,5 +72,9 @@ export function useImageProcessor(
 
   useEffect(() => () => disposeAllClients(), []);
 
-  return { result, status, error };
+  const resultEngine = result?.engine ?? null;
+  const visibleResult =
+    result && result.engine === engine ? result.data : null;
+
+  return { result: visibleResult, resultEngine, status, error };
 }

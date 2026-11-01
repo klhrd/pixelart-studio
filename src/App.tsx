@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { Component, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import { Header } from './components/layout/Header';
 import { MobileEngineNav, Sidebar } from './components/layout/Sidebar';
 import { DropZone } from './components/canvas/DropZone';
@@ -13,7 +14,7 @@ import { exportPng } from './utils/exportImage';
 function Studio() {
   const { engine, settings, palette } = useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
-  const { result, status, error } = useImageProcessor(
+  const { result, resultEngine, status, error } = useImageProcessor(
     source,
     engine,
     settings,
@@ -59,6 +60,7 @@ function Studio() {
               <PreviewCanvas
                 source={source}
                 engine={engine}
+                resultEngine={resultEngine}
                 result={result}
                 status={status}
                 settings={settings}
@@ -77,10 +79,45 @@ function Studio() {
   );
 }
 
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  state = { error: null as Error | null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="flex h-full items-center justify-center p-8">
+          <div className="text-center">
+            <p className="font-mono text-sm text-red-400">
+              Render error: {this.state.error.message}
+            </p>
+            <button
+              type="button"
+              className="btn mt-4"
+              onClick={() => this.setState({ error: null })}
+            >
+              Reload View
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export default function App() {
   return (
     <SettingsProvider>
-      <Studio />
+      <ErrorBoundary>
+        <Studio />
+      </ErrorBoundary>
     </SettingsProvider>
   );
 }

@@ -24,10 +24,9 @@ export function computeVoronoi(
   const sob = sobel(lum, w, h);
   const rand = mulberry32(Math.imul(s.seed, 2654435761));
 
-  const target = s.pointDensity;
-  const aspect = w / h;
-  const gx = Math.max(2, Math.round(Math.sqrt(target * aspect)));
-  const gy = Math.max(2, Math.round(target / gx));
+  const spacing = Math.max(4, s.cellSize * 3);
+  const gx = Math.max(2, Math.ceil(w / spacing));
+  const gy = Math.max(2, Math.ceil(h / spacing));
 
   const pts: number[] = [];
   const seen = new Set<number>();
@@ -48,7 +47,7 @@ export function computeVoronoi(
     }
   }
 
-  const extraCount = Math.round(target * 0.6);
+  const extraCount = Math.round((gx * gy * s.pointDensity) / 100);
   const BX = 32;
   const BY = Math.max(2, Math.round((BX * h) / w));
   const bw = Math.ceil(w / BX);

@@ -15,7 +15,7 @@ export const DEFAULT_SETTINGS: Settings = {
   seed: 1,
   strokeWidth: 0.42,
   blankThreshold: 0.82,
-  pointDensity: 350,
+  pointDensity: 60,
   voronoiMode: 'voronoi',
   edgeWidth: 1,
   threshold: 128,

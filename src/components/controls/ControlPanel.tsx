@@ -1,13 +1,10 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
-import type { EngineId } from '../../types';
 import { Collapsible } from './Collapsible';
 import { PalettePicker } from './PalettePicker';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
-
-const CELL_SIZE_ENGINES: readonly EngineId[] = ['moon', 'truchet', 'braille'];
 
 function PanelSection({
   title,
@@ -49,16 +46,14 @@ export function ControlPanel() {
       </div>
 
       <PanelSection title="Global">
-        {CELL_SIZE_ENGINES.includes(engine) && (
-          <Slider
-            label="Cell Size"
-            min={3}
-            max={48}
-            value={settings.cellSize}
-            onChange={(v) => update({ cellSize: v })}
-            display={`${settings.cellSize}px`}
-          />
-        )}
+        <Slider
+          label="Cell Size"
+          min={3}
+          max={48}
+          value={settings.cellSize}
+          onChange={(v) => update({ cellSize: v })}
+          display={`${settings.cellSize}px`}
+        />
         <PalettePicker
           value={settings.paletteId}
           onChange={(id) => update({ paletteId: id })}
@@ -189,13 +184,13 @@ export function ControlPanel() {
             ]}
           />
           <Slider
-            label="Sites"
-            min={60}
-            max={1500}
-            step={20}
+            label="Edge Site Bias"
+            min={0}
+            max={150}
+            step={5}
             value={settings.pointDensity}
             onChange={(v) => update({ pointDensity: v })}
-            display={`${settings.pointDensity}`}
+            display={`${settings.pointDensity}%`}
           />
           <Slider
             label="Edge Width"
@@ -240,8 +235,9 @@ export function ControlPanel() {
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
             Quantization error is diffused to neighboring pixels with weights
-            7/16, 3/16, 5/16 and 1/16. The selected palette defines the target
-            colors ({palette.length} colors).
+            7/16, 3/16, 5/16 and 1/16. Cell Size controls the pixel scale for
+            chunkier output. The selected palette defines the target colors (
+            {palette.length} colors).
           </p>
         </PanelSection>
       )}
