@@ -90,6 +90,12 @@ export function computeContour(
         const emit = (a: 't' | 'r' | 'b' | 'l', b: 't' | 'r' | 'b' | 'l') => {
           const [ax, ay] = P(a);
           const [bx, by] = P(b);
+          if (
+            !isFinite(ax) ||
+            !isFinite(ay) ||
+            !isFinite(bx) ||
+            !isFinite(by)
+          ) return;
           segs.push(ax, ay, bx, by);
           segLevel.push(li);
         };

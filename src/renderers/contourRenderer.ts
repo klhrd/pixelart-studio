@@ -26,10 +26,28 @@ export function renderContour(
     ctx.strokeStyle = palette[colorIdx];
     ctx.lineWidth = li % 5 === 4 ? 1.8 : 1;
     ctx.beginPath();
-    for (const base of segIdx) {
-      ctx.moveTo(res.segs[base], res.segs[base + 1]);
-      ctx.lineTo(res.segs[base + 2], res.segs[base + 3]);
-    }
+      for (const base of segIdx) {
+        const x1 = res.segs[base];
+        const y1 = res.segs[base + 1];
+        const x2 = res.segs[base + 2];
+        const y2 = res.segs[base + 3];
+        if (
+          !isFinite(x1) ||
+          !isFinite(y1) ||
+          !isFinite(x2) ||
+          !isFinite(y2) ||
+          x1 < 0 ||
+          x1 > width ||
+          x2 < 0 ||
+          x2 > width ||
+          y1 < 0 ||
+          y1 > height ||
+          y2 < 0 ||
+          y2 > height
+        ) continue;
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+      }
     ctx.stroke();
   }
 }
