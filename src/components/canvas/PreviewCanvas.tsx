@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   EngineId,
   EngineResult,
@@ -18,6 +18,9 @@ interface PreviewCanvasProps {
   palette: string[];
 }
 
+const MIN_SCALE = 1;
+const MAX_SCALE = 8;
+
 export function PreviewCanvas({
   source,
   engine,
@@ -27,9 +30,46 @@ export function PreviewCanvas({
   settings,
   palette,
 }: PreviewCanvasProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const minimapRef = useRef<HTMLCanvasElement>(null);
+  const thumbRef = useRef<HTMLCanvasElement | null>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+
+  const [fit, setFit] = useState({ w: 0, h: 0 });
+  const [mmSize, setMmSize] = useState({ w: 72, h: 72 });
+  const [view, setView] = useState({ s: 1, x: 0, y: 0 });
+  const viewRef = useRef(view);
+  viewRef.current = view;
+
+  const clampView = useCallback(
+    (s: number, x: number, y: number) => {
+      const el = containerRef.current;
+      if (!el || fit.w === 0) return { s, x, y };
+      const ns = Math.min(MAX_SCALE, Math.max(MIN_SCALE, s));
+      const cw = el.clientWidth;
+      const ch = el.clientHeight;
+      const contentW = fit.w * ns;
+      const contentH = fit.h * ns;
+      const nx =
+        contentW <= cw ? (cw - contentW) / 2 : Math.min(0, Math.max(cw - contentW, x));
+      const ny =
+        contentH <= ch ? (ch - contentH) / 2 : Math.min(0, Math.max(ch - contentH, y));
+      return { s: ns, x: nx, y: ny };
+    },
+    [fit],
+  );
+
+  const resetView = useCallback(() => {
+    const el = containerRef.current;
+    if (!el || fit.w === 0) return;
+    setView({
+      s: 1,
+      x: (el.clientWidth - fit.w) / 2,
+      y: (el.clientHeight - fit.h) / 2,
+    });
+  }, [fit]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -79,22 +119,228 @@ export function PreviewCanvas({
     return () => cancelAnimationFrame(raf);
   }, [engine, resultEngine, settings.animate, draw]);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const compute = () => {
+      const cw = el.clientWidth;
+      const ch = el.clientHeight;
+      if (cw === 0 || ch === 0) return;
+      const k = Math.min(cw / source.width, ch / source.height);
+      const w = Math.max(1, Math.floor(source.width * k));
+      const h = Math.max(1, Math.floor(source.height * k));
+      setFit({ w, h });
+      setView((v) =>
+        v.s === 1 ? { s: 1, x: (cw - w) / 2, y: (ch - h) / 2 } : v,
+      );
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [source]);
+
+  useEffect(() => {
+    const k = Math.min(76 / source.width, 96 / source.height);
+    const tw = Math.max(1, Math.round(source.width * k));
+    const th = Math.max(1, Math.round(source.height * k));
+    const full = document.createElement('canvas');
+    full.width = source.width;
+    full.height = source.height;
+    full
+      .getContext('2d')
+      ?.putImageData(new ImageData(source.bytes, source.width, source.height), 0, 0);
+    const thumb = document.createElement('canvas');
+    thumb.width = tw;
+    thumb.height = th;
+    const tctx = thumb.getContext('2d');
+    if (tctx) {
+      tctx.imageSmoothingEnabled = true;
+      tctx.drawImage(full, 0, 0, tw, th);
+    }
+    thumbRef.current = thumb;
+    setMmSize({ w: tw, h: th });
+  }, [source]);
+
+  const drawMinimap = useCallback(() => {
+    const mm = minimapRef.current;
+    const thumb = thumbRef.current;
+    const el = containerRef.current;
+    if (!mm || !thumb || !el || fit.w === 0) return;
+    if (mm.width !== mmSize.w) mm.width = mmSize.w;
+    if (mm.height !== mmSize.h) mm.height = mmSize.h;
+    const ctx = mm.getContext('2d');
+    if (!ctx) return;
+    ctx.clearRect(0, 0, mm.width, mm.height);
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(thumb, 0, 0, mm.width, mm.height);
+    const v = viewRef.current;
+    if (v.s <= 1.001) return;
+    const k = source.width / fit.w;
+    const vx = (-v.x / v.s) * k;
+    const vy = (-v.y / v.s) * k;
+    const vw = (el.clientWidth / v.s) * k;
+    const vh = (el.clientHeight / v.s) * k;
+    const mk = mm.width / source.width;
+    ctx.strokeStyle = '#34d399';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(vx * mk, vy * mk, vw * mk, vh * mk);
+  }, [mmSize, fit, source]);
+
+  useEffect(() => {
+    drawMinimap();
+  }, [view, drawMinimap]);
+
+  const pointers = useRef(new Map<number, { x: number; y: number }>());
+  const pinch = useRef<{
+    dist: number;
+    cx: number;
+    cy: number;
+    s: number;
+    x: number;
+    y: number;
+  } | null>(null);
+  const hadPinch = useRef(false);
+  const lastPos = useRef({ x: 0, y: 0 });
+  const lastTap = useRef(0);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    containerRef.current?.setPointerCapture(e.pointerId);
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size === 1) {
+      lastPos.current = { x: e.clientX, y: e.clientY };
+    }
+    if (pointers.current.size === 2) {
+      const [a, b] = [...pointers.current.values()];
+      const v = viewRef.current;
+      pinch.current = {
+        dist: Math.hypot(a.x - b.x, a.y - b.y),
+        cx: (a.x + b.x) / 2,
+        cy: (a.y + b.y) / 2,
+        s: v.s,
+        x: v.x,
+        y: v.y,
+      };
+      hadPinch.current = true;
+    }
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!pointers.current.has(e.pointerId)) return;
+    pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.current.size >= 2 && pinch.current) {
+      const [a, b] = [...pointers.current.values()];
+      const dist = Math.hypot(a.x - b.x, a.y - b.y);
+      const cx = (a.x + b.x) / 2;
+      const cy = (a.y + b.y) / 2;
+      const g = pinch.current;
+      const ns = Math.min(
+        MAX_SCALE,
+        Math.max(MIN_SCALE, g.s * (dist / Math.max(1, g.dist))),
+      );
+      const wx = (g.cx - g.x) / g.s;
+      const wy = (g.cy - g.y) / g.s;
+      setView(clampView(ns, cx - wx * ns, cy - wy * ns));
+    } else if (pointers.current.size === 1) {
+      const v = viewRef.current;
+      if (v.s > 1) {
+        const dx = e.clientX - lastPos.current.x;
+        const dy = e.clientY - lastPos.current.y;
+        setView(clampView(v.s, v.x + dx, v.y + dy));
+      }
+      lastPos.current = { x: e.clientX, y: e.clientY };
+    }
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    pointers.current.delete(e.pointerId);
+    if (pointers.current.size < 2) pinch.current = null;
+    if (pointers.current.size === 1) {
+      const [p] = pointers.current.values();
+      lastPos.current = { x: p.x, y: p.y };
+    }
+    if (pointers.current.size === 0) {
+      if (!hadPinch.current) {
+        const now = performance.now();
+        if (now - lastTap.current < 300) resetView();
+        lastTap.current = now;
+      }
+      hadPinch.current = false;
+    }
+  };
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const v = viewRef.current;
+      const rect = el.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const ns = Math.min(
+        MAX_SCALE,
+        Math.max(MIN_SCALE, v.s * Math.exp(-e.deltaY * 0.0015)),
+      );
+      const wx = (cx - v.x) / v.s;
+      const wy = (cy - v.y) / v.s;
+      setView(clampView(ns, cx - wx * ns, cy - wy * ns));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, [clampView]);
+
   const pixelated = engine === 'dither' || engine === 'braille';
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center">
-      <canvas
-        ref={canvasRef}
-        className={`max-h-full max-w-full rounded-lg border border-zinc-800 shadow-2xl shadow-black/50 ${
-          pixelated ? '[image-rendering:pixelated]' : ''
-        }`}
-      />
-      {status === 'processing' && (
-        <span className="absolute right-6 top-6 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-zinc-900/90 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-          Computing
-        </span>
-      )}
+    <div className="relative h-full w-full">
+      <div
+        ref={containerRef}
+        className="relative h-full w-full touch-none select-none overflow-hidden"
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+      >
+        <div
+          className="absolute left-0 top-0"
+          style={{
+            width: fit.w,
+            height: fit.h,
+            transform: `translate(${view.x}px, ${view.y}px) scale(${view.s})`,
+            transformOrigin: '0 0',
+          }}
+        >
+          <canvas
+            ref={canvasRef}
+            className={`h-full w-full rounded-lg border border-zinc-800 shadow-2xl shadow-black/50 ${
+              pixelated ? '[image-rendering:pixelated]' : ''
+            }`}
+          />
+        </div>
+
+        {status === 'processing' && (
+          <span className="absolute right-6 top-6 z-10 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-zinc-900/90 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            Computing
+          </span>
+        )}
+
+        <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-1.5">
+          {view.s > 1.02 && (
+            <button
+              type="button"
+              onClick={resetView}
+              className="rounded-md border border-zinc-700 bg-zinc-900/90 px-2 py-1 font-mono text-[10px] text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300"
+            >
+              {view.s.toFixed(1)}x Reset
+            </button>
+          )}
+          <div className="pointer-events-none rounded-md border border-zinc-700/80 bg-zinc-900/80 p-0.5 shadow-lg shadow-black/40">
+            <canvas ref={minimapRef} className="block rounded-sm" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

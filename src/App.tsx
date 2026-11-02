@@ -1,4 +1,4 @@
-import { Component, useRef, useState } from 'react';
+import { Component, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
@@ -14,6 +14,7 @@ import { useSourceImage } from './hooks/useSourceImage';
 import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
+import { parseShareHash } from './utils/shareLink';
 import type { SheetId } from './types';
 
 class ErrorBoundary extends Component<
@@ -50,7 +51,8 @@ class ErrorBoundary extends Component<
 }
 
 function Studio() {
-  const { engine, setEngine, settings, palette } = useSettings();
+  const { engine, setEngine, settings, palette, update, saveCustomPalette } =
+    useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
     source,
@@ -59,14 +61,34 @@ function Studio() {
     palette,
   );
   const [exportScale, setExportScale] = useState(2);
+  const [exportName, setExportName] = useState('pixelcraft');
   const [sheet, setSheet] = useState<SheetId>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const shared = parseShareHash(location.hash);
+    if (!shared) return;
+    if (shared.custom) {
+      saveCustomPalette(shared.custom.colors, shared.custom.name);
+    }
+    if (shared.settings) update(shared.settings);
+    if (shared.engine) setEngine(shared.engine);
+    history.replaceState(null, '', location.pathname + location.search);
+  }, [saveCustomPalette, update, setEngine]);
 
   const closeSheet = () => setSheet(null);
 
   const handleExport = () => {
     if (source && result && status === 'ready') {
-      void exportPng(source, engine, result, settings, palette, exportScale);
+      void exportPng(
+        source,
+        engine,
+        result,
+        settings,
+        palette,
+        exportScale,
+        exportName,
+      );
     }
   };
 
@@ -83,11 +105,7 @@ function Studio() {
           e.target.value = '';
         }}
       />
-      <TopBar
-        status={status}
-        error={loadError ?? error}
-        onUpload={() => fileInputRef.current?.click()}
-      />
+      <TopBar status={status} error={loadError ?? error} />
       <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
         {source ? (
           <PreviewCanvas
@@ -126,7 +144,10 @@ function Studio() {
         <ExportSheet
           scale={exportScale}
           onScale={setExportScale}
+          filename={exportName}
+          onFilenameChange={setExportName}
           onExport={handleExport}
+          onUpload={() => fileInputRef.current?.click()}
           disabled={!source || !result || status !== 'ready'}
           outputWidth={(source?.width ?? 0) * exportScale}
           outputHeight={(source?.height ?? 0) * exportScale}

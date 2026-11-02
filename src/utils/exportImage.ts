@@ -13,6 +13,7 @@ export async function exportPng(
   settings: Settings,
   palette: string[],
   scale: number,
+  filename: string,
 ): Promise<void> {
   const canvas = document.createElement('canvas');
   canvas.width = source.width * scale;
@@ -35,10 +36,15 @@ export async function exportPng(
   );
   if (!blob) throw new Error('PNG export failed');
 
+  const base =
+    filename
+      .trim()
+      .replace(/[\\/:*?"<>|]/g, '')
+      .slice(0, 60) || 'pixelcraft';
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `pixelcraft-${engine}-${Date.now()}.png`;
+  a.download = `${base}.png`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
