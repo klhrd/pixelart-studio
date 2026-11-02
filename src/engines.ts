@@ -86,6 +86,24 @@ export const ENGINES: EngineMeta[] = [
     name: 'Topographic Map',
     tagline: 'Marching squares contour lines',
   },
+  {
+    id: 'stringart',
+    code: 'N',
+    name: 'String Art',
+    tagline: 'Greedy nail-and-thread portrait',
+  },
+  {
+    id: 'turing',
+    code: 'O',
+    name: 'Turing Patterns',
+    tagline: 'Gray-Scott reaction-diffusion',
+  },
+  {
+    id: 'pixelsort',
+    code: 'P',
+    name: 'Pixel Sorting',
+    tagline: 'Cyberpunk glitch sort',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

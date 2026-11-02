@@ -11,7 +11,10 @@ export type EngineId =
   | 'hexdump'
   | 'benday'
   | 'wave'
-  | 'contour';
+  | 'contour'
+  | 'stringart'
+  | 'turing'
+  | 'pixelsort';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -48,6 +51,14 @@ export interface Settings {
   waveAmp: number;
   waveFreq: number;
   contourLevels: number;
+  stringPoints: number;
+  stringLines: number;
+  turingFrames: number;
+  turingFeed: number;
+  turingKill: number;
+  pixelSortThreshold: number;
+  pixelSortDirection: 'horizontal' | 'vertical';
+  pixelSortMode: 'asc' | 'desc';
 }
 
 export interface SourceImage {
@@ -110,13 +121,6 @@ export interface FlowResult {
   shade: Float32Array;
 }
 
-export interface HanziResult {
-  cols: number;
-  rows: number;
-  chars: Uint8Array;
-  luma: Float32Array;
-}
-
 export interface HexDumpResult {
   cols: number;
   rows: number;
@@ -131,6 +135,13 @@ export interface BendayResult {
   k: Float32Array;
 }
 
+export interface HanziResult {
+  cols: number;
+  rows: number;
+  chars: Uint8Array;
+  luma: Float32Array;
+}
+
 export interface WaveResult {
   colLum: Float32Array;
 }
@@ -139,6 +150,28 @@ export interface ContourResult {
   segs: Float32Array;
   level: Uint8Array;
   levels: number;
+}
+
+export interface StringArtResult {
+  anchorsX: Float32Array;
+  anchorsY: Float32Array;
+  linesX1: Float32Array;
+  linesY1: Float32Array;
+  linesX2: Float32Array;
+  linesY2: Float32Array;
+  lineCount: number;
+}
+
+export interface TuringResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+}
+
+export interface PixelSortResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
 }
 
 export type EngineResult =
@@ -153,7 +186,10 @@ export type EngineResult =
   | HexDumpResult
   | BendayResult
   | WaveResult
-  | ContourResult;
+  | ContourResult
+  | StringArtResult
+  | TuringResult
+  | PixelSortResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

@@ -180,5 +180,36 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           />
         </svg>
       );
+    case 'stringart':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path {...stroke} d="M3 3h18v18H3z" />
+          <path {...stroke} d="M3 3l18 18M21 3l-18 18" strokeWidth="0.8" opacity="0.4" />
+          <circle cx="6" cy="6" r="1" fill="currentColor" />
+          <circle cx="18" cy="6" r="1" fill="currentColor" />
+          <circle cx="6" cy="18" r="1" fill="currentColor" />
+          <circle cx="18" cy="18" r="1" fill="currentColor" />
+          <circle cx="12" cy="12" r="1" fill="currentColor" />
+        </svg>
+      );
+    case 'turing':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="7" cy="7" r="2" fill="currentColor" opacity="0.35" />
+          <circle cx="12" cy="9" r="3" fill="currentColor" opacity="0.55" />
+          <circle cx="16" cy="7" r="1.5" fill="currentColor" opacity="0.35" />
+          <circle cx="9" cy="14" r="2.5" fill="currentColor" opacity="0.45" />
+          <circle cx="15" cy="15" r="2" fill="currentColor" opacity="0.45" />
+          <circle cx="6" cy="17" r="1.2" fill="currentColor" opacity="0.35" />
+          <circle cx="19" cy="17" r="1.2" fill="currentColor" opacity="0.35" />
+        </svg>
+      );
+    case 'pixelsort':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path {...stroke} d="M4 4h6v6H4zM13 4h6v6h-6zM13 13h6v6h-6z" fill="currentColor" />
+          <path {...stroke} d="M4 13h6v6H4z" fill="currentColor" opacity="0.45" />
+        </svg>
+      );
   }
 }

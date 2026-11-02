@@ -11,6 +11,9 @@ import HexDumpWorker from './hexdump.worker?worker';
 import BendayWorker from './benday.worker?worker';
 import WaveWorker from './wave.worker?worker';
 import ContourWorker from './contour.worker?worker';
+import StringartWorker from './stringart.worker?worker';
+import TuringWorker from './turing.worker?worker';
+import PixelsortWorker from './pixelsort.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -34,6 +37,9 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   benday: BendayWorker,
   wave: WaveWorker,
   contour: ContourWorker,
+  stringart: StringartWorker,
+  turing: TuringWorker,
+  pixelsort: PixelsortWorker,
 };
 
 export class EngineClient {

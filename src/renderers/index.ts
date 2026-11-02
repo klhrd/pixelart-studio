@@ -14,6 +14,9 @@ import type {
   TruchetResult,
   VoronoiResult,
   WaveResult,
+  StringArtResult,
+  TuringResult,
+  PixelSortResult,
 } from '../types';
 import { renderMoon } from './moonRenderer';
 import { renderTruchet } from './truchetRenderer';
@@ -27,6 +30,9 @@ import { renderHexDump } from './hexdumpRenderer';
 import { renderBenday } from './bendayRenderer';
 import { renderWave } from './waveRenderer';
 import { renderContour } from './contourRenderer';
+import { renderStringArt } from './stringartRenderer';
+import { renderTuring } from './turingRenderer';
+import { renderPixelSort } from './pixelsortRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -139,6 +145,29 @@ export function renderResult(
       renderContour(
         ctx,
         result as ContourResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'stringart':
+      renderStringArt(
+        ctx,
+        result as StringArtResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'turing':
+      renderTuring(ctx, result as TuringResult, settings, palette, width, height);
+      break;
+    case 'pixelsort':
+      renderPixelSort(
+        ctx,
+        result as PixelSortResult,
         settings,
         palette,
         width,

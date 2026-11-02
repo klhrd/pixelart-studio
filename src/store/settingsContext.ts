@@ -35,6 +35,14 @@ export const DEFAULT_SETTINGS: Settings = {
   waveAmp: 0.6,
   waveFreq: 8,
   contourLevels: 10,
+  stringPoints: 240,
+  stringLines: 800,
+  turingFrames: 150,
+  turingFeed: 0.055,
+  turingKill: 0.062,
+  pixelSortThreshold: 128,
+  pixelSortDirection: 'horizontal',
+  pixelSortMode: 'asc',
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

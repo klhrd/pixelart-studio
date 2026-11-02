@@ -333,6 +333,103 @@ export function EnginePanel() {
         </PanelSection>
       )}
 
+      {engine === 'stringart' && (
+        <PanelSection title="String Art">
+          <Slider
+            label="Nails"
+            min={100}
+            max={600}
+            step={20}
+            value={settings.stringPoints}
+            onChange={(v) => update({ stringPoints: v })}
+            display={`${settings.stringPoints}`}
+          />
+          <Slider
+            label="Threads"
+            min={100}
+            max={3000}
+            step={100}
+            value={settings.stringLines}
+            onChange={(v) => update({ stringLines: v })}
+            display={`${settings.stringLines}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            A greedy thread is pulled between perimeter nails to cover the
+            darkest pixels first — a single continuous string weaving a
+            portrait. Cell Size scales the line width.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'turing' && (
+        <PanelSection title="Turing Patterns">
+          <Slider
+            label="Frames"
+            min={50}
+            max={800}
+            step={50}
+            value={settings.turingFrames}
+            onChange={(v) => update({ turingFrames: v })}
+            display={`${settings.turingFrames}`}
+          />
+          <Slider
+            label="Feed"
+            min={0.01}
+            max={0.1}
+            step={0.005}
+            value={settings.turingFeed}
+            onChange={(v) => update({ turingFeed: v })}
+            display={settings.turingFeed.toFixed(3)}
+          />
+          <Slider
+            label="Kill"
+            min={0.01}
+            max={0.1}
+            step={0.005}
+            value={settings.turingKill}
+            onChange={(v) => update({ turingKill: v })}
+            display={settings.turingKill.toFixed(3)}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Gray-Scott reaction-diffusion: chemicals A and B diffuse and react,
+            growing organic cellular patterns guided by image luminance.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'pixelsort' && (
+        <PanelSection title="Pixel Sorting">
+          <Slider
+            label="Threshold"
+            min={0}
+            max={254}
+            value={settings.pixelSortThreshold}
+            onChange={(v) => update({ pixelSortThreshold: v })}
+            display={`${settings.pixelSortThreshold}`}
+          />
+          <Segmented
+            value={settings.pixelSortDirection}
+            onChange={(v) => update({ pixelSortDirection: v })}
+            options={[
+              { value: 'horizontal', label: 'Horizontal' },
+              { value: 'vertical', label: 'Vertical' },
+            ]}
+          />
+          <Segmented
+            value={settings.pixelSortMode}
+            onChange={(v) => update({ pixelSortMode: v })}
+            options={[
+              { value: 'asc', label: 'Dark→Bright' },
+              { value: 'desc', label: 'Bright→Dark' },
+            ]}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Pixel runs above/below the threshold are sorted by luminance,
+            melting the image into horizontal or vertical streaks.
+          </p>
+        </PanelSection>
+      )}
+
       {engine === 'hexdump' && (
         <PanelSection title="Hex Dump">
           <p className="text-[11px] leading-relaxed text-zinc-500">
