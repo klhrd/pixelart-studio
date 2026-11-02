@@ -64,5 +64,55 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <path {...stroke} d="M13 4h7v7h-7zM4 13h7v7H4z" />
         </svg>
       );
+    case 'stipple':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          {[
+            [5.5, 6, 1.9],
+            [13, 4.5, 1.3],
+            [18.5, 9, 2.2],
+            [7, 14.5, 1.4],
+            [14.5, 13.5, 1.8],
+            [19, 19, 1.2],
+            [10.5, 19.5, 2.0],
+            [3.5, 20, 1.1],
+          ].map(([cx, cy, r]) => (
+            <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} fill="currentColor" />
+          ))}
+        </svg>
+      );
+    case 'flow':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path
+            {...stroke}
+            d="M3 7c3-3.5 6 3.5 9 0s6 3.5 9 0M3 13c3-3.5 6 3.5 9 0s6 3.5 9 0M3 19c3-3.5 6 3.5 9 0s6 3.5 9 0"
+          />
+        </svg>
+      );
+    case 'scanline':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path {...stroke} d="M3.5 5h17v14h-17z" />
+          <path
+            {...stroke}
+            d="M6 8.5h12M6 12h8M6 15.5h12M17 12h1"
+          />
+        </svg>
+      );
+    case 'hanzi':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <text
+            x="12"
+            y="17.5"
+            textAnchor="middle"
+            fontSize="17"
+            fill="currentColor"
+          >
+            文
+          </text>
+        </svg>
+      );
   }
 }

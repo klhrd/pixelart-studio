@@ -3,6 +3,10 @@ import TruchetWorker from './truchet.worker?worker';
 import VoronoiWorker from './voronoi.worker?worker';
 import BrailleWorker from './braille.worker?worker';
 import FloydSteinbergWorker from './floydSteinberg.worker?worker';
+import StippleWorker from './stipple.worker?worker';
+import FlowWorker from './flow.worker?worker';
+import ScanlineWorker from './scanline.worker?worker';
+import HanziWorker from './hanzi.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -18,6 +22,10 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   voronoi: VoronoiWorker,
   braille: BrailleWorker,
   dither: FloydSteinbergWorker,
+  stipple: StippleWorker,
+  flow: FlowWorker,
+  scanline: ScanlineWorker,
+  hanzi: HanziWorker,
 };
 
 export class EngineClient {

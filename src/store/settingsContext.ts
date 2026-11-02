@@ -21,6 +21,15 @@ export const DEFAULT_SETTINGS: Settings = {
   threshold: 128,
   invert: false,
   serpentine: true,
+  stippleCount: 1200,
+  stippleSteps: 8,
+  flowParticles: 2500,
+  flowSteps: 60,
+  flowNoise: 0.35,
+  flowWidth: 1.2,
+  scanGlow: 0.6,
+  scanAberration: 2,
+  scanGlitch: 0.3,
 };
 
 export interface SettingsContextValue {

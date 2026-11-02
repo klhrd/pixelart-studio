@@ -3,8 +3,11 @@ import type {
   DitherResult,
   EngineId,
   EngineResult,
+  FlowResult,
+  HanziResult,
   MoonResult,
   Settings,
+  StippleResult,
   TruchetResult,
   VoronoiResult,
 } from '../types';
@@ -13,6 +16,9 @@ import { renderTruchet } from './truchetRenderer';
 import { renderVoronoi } from './voronoiRenderer';
 import { renderBraille } from './brailleRenderer';
 import { renderPixels } from './pixelRenderer';
+import { renderStipple } from './stippleRenderer';
+import { renderFlow } from './flowRenderer';
+import { renderHanzi } from './hanziRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -58,6 +64,7 @@ export function renderResult(
       );
       break;
     case 'dither':
+    case 'scanline':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -67,7 +74,39 @@ export function renderResult(
         height,
       );
       break;
+    case 'stipple':
+      renderStipple(
+        ctx,
+        result as StippleResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'flow':
+      renderFlow(ctx, result as FlowResult, settings, palette, width, height);
+      break;
+    case 'hanzi':
+      renderHanzi(
+        ctx,
+        result as HanziResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
   }
 }
 
-export { renderMoon, renderTruchet, renderVoronoi, renderBraille, renderPixels };
+export {
+  renderMoon,
+  renderTruchet,
+  renderVoronoi,
+  renderBraille,
+  renderPixels,
+  renderStipple,
+  renderFlow,
+  renderHanzi,
+};

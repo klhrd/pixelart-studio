@@ -201,6 +201,132 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'stipple' && (
+        <PanelSection title="Stippling">
+          <Slider
+            label="Points"
+            min={300}
+            max={4000}
+            step={50}
+            value={settings.stippleCount}
+            onChange={(v) => update({ stippleCount: v })}
+            display={`${settings.stippleCount}`}
+          />
+          <Slider
+            label="Relax Steps"
+            min={1}
+            max={20}
+            value={settings.stippleSteps}
+            onChange={(v) => update({ stippleSteps: v })}
+            display={`${settings.stippleSteps}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Weighted Centroidal Voronoi relaxation drifts points toward mass
+            centers: dark regions crowd with dots, bright regions stay empty.
+            Cell Size scales the dot radius.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'flow' && (
+        <PanelSection title="Flow Field">
+          <Slider
+            label="Particles"
+            min={500}
+            max={8000}
+            step={100}
+            value={settings.flowParticles}
+            onChange={(v) => update({ flowParticles: v })}
+            display={`${settings.flowParticles}`}
+          />
+          <Slider
+            label="Trace Length"
+            min={10}
+            max={120}
+            value={settings.flowSteps}
+            onChange={(v) => update({ flowSteps: v })}
+            display={`${settings.flowSteps}`}
+          />
+          <Slider
+            label="Noise Blend"
+            min={0}
+            max={1}
+            step={0.01}
+            value={settings.flowNoise}
+            onChange={(v) => update({ flowNoise: v })}
+            display={`${Math.round(settings.flowNoise * 100)}%`}
+          />
+          <Slider
+            label="Stroke Width"
+            min={0.5}
+            max={3}
+            step={0.1}
+            value={settings.flowWidth}
+            onChange={(v) => update({ flowWidth: v })}
+            display={settings.flowWidth.toFixed(1)}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Particles ride a vector field built from image gradients blended
+            with Perlin-style noise, leaving silky ink trails.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'scanline' && (
+        <PanelSection title="Scanline CRT">
+          <Slider
+            label="Glow"
+            min={0}
+            max={1}
+            step={0.01}
+            value={settings.scanGlow}
+            onChange={(v) => update({ scanGlow: v })}
+            display={`${Math.round(settings.scanGlow * 100)}%`}
+          />
+          <Slider
+            label="Aberration"
+            min={0}
+            max={10}
+            value={settings.scanAberration}
+            onChange={(v) => update({ scanAberration: v })}
+            display={`${settings.scanAberration}px`}
+          />
+          <Slider
+            label="Glitch"
+            min={0}
+            max={1}
+            step={0.01}
+            value={settings.scanGlitch}
+            onChange={(v) => update({ scanGlitch: v })}
+            display={`${Math.round(settings.scanGlitch * 100)}%`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Scanline pitch follows Cell Size. Rows are darkened and glowing
+            bands by luminance, with RGB channel shift and seeded glitch
+            blocks.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'hanzi' && (
+        <PanelSection title="Hanzi Glyphs">
+          <Slider
+            label="Blank Above"
+            min={0}
+            max={1}
+            step={0.01}
+            value={settings.blankThreshold}
+            onChange={(v) => update({ blankThreshold: v })}
+            display={settings.blankThreshold.toFixed(2)}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Each cell maps its darkness onto one of twelve Chinese characters
+            ordered by stroke density, from 一 to 鑫. Cell Size sets the glyph
+            size.
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

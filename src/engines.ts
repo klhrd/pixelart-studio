@@ -38,6 +38,30 @@ export const ENGINES: EngineMeta[] = [
     name: 'Error Diffusion',
     tagline: 'Floyd-Steinberg dithering',
   },
+  {
+    id: 'stipple',
+    code: 'F',
+    name: 'Stippling',
+    tagline: 'Weighted Voronoi point painting',
+  },
+  {
+    id: 'flow',
+    code: 'G',
+    name: 'Flow Field',
+    tagline: 'Gradient streamline particles',
+  },
+  {
+    id: 'scanline',
+    code: 'H',
+    name: 'Scanline CRT',
+    tagline: 'Retro glitch halftone',
+  },
+  {
+    id: 'hanzi',
+    code: 'I',
+    name: 'Hanzi Glyphs',
+    tagline: 'Stroke-density character map',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

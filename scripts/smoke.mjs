@@ -93,7 +93,17 @@ async function runScenario(browser, label, viewport, pngPath) {
     logs.length = 0;
   };
 
-  const engines = ['Truchet Tiling', 'Voronoi / Low-Poly', 'Braille Raster', 'Error Diffusion', 'Moon Phase Halftone'];
+  const engines = [
+    'Truchet Tiling',
+    'Voronoi / Low-Poly',
+    'Braille Raster',
+    'Error Diffusion',
+    'Stippling',
+    'Flow Field',
+    'Scanline CRT',
+    'Hanzi Glyphs',
+    'Moon Phase Halftone',
+  ];
   for (const name of engines) {
     await flow(`switch→${name}`, async () => {
       const btns = await page.$$('nav button');

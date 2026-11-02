@@ -1,4 +1,13 @@
-export type EngineId = 'moon' | 'truchet' | 'voronoi' | 'braille' | 'dither';
+export type EngineId =
+  | 'moon'
+  | 'truchet'
+  | 'voronoi'
+  | 'braille'
+  | 'dither'
+  | 'stipple'
+  | 'flow'
+  | 'scanline'
+  | 'hanzi';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -22,6 +31,15 @@ export interface Settings {
   threshold: number;
   invert: boolean;
   serpentine: boolean;
+  stippleCount: number;
+  stippleSteps: number;
+  flowParticles: number;
+  flowSteps: number;
+  flowNoise: number;
+  flowWidth: number;
+  scanGlow: number;
+  scanAberration: number;
+  scanGlitch: number;
 }
 
 export interface SourceImage {
@@ -72,12 +90,34 @@ export interface DitherResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface StippleResult {
+  points: Float32Array;
+  radii: Float32Array;
+}
+
+export interface FlowResult {
+  coords: Float32Array;
+  starts: Uint32Array;
+  lengths: Uint32Array;
+  shade: Float32Array;
+}
+
+export interface HanziResult {
+  cols: number;
+  rows: number;
+  chars: Uint8Array;
+  luma: Float32Array;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
   | VoronoiResult
   | BrailleResult
-  | DitherResult;
+  | DitherResult
+  | StippleResult
+  | FlowResult
+  | HanziResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }
