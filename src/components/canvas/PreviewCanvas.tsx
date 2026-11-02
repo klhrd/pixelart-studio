@@ -326,16 +326,7 @@ export function PreviewCanvas({
           </span>
         )}
 
-        <div className="absolute bottom-3 left-3 z-10 flex flex-col items-start gap-1.5">
-          {view.s > 1.02 && (
-            <button
-              type="button"
-              onClick={resetView}
-              className="rounded-md border border-zinc-700 bg-zinc-900/90 px-2 py-1 font-mono text-[10px] text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300"
-            >
-              {view.s.toFixed(1)}x Reset
-            </button>
-          )}
+        <div className="absolute bottom-3 left-3 z-10">
           <div className="pointer-events-none rounded-md border border-zinc-700/80 bg-zinc-900/80 p-0.5 shadow-lg shadow-black/40">
             <canvas ref={minimapRef} className="block rounded-sm" />
           </div>
