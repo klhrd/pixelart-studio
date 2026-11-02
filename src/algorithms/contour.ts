@@ -59,15 +59,17 @@ export function computeContour(
     bl: number,
     t: number,
   ): [number, number] => {
+    const frac = (a: number, b: number) =>
+      Math.max(0, Math.min(1, (t - a) / Math.max(1e-6, b - a)));
     switch (edge) {
       case 't':
-        return [x + (t - tl) / Math.max(1e-6, tr - tl), y];
+        return [x + frac(tl, tr), y];
       case 'r':
-        return [x + 1, y + (t - tr) / Math.max(1e-6, br - tr)];
+        return [x + 1, y + frac(tr, br)];
       case 'b':
-        return [x + (t - bl) / Math.max(1e-6, br - bl), y + 1];
+        return [x + frac(bl, br), y + 1];
       case 'l':
-        return [x, y + (t - tl) / Math.max(1e-6, bl - tl)];
+        return [x, y + frac(tl, bl)];
     }
   };
 

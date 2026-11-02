@@ -24,7 +24,7 @@ export function renderContour(
     if (segIdx.length === 0) continue;
     const colorIdx = Math.min(n - 1, Math.round((li / (res.levels - 1)) * (n - 1)));
     ctx.strokeStyle = palette[colorIdx];
-    ctx.lineWidth = li % 5 === 4 ? 1.8 : 1;
+    ctx.lineWidth = li % 5 === 4 ? 2.2 : 1.4;
     ctx.beginPath();
       for (const base of segIdx) {
         const x1 = res.segs[base];
