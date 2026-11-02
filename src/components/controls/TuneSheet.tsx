@@ -128,9 +128,9 @@ export function TuneSheet() {
           <span className="block text-sm font-medium text-zinc-100">
             Engine Settings
           </span>
-          <span className="block truncate text-xs text-zinc-500">
-            {meta.code} · {meta.name}
-          </span>
+              <span className="block truncate text-xs text-zinc-500">
+                {meta.name}
+              </span>
         </span>
         <svg
           viewBox="0 0 24 24"

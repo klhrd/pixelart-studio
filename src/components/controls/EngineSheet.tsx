@@ -130,16 +130,16 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
                   : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-600'
               }`}
             >
-              <span
-                className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-                  engine === e.id
-                    ? 'bg-emerald-500/20 text-emerald-300'
-                    : 'bg-zinc-800 text-zinc-400'
-                }`}
-              >
-                <EngineIcon id={e.id} className="h-5 w-5" />
-              </span>
-              <span className="min-w-0 flex-1">
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+            engine === e.id
+              ? 'bg-emerald-500/20 text-emerald-300'
+              : 'bg-zinc-800 text-zinc-400'
+          }`}
+        >
+          <EngineIcon id={e.id} className="h-5 w-5" />
+        </span>
+        <span className="min-w-0 flex-1">
                 <span
                   className={`block text-sm font-medium ${
                     engine === e.id ? 'text-emerald-300' : 'text-zinc-200'
@@ -147,9 +147,9 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
                 >
                   {e.name}
                 </span>
-                <span className="block truncate text-xs text-zinc-500">
-                  Module {e.code} · {e.tagline}
-                </span>
+              <span className="block truncate text-xs text-zinc-500">
+                {e.tagline}
+              </span>
               </span>
               {engine === e.id && (
                 <svg
