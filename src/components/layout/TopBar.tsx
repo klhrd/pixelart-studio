@@ -13,6 +13,9 @@ export function TopBar({ status, error, onUpload }: TopBarProps) {
         <span className="shrink-0 font-mono text-sm font-bold text-zinc-100">
           Pixel<span className="text-emerald-400">Craft</span>
         </span>
+        <span className="shrink-0 font-mono text-[10px] text-zinc-600">
+          v{__APP_VERSION__}
+        </span>
         {status === 'processing' && (
           <span className="flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
