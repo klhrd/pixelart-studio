@@ -1,5 +1,6 @@
 import { ENGINES } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import { EngineIcon } from '../icons/EngineIcon';
 import type { EngineId } from '../../types';
 
 interface EngineSheetProps {
@@ -23,13 +24,13 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
           }`}
         >
           <span
-            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-bold ${
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
               engine === e.id
-                ? 'bg-emerald-500 text-zinc-950'
+                ? 'bg-emerald-500/20 text-emerald-300'
                 : 'bg-zinc-800 text-zinc-400'
             }`}
           >
-            {e.code}
+            <EngineIcon id={e.id} className="h-5 w-5" />
           </span>
           <span className="min-w-0 flex-1">
             <span
@@ -40,7 +41,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
               {e.name}
             </span>
             <span className="block truncate text-xs text-zinc-500">
-              {e.tagline}
+              Module {e.code} · {e.tagline}
             </span>
           </span>
           {engine === e.id && (

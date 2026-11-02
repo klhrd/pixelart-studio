@@ -38,17 +38,6 @@ export function GeneralPanel() {
           onChange={(id) => update({ paletteId: id })}
         />
       </PanelSection>
-
-      <PanelSection title="Grid">
-        <Slider
-          label="Cell Size"
-          min={3}
-          max={48}
-          value={settings.cellSize}
-          onChange={(v) => update({ cellSize: v })}
-          display={`${settings.cellSize}px`}
-        />
-      </PanelSection>
     </>
   );
 }

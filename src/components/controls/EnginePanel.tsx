@@ -1,5 +1,6 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import { EngineIcon } from '../icons/EngineIcon';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
@@ -13,8 +14,8 @@ export function EnginePanel() {
     <>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500 font-mono text-xs font-bold text-zinc-950">
-            {meta.code}
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-300">
+            <EngineIcon id={engine} className="h-5 w-5" />
           </span>
           <div>
             <div className="text-sm font-semibold text-zinc-100">
@@ -31,6 +32,17 @@ export function EnginePanel() {
           Reset
         </button>
       </div>
+
+      <PanelSection title="Grid">
+        <Slider
+          label="Cell Size"
+          min={3}
+          max={48}
+          value={settings.cellSize}
+          onChange={(v) => update({ cellSize: v })}
+          display={`${settings.cellSize}px`}
+        />
+      </PanelSection>
 
       {engine === 'moon' && (
         <PanelSection title="Moon Phase">

@@ -88,7 +88,7 @@ export function TuneSheet() {
             General Adjustments
           </span>
           <span className="block truncate text-xs text-zinc-500">
-            Brightness · Contrast · Saturation · Palette · Grid
+            Brightness · Contrast · Saturation · Palette
           </span>
         </span>
         <svg
