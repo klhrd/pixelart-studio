@@ -167,6 +167,12 @@ export function PalettePicker() {
   } = useSettings();
   const [manageOpen, setManageOpen] = useState(false);
 
+  const openNewCustom = () => {
+    setEditingPaletteId(null);
+    setCustomSheetOpen(true);
+    setManageOpen(false);
+  };
+
   const shown = allPalettes.filter((p) => featured.includes(p.id));
 
   return (
@@ -207,32 +213,6 @@ export function PalettePicker() {
             </span>
           </button>
         ))}
-        <button
-          type="button"
-          onClick={() => {
-            setEditingPaletteId(null);
-            setCustomSheetOpen(true);
-          }}
-          className="flex items-center gap-2 rounded-lg border border-dashed border-zinc-700 bg-transparent p-1.5 text-left transition hover:border-emerald-500/60"
-        >
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-zinc-800 text-zinc-300">
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              className="h-3.5 w-3.5"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-          </span>
-          <span className="font-mono text-[10px] text-zinc-400">Custom…</span>
-        </button>
       </div>
 
       <Sheet
@@ -240,6 +220,27 @@ export function PalettePicker() {
         title="Palette Manager"
         onClose={() => setManageOpen(false)}
       >
+        <button
+          type="button"
+          onClick={openNewCustom}
+          className="btn mb-2 w-full justify-center"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4.5v15m7.5-7.5h-15"
+            />
+          </svg>
+          New Custom Palette
+        </button>
         <div className="space-y-1.5">
           {allPalettes.map((p) => (
             <ManagerRow key={p.id} p={p} />
