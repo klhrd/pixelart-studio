@@ -7,7 +7,7 @@ export const DEFAULT_SETTINGS: Settings = {
   contrast: 15,
   brightness: 0,
   saturation: 0,
-  paletteId: 'mono',
+  paletteId: 'cga',
   edgeSensitivity: 0.7,
   animOffset: 0,
   animSpeed: 0.25,
@@ -43,6 +43,7 @@ export interface SettingsContextValue {
   allPalettes: Palette[];
   customPalettes: Palette[];
   saveCustomPalette: (colors: string[], name: string) => void;
+  updateCustomPalette: (id: string, colors: string[], name: string) => void;
   deleteCustomPalette: (id: string) => void;
   customSheetOpen: boolean;
   setCustomSheetOpen: (open: boolean) => void;

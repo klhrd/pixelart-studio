@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
+import type { Palette } from '../../algorithms/palettes';
 
 export function CustomPaletteSheet() {
   const {
@@ -8,6 +9,7 @@ export function CustomPaletteSheet() {
     allPalettes,
     customPalettes,
     saveCustomPalette,
+    updateCustomPalette,
     deleteCustomPalette,
   } = useSettings();
 
@@ -16,9 +18,27 @@ export function CustomPaletteSheet() {
     () => current?.colors ?? ['#0a0a0f', '#34d399', '#e8e8e8'],
   );
   const [name, setName] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const setColor = (index: number, value: string) => {
     setColors((prev) => prev.map((c, i) => (i === index ? value : c)));
+  };
+
+  const startEdit = (p: Palette) => {
+    setEditingId(p.id);
+    setColors([...p.colors]);
+    setName(p.name);
+  };
+
+  const discardEdit = () => {
+    setEditingId(null);
+    setColors(current?.colors ?? ['#0a0a0f', '#34d399', '#e8e8e8']);
+    setName('');
+  };
+
+  const handleSave = () => {
+    if (editingId) updateCustomPalette(editingId, colors, name);
+    else saveCustomPalette(colors, name);
   };
 
   return (
@@ -28,6 +48,21 @@ export function CustomPaletteSheet() {
           <span key={i} className="flex-1" style={{ background: c }} />
         ))}
       </div>
+
+      {editingId && (
+        <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-300">
+            Editing existing palette
+          </span>
+          <button
+            type="button"
+            onClick={discardEdit}
+            className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 transition hover:text-zinc-100"
+          >
+            Discard
+          </button>
+        </div>
+      )}
 
       <label className="block">
         <span className="mb-1.5 block text-xs text-zinc-400">Name</span>
@@ -92,9 +127,9 @@ export function CustomPaletteSheet() {
       <button
         type="button"
         className="btn-primary w-full justify-center py-2.5"
-        onClick={() => saveCustomPalette(colors, name)}
+        onClick={handleSave}
       >
-        Save to History
+        {editingId ? 'Update Palette' : 'Save to History'}
       </button>
 
       {customPalettes.length > 0 && (
@@ -122,6 +157,27 @@ export function CustomPaletteSheet() {
                 <span className="truncate font-mono text-[11px] text-zinc-300">
                   {p.name}
                 </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => startEdit(p)}
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-emerald-300"
+                aria-label={`Edit ${p.name}`}
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z"
+                  />
+                </svg>
               </button>
               <button
                 type="button"

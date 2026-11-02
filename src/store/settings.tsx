@@ -64,6 +64,23 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const updateCustomPalette = useCallback(
+    (id: string, colors: string[], name: string) => {
+      setCustomPalettes((prev) => {
+        const next = prev.map((p) =>
+          p.id === id
+            ? { ...p, colors: [...colors], name: name.trim() || p.name }
+            : p,
+        );
+        persistCustomPalettes(next);
+        return next;
+      });
+      setSettings((s) => (s.paletteId === id ? s : { ...s, paletteId: id }));
+      setCustomSheetOpen(false);
+    },
+    [],
+  );
+
   const value = useMemo(
     () => ({
       engine,
@@ -75,6 +92,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       allPalettes,
       customPalettes,
       saveCustomPalette,
+      updateCustomPalette,
       deleteCustomPalette,
       customSheetOpen,
       setCustomSheetOpen,
@@ -88,6 +106,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       allPalettes,
       customPalettes,
       saveCustomPalette,
+      updateCustomPalette,
       deleteCustomPalette,
       customSheetOpen,
     ],
