@@ -1,5 +1,4 @@
 import { useSettings } from '../../store/settingsContext';
-import { PalettePicker } from './PalettePicker';
 import { PanelSection } from './PanelSection';
 import { Slider } from './Slider';
 
@@ -29,13 +28,6 @@ export function GeneralPanel() {
           max={100}
           value={settings.saturation}
           onChange={(v) => update({ saturation: v })}
-        />
-      </PanelSection>
-
-      <PanelSection title="Palette">
-        <PalettePicker
-          value={settings.paletteId}
-          onChange={(id) => update({ paletteId: id })}
         />
       </PanelSection>
     </>

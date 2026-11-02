@@ -1,6 +1,7 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
 import { EngineIcon } from '../icons/EngineIcon';
+import { PalettePicker } from './PalettePicker';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
@@ -42,6 +43,10 @@ export function EnginePanel() {
           onChange={(v) => update({ cellSize: v })}
           display={`${settings.cellSize}px`}
         />
+      </PanelSection>
+
+      <PanelSection title="Palette">
+        <PalettePicker />
       </PanelSection>
 
       {engine === 'moon' && (

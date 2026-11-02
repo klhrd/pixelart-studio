@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
 import type { EngineId, Settings } from '../types';
+import type { Palette } from '../algorithms/palettes';
 
 export const DEFAULT_SETTINGS: Settings = {
   cellSize: 14,
@@ -39,6 +40,12 @@ export interface SettingsContextValue {
   update: (patch: Partial<Settings>) => void;
   reset: () => void;
   palette: string[];
+  allPalettes: Palette[];
+  customPalettes: Palette[];
+  saveCustomPalette: (colors: string[], name: string) => void;
+  deleteCustomPalette: (id: string) => void;
+  customSheetOpen: boolean;
+  setCustomSheetOpen: (open: boolean) => void;
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);

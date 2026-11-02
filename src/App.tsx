@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
 import { TuneSheet } from './components/controls/TuneSheet';
+import { CustomPaletteSheet } from './components/controls/CustomPaletteSheet';
 import { EngineSheet } from './components/controls/EngineSheet';
 import { ExportSheet } from './components/controls/ExportSheet';
 import { BottomBar } from './components/layout/BottomBar';
@@ -131,7 +132,21 @@ function Studio() {
           outputHeight={(source?.height ?? 0) * exportScale}
         />
       </Sheet>
+      <CustomPaletteSheetMount />
     </div>
+  );
+}
+
+function CustomPaletteSheetMount() {
+  const { customSheetOpen, setCustomSheetOpen } = useSettings();
+  return (
+    <Sheet
+      open={customSheetOpen}
+      title="Custom Palette"
+      onClose={() => setCustomSheetOpen(false)}
+    >
+      <CustomPaletteSheet />
+    </Sheet>
   );
 }
 

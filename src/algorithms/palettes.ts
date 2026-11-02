@@ -7,6 +7,11 @@ export interface Palette {
 export const PALETTES: Palette[] = [
   { id: 'mono', name: 'Mono', colors: ['#050505', '#e8e8e8'] },
   {
+    id: 'muted',
+    name: 'Low Sat',
+    colors: ['#20211f', '#4a4d43', '#7d8371', '#b3b8a7', '#e8eadf'],
+  },
+  {
     id: 'gameboy',
     name: 'Game Boy',
     colors: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'],
@@ -50,4 +55,29 @@ export function paletteById(id: string, palettes: Palette[]): Palette {
 export function hexToRgb(hex: string): [number, number, number] {
   const v = parseInt(hex.slice(1), 16);
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
+}
+
+const CUSTOM_KEY = 'pixelcraft-custom-palettes';
+export const MAX_CUSTOM_PALETTES = 6;
+
+export function loadCustomPalettes(): Palette[] {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw) as Palette[];
+    if (!Array.isArray(list)) return [];
+    return list.filter(
+      (p) => p && typeof p.id === 'string' && Array.isArray(p.colors),
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function persistCustomPalettes(list: Palette[]): void {
+  try {
+    localStorage.setItem(CUSTOM_KEY, JSON.stringify(list));
+  } catch {
+    /* storage unavailable */
+  }
 }

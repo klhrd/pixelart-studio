@@ -10,9 +10,9 @@ const VIEW_KEY = 'pixelcraft-engine-view';
 
 function loadView(): ViewMode {
   try {
-    return localStorage.getItem(VIEW_KEY) === 'grid' ? 'grid' : 'list';
+    return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid';
   } catch {
-    return 'list';
+    return 'grid';
   }
 }
 
