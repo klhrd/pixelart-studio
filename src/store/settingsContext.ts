@@ -33,6 +33,27 @@ export const DEFAULT_SETTINGS: Settings = {
   scanGlitch: 0.3,
 };
 
+export const DEFAULT_PALETTE_ORDER: string[] = [
+  'cga',
+  'cyberpunk',
+  'gameboy',
+  'matrix',
+  'muted',
+  'ember',
+  'glacier',
+  'sepia',
+  'mono',
+];
+
+export const DEFAULT_FEATURED: string[] = [
+  'cga',
+  'cyberpunk',
+  'gameboy',
+  'matrix',
+  'muted',
+  'mono',
+];
+
 export interface SettingsContextValue {
   engine: EngineId;
   setEngine: (engine: EngineId) => void;
@@ -47,6 +68,11 @@ export interface SettingsContextValue {
   deleteCustomPalette: (id: string) => void;
   customSheetOpen: boolean;
   setCustomSheetOpen: (open: boolean) => void;
+  editingPaletteId: string | null;
+  setEditingPaletteId: (id: string | null) => void;
+  movePalette: (id: string, dir: -1 | 1) => void;
+  togglePaletteFeatured: (id: string) => void;
+  featured: string[];
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);

@@ -8,17 +8,23 @@ export function CustomPaletteSheet() {
     update,
     allPalettes,
     customPalettes,
+    editingPaletteId,
     saveCustomPalette,
     updateCustomPalette,
     deleteCustomPalette,
   } = useSettings();
 
+  const editTarget = editingPaletteId
+    ? customPalettes.find((p) => p.id === editingPaletteId)
+    : null;
   const current = allPalettes.find((p) => p.id === settings.paletteId);
   const [colors, setColors] = useState<string[]>(
-    () => current?.colors ?? ['#0a0a0f', '#34d399', '#e8e8e8'],
+    () => editTarget?.colors ?? current?.colors ?? ['#0a0a0f', '#34d399', '#e8e8e8'],
   );
-  const [name, setName] = useState('');
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [name, setName] = useState(() => editTarget?.name ?? '');
+  const [editingId, setEditingId] = useState<string | null>(
+    () => editTarget?.id ?? null,
+  );
 
   const setColor = (index: number, value: string) => {
     setColors((prev) => prev.map((c, i) => (i === index ? value : c)));
