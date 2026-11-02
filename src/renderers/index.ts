@@ -1,15 +1,19 @@
 import type {
+  BendayResult,
   BrailleResult,
+  ContourResult,
   DitherResult,
   EngineId,
   EngineResult,
   FlowResult,
   HanziResult,
+  HexDumpResult,
   MoonResult,
   Settings,
   StippleResult,
   TruchetResult,
   VoronoiResult,
+  WaveResult,
 } from '../types';
 import { renderMoon } from './moonRenderer';
 import { renderTruchet } from './truchetRenderer';
@@ -19,6 +23,10 @@ import { renderPixels } from './pixelRenderer';
 import { renderStipple } from './stippleRenderer';
 import { renderFlow } from './flowRenderer';
 import { renderHanzi } from './hanziRenderer';
+import { renderHexDump } from './hexdumpRenderer';
+import { renderBenday } from './bendayRenderer';
+import { renderWave } from './waveRenderer';
+import { renderContour } from './contourRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -91,6 +99,46 @@ export function renderResult(
       renderHanzi(
         ctx,
         result as HanziResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'hexdump':
+      renderHexDump(
+        ctx,
+        result as HexDumpResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'benday':
+      renderBenday(
+        ctx,
+        result as BendayResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'wave':
+      renderWave(
+        ctx,
+        result as WaveResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'contour':
+      renderContour(
+        ctx,
+        result as ContourResult,
         settings,
         palette,
         width,

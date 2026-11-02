@@ -332,6 +332,80 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'hexdump' && (
+        <PanelSection title="Hex Dump">
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Every cell prints the average pixel color as a raw hex code
+            (#RRGGBB). Text brightness follows luminance — bright areas glow
+            with light code, shadows stay dark. Cell Size sets the font size.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'benday' && (
+        <PanelSection title="Ben-Day Dots">
+          <Slider
+            label="Dot Scale"
+            min={0.4}
+            max={1.1}
+            step={0.01}
+            value={settings.bendayScale}
+            onChange={(v) => update({ bendayScale: v })}
+            display={settings.bendayScale.toFixed(2)}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Naive CMYK separation printed as angled dot screens (C 15°, M 75°,
+            Y 0°, K 45°) overprinted with multiply blending for that retro
+            comic feel. Cell Size sets the screen pitch.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'wave' && (
+        <PanelSection title="Wave Interference">
+          <Slider
+            label="Amplitude"
+            min={0.1}
+            max={1.5}
+            step={0.05}
+            value={settings.waveAmp}
+            onChange={(v) => update({ waveAmp: v })}
+            display={settings.waveAmp.toFixed(2)}
+          />
+          <Slider
+            label="Wavelength"
+            min={2}
+            max={24}
+            value={settings.waveFreq}
+            onChange={(v) => update({ waveFreq: v })}
+            display={`${settings.waveFreq}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Parallel sine lines whose local amplitude follows column
+            luminance. Push wavelength near the line spacing to trigger moiré
+            interference. Cell Size sets the line spacing.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'contour' && (
+        <PanelSection title="Topographic Map">
+          <Slider
+            label="Levels"
+            min={4}
+            max={20}
+            value={settings.contourLevels}
+            onChange={(v) => update({ contourLevels: v })}
+            display={`${settings.contourLevels}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Grayscale is treated as a smoothed heightmap and Marching Squares
+            extracts contour lines at fixed elevation intervals. Cell Size
+            scales the smoothing radius.
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

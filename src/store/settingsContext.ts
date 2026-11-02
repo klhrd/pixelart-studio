@@ -31,6 +31,10 @@ export const DEFAULT_SETTINGS: Settings = {
   scanGlow: 0.6,
   scanAberration: 2,
   scanGlitch: 0.3,
+  bendayScale: 0.8,
+  waveAmp: 0.6,
+  waveFreq: 8,
+  contourLevels: 10,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

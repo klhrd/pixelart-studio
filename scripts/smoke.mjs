@@ -102,6 +102,10 @@ async function runScenario(browser, label, viewport, pngPath) {
     'Flow Field',
     'Scanline CRT',
     'Hanzi Glyphs',
+    'Hex Dump',
+    'Ben-Day Dots',
+    'Wave Interference',
+    'Topographic Map',
     'Moon Phase Halftone',
   ];
   for (const name of engines) {

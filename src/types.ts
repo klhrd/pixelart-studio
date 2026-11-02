@@ -7,7 +7,11 @@ export type EngineId =
   | 'stipple'
   | 'flow'
   | 'scanline'
-  | 'hanzi';
+  | 'hanzi'
+  | 'hexdump'
+  | 'benday'
+  | 'wave'
+  | 'contour';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -40,6 +44,10 @@ export interface Settings {
   scanGlow: number;
   scanAberration: number;
   scanGlitch: number;
+  bendayScale: number;
+  waveAmp: number;
+  waveFreq: number;
+  contourLevels: number;
 }
 
 export interface SourceImage {
@@ -109,6 +117,30 @@ export interface HanziResult {
   luma: Float32Array;
 }
 
+export interface HexDumpResult {
+  cols: number;
+  rows: number;
+  rgb: Uint8Array;
+  luma: Float32Array;
+}
+
+export interface BendayResult {
+  c: Float32Array;
+  m: Float32Array;
+  y: Float32Array;
+  k: Float32Array;
+}
+
+export interface WaveResult {
+  colLum: Float32Array;
+}
+
+export interface ContourResult {
+  segs: Float32Array;
+  level: Uint8Array;
+  levels: number;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -117,7 +149,11 @@ export type EngineResult =
   | DitherResult
   | StippleResult
   | FlowResult
-  | HanziResult;
+  | HanziResult
+  | HexDumpResult
+  | BendayResult
+  | WaveResult
+  | ContourResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

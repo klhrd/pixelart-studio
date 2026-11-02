@@ -7,6 +7,10 @@ import StippleWorker from './stipple.worker?worker';
 import FlowWorker from './flow.worker?worker';
 import ScanlineWorker from './scanline.worker?worker';
 import HanziWorker from './hanzi.worker?worker';
+import HexDumpWorker from './hexdump.worker?worker';
+import BendayWorker from './benday.worker?worker';
+import WaveWorker from './wave.worker?worker';
+import ContourWorker from './contour.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -26,6 +30,10 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   flow: FlowWorker,
   scanline: ScanlineWorker,
   hanzi: HanziWorker,
+  hexdump: HexDumpWorker,
+  benday: BendayWorker,
+  wave: WaveWorker,
+  contour: ContourWorker,
 };
 
 export class EngineClient {

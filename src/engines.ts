@@ -62,6 +62,30 @@ export const ENGINES: EngineMeta[] = [
     name: 'Hanzi Glyphs',
     tagline: 'Stroke-density character map',
   },
+  {
+    id: 'hexdump',
+    code: 'J',
+    name: 'Hex Dump',
+    tagline: 'Pixel values as raw hex codes',
+  },
+  {
+    id: 'benday',
+    code: 'K',
+    name: 'Ben-Day Dots',
+    tagline: 'CMYK comic print screens',
+  },
+  {
+    id: 'wave',
+    code: 'L',
+    name: 'Wave Interference',
+    tagline: 'Luminance-modulated sine field',
+  },
+  {
+    id: 'contour',
+    code: 'M',
+    name: 'Topographic Map',
+    tagline: 'Marching squares contour lines',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

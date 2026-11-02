@@ -114,5 +114,71 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           </text>
         </svg>
       );
+    case 'hexdump':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <text
+            x="12"
+            y="16.5"
+            textAnchor="middle"
+            fontSize="11"
+            fontFamily="ui-monospace, Menlo, Consolas, monospace"
+            fill="currentColor"
+          >
+            3F7
+          </text>
+          <path {...stroke} d="M4 19.5h16" strokeDasharray="2 2.4" />
+        </svg>
+      );
+    case 'benday':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="9.5" cy="9.5" r="5" fill="currentColor" opacity="0.45" />
+          <circle cx="14.5" cy="9.5" r="5" fill="currentColor" opacity="0.45" />
+          <circle cx="12" cy="14.5" r="5" fill="currentColor" opacity="0.45" />
+        </svg>
+      );
+    case 'wave':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path
+            {...stroke}
+            d="M2 9c3-6 5.5-6 8.5 0s5.5 6 8.5 0M2 17c3-6 5.5-6 8.5 0s5.5 6 8.5 0"
+            transform="translate(1.5 0) scale(0.9)"
+          />
+        </svg>
+      );
+    case 'contour':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <ellipse
+            cx="12"
+            cy="12"
+            rx="9.5"
+            ry="7"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <ellipse
+            cx="12"
+            cy="12"
+            rx="6"
+            ry="4.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+          <ellipse
+            cx="12"
+            cy="12"
+            rx="2.8"
+            ry="2.2"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+          />
+        </svg>
+      );
   }
 }
