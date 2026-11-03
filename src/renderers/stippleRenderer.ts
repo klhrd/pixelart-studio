@@ -24,3 +24,28 @@ export function renderStipple(
     ctx.fill();
   }
 }
+
+export function renderStippleSVG(
+  res: StippleResult,
+  settings: Settings,
+  palette: string[],
+  width: number,
+  height: number,
+): string {
+  const { points, radii } = res;
+  const bg = palette[palette.length - 1];
+  const ink = palette[0];
+
+  const parts: string[] = [];
+  parts.push(`<rect width="${width}" height="${height}" fill="${bg}"/>`);
+
+  const scale = Math.max(0.4, settings.cellSize / 14);
+  for (let k = 0; k < radii.length; k++) {
+    const r = radii[k] * scale;
+    parts.push(
+      `<circle cx="${points[k * 2]}" cy="${points[k * 2 + 1]}" r="${r}" fill="${ink}"/>`,
+    );
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${parts.join('')}</svg>`;
+}

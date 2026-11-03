@@ -19,17 +19,24 @@ import type {
   PixelSortResult,
 } from '../types';
 import { renderMoon } from './moonRenderer';
+import { renderMoonSVG } from './moonRenderer';
 import { renderTruchet } from './truchetRenderer';
+import { renderTruchetSVG } from './truchetRenderer';
 import { renderVoronoi } from './voronoiRenderer';
+import { renderVoronoiSVG } from './voronoiRenderer';
 import { renderBraille } from './brailleRenderer';
+import { renderBrailleSVG } from './brailleRenderer';
 import { renderPixels } from './pixelRenderer';
 import { renderStipple } from './stippleRenderer';
+import { renderStippleSVG } from './stippleRenderer';
 import { renderFlow } from './flowRenderer';
+import { renderFlowSVG } from './flowRenderer';
 import { renderHanzi } from './hanziRenderer';
 import { renderHexDump } from './hexdumpRenderer';
 import { renderBenday } from './bendayRenderer';
 import { renderWave } from './waveRenderer';
 import { renderContour } from './contourRenderer';
+import { renderContourSVG } from './contourRenderer';
 import { renderStringArt } from './stringartRenderer';
 import { renderTuring } from './turingRenderer';
 import { renderPixelSort } from './pixelsortRenderer';
@@ -177,6 +184,76 @@ export function renderResult(
   }
 }
 
+export function renderSVG(
+  engine: EngineId,
+  result: EngineResult,
+  settings: Settings,
+  palette: string[],
+  width: number,
+  height: number,
+): string {
+  switch (engine) {
+    case 'moon':
+      return renderMoonSVG(
+        result as MoonResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'truchet':
+      return renderTruchetSVG(
+        result as TruchetResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'voronoi':
+      return renderVoronoiSVG(
+        result as VoronoiResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'braille':
+      return renderBrailleSVG(
+        result as BrailleResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'stipple':
+      return renderStippleSVG(
+        result as StippleResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'flow':
+      return renderFlowSVG(
+        result as FlowResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'contour':
+      return renderContourSVG(
+        result as ContourResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    default:
+      throw new Error(`SVG export not supported for engine: ${engine}`);
+  }
+}
+
 export {
   renderMoon,
   renderTruchet,
@@ -186,4 +263,18 @@ export {
   renderStipple,
   renderFlow,
   renderHanzi,
+  renderHexDump,
+  renderBenday,
+  renderWave,
+  renderContour,
+  renderStringArt,
+  renderTuring,
+  renderPixelSort,
+  renderMoonSVG,
+  renderTruchetSVG,
+  renderVoronoiSVG,
+  renderBrailleSVG,
+  renderStippleSVG,
+  renderFlowSVG,
+  renderContourSVG,
 };

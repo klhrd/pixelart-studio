@@ -8,6 +8,7 @@ interface ExportSheetProps {
   filename: string;
   onFilenameChange: (name: string) => void;
   onExport: () => void;
+  onExportSvg: () => void;
   onUpload: () => void;
   disabled: boolean;
   outputWidth: number;
@@ -22,6 +23,7 @@ export function ExportSheet({
   filename,
   onFilenameChange,
   onExport,
+  onExportSvg,
   onUpload,
   disabled,
   outputWidth,
@@ -35,6 +37,12 @@ export function ExportSheet({
 
   const handleExport = () => {
     onExport();
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleExportSvg = () => {
+    onExportSvg();
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -141,6 +149,34 @@ export function ExportSheet({
         ) : (
           'Export PNG'
         )}
+      </button>
+
+      <button
+        type="button"
+        className="btn w-full justify-center py-3"
+        disabled={disabled}
+        onClick={handleExportSvg}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          className="h-5 w-5"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 19.5v-2a2 2 0 012-2h4a2 2 0 012 2v2M14 19.5v-2a2 2 0 012-2h4a2 2 0 012 2v2"
+          />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 11a2 2 0 012-2h4a2 2 0 012 2v2M4 7a2 2 0 012-2h4a2 2 0 012 2v2"
+          />
+        </svg>
+        Export SVG
       </button>
 
       <div className="flex gap-1.5 border-t border-zinc-800 pt-3">

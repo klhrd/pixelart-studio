@@ -51,3 +51,36 @@ export function renderContour(
     ctx.stroke();
   }
 }
+
+export function renderContourSVG(
+  res: ContourResult,
+  _settings: Settings,
+  palette: string[],
+  width: number,
+  height: number,
+): string {
+  const { segs, level, levels } = res;
+  const n = palette.length;
+
+  const parts: string[] = [];
+  parts.push(`<rect width="${width}" height="${height}" fill="${palette[0]}"/>`);
+
+  const byLevel: number[][] = Array.from({ length: levels }, () => []);
+  for (let i = 0; i < level.length; i++) {
+    byLevel[level[i]].push(i * 4);
+  }
+
+  for (let li = 0; li < levels; li++) {
+    const segIdx = byLevel[li];
+    if (segIdx.length === 0) continue;
+    const colorIdx = Math.min(n - 1, Math.round((li / (levels - 1)) * (n - 1)));
+
+    for (const base of segIdx) {
+      parts.push(
+        `<path d="M ${segs[base]} ${segs[base + 1]} L ${segs[base + 2]} ${segs[base + 3]}" fill="none" stroke="${palette[colorIdx]}" stroke-width="${li % 5 === 4 ? 2.2 : 1.4}"/>`,
+      );
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${parts.join('')}</svg>`;
+}

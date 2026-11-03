@@ -14,6 +14,8 @@ import { useSourceImage } from './hooks/useSourceImage';
 import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
+import { exportSvg } from './utils/exportSvg';
+import { renderSVG } from './renderers';
 import { parseShareHash } from './utils/shareLink';
 import type { EngineId, SheetId } from './types';
 
@@ -137,6 +139,23 @@ function Studio() {
     }
   };
 
+  const handleExportSvg = () => {
+    if (!source || !result || status !== 'ready') return;
+    try {
+      const svg = renderSVG(
+        engine,
+        result,
+        settings,
+        palette,
+        source.width,
+        source.height,
+      );
+      void exportSvg(svg, exportName);
+    } catch (err) {
+      console.warn('SVG export not supported for this engine:', err);
+    }
+  };
+
   return (
     <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">
       <input
@@ -200,6 +219,7 @@ function Studio() {
           filename={exportName}
           onFilenameChange={setExportName}
           onExport={handleExport}
+          onExportSvg={handleExportSvg}
           onUpload={() => fileInputRef.current?.click()}
           disabled={!source || !result || status !== 'ready'}
           outputWidth={(source?.width ?? 0) * exportScale}
