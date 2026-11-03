@@ -13,6 +13,7 @@ import { DEFAULT_SETTINGS, DEFAULT_FEATURED, DEFAULT_PALETTE_ORDER, SettingsCont
 
 const ORDER_KEY = 'pixelcraft-palette-order';
 const FEATURED_KEY = 'pixelcraft-palette-featured';
+const HISTORY_MAX = 50;
 
 function loadIdList(key: string): string[] {
   try {
@@ -51,14 +52,51 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   });
   const [customSheetOpen, setCustomSheetOpen] = useState(false);
   const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
+  const [history, setHistory] = useState<Settings[]>([]);
+  const [future, setFuture] = useState<Settings[]>([]);
+
+  const pushHistory = useCallback((current: Settings) => {
+    setHistory(prev => {
+      const last = prev[prev.length - 1];
+      if (last && JSON.stringify(last) === JSON.stringify(current)) return prev;
+      const next = [...prev, current].slice(-HISTORY_MAX);
+      return next;
+    });
+    setFuture([]);
+  }, []);
 
   const update = useCallback((patch: Partial<Settings>) => {
-    setSettings((prev) => ({ ...prev, ...patch }));
-  }, []);
+    setSettings(prev => {
+      pushHistory(prev);
+      return { ...prev, ...patch };
+    });
+  }, [pushHistory]);
 
   const reset = useCallback(() => {
+    pushHistory(settings);
     setSettings(DEFAULT_SETTINGS);
-  }, []);
+    setFuture([]);
+  }, [settings, pushHistory]);
+
+  const undo = useCallback(() => {
+    setHistory(prev => {
+      if (prev.length === 0) return prev;
+      const previous = prev[prev.length - 1];
+      setFuture(f => [...f, settings]);
+      setSettings(previous);
+      return prev.slice(0, -1);
+    });
+  }, [settings]);
+
+  const redo = useCallback(() => {
+    setFuture(prev => {
+      if (prev.length === 0) return prev;
+      const next = prev[prev.length - 1];
+      setHistory(h => [...h, settings]);
+      setSettings(next);
+      return prev.slice(0, -1);
+    });
+  }, [settings]);
 
   const byId = useMemo(
     () => new Map([...PALETTES, ...customPalettes].map((p) => [p.id, p])),
@@ -177,6 +215,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const canUndo = history.length > 0;
+  const canRedo = future.length > 0;
+
   const value = useMemo(
     () => ({
       engine,
@@ -184,6 +225,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       settings,
       update,
       reset,
+      undo,
+      redo,
       palette,
       allPalettes,
       customPalettes,
@@ -197,12 +240,16 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       movePalette,
       togglePaletteFeatured,
       featured,
+      canUndo,
+      canRedo,
     }),
     [
       engine,
       settings,
       update,
       reset,
+      undo,
+      redo,
       palette,
       allPalettes,
       customPalettes,
@@ -211,9 +258,12 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       deleteCustomPalette,
       customSheetOpen,
       editingPaletteId,
+      setCustomSheetOpen,
       movePalette,
       togglePaletteFeatured,
       featured,
+      canUndo,
+      canRedo,
     ],
   );
 

@@ -51,7 +51,7 @@ class ErrorBoundary extends Component<
 }
 
 function Studio() {
-  const { engine, setEngine, settings, palette, update, saveCustomPalette } =
+  const { engine, setEngine, settings, palette, update, saveCustomPalette, undo, redo } =
     useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
@@ -82,8 +82,16 @@ function Studio() {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       const key = e.key;
-      if (key === 'c') setCompare((c) => !c);
-      if (key === 'f') toggleFullscreen();
+      if (e.ctrlKey && key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if (e.ctrlKey && key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+      if (e.key === 'c') setCompare((c) => !c);
+      if (e.key === 'f') toggleFullscreen();
       const n = Number(key);
       if (!isNaN(n) && n >= 1 && n <= 9) {
         const ids: EngineId[] = [
@@ -96,7 +104,7 @@ function Studio() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [setEngine, setSheet]);
+  }, [setEngine, setSheet, undo, redo]);
 
   const toggleFullscreen = () => {
     const el = document.documentElement;

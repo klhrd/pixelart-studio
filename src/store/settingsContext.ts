@@ -85,6 +85,10 @@ export interface SettingsContextValue {
   movePalette: (id: string, dir: -1 | 1) => void;
   togglePaletteFeatured: (id: string) => void;
   featured: string[];
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);
