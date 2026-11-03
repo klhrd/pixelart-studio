@@ -337,18 +337,18 @@ export function EnginePanel() {
         <PanelSection title="String Art">
           <Slider
             label="Nails"
-            min={100}
-            max={600}
-            step={20}
+            min={20}
+            max={300}
+            step={10}
             value={settings.stringPoints}
             onChange={(v) => update({ stringPoints: v })}
             display={`${settings.stringPoints}`}
           />
           <Slider
             label="Threads"
-            min={100}
-            max={3000}
-            step={100}
+            min={50}
+            max={1000}
+            step={50}
             value={settings.stringLines}
             onChange={(v) => update({ stringLines: v })}
             display={`${settings.stringLines}`}
@@ -365,9 +365,9 @@ export function EnginePanel() {
         <PanelSection title="Turing Patterns">
           <Slider
             label="Frames"
-            min={50}
-            max={800}
-            step={50}
+            min={10}
+            max={300}
+            step={10}
             value={settings.turingFrames}
             onChange={(v) => update({ turingFrames: v })}
             display={`${settings.turingFrames}`}

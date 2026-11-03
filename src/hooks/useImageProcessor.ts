@@ -33,7 +33,7 @@ export function useImageProcessor(
   const workerKey = JSON.stringify(strippedRef.current);
   const [stable, setStable] = useState(strippedRef.current);
   useEffect(() => {
-    const t = setTimeout(() => setStable(strippedRef.current), 120);
+    const t = setTimeout(() => setStable(strippedRef.current), 400);
     return () => clearTimeout(t);
   }, [workerKey]);
 
