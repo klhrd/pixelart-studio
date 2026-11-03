@@ -19,6 +19,14 @@ export function TopBar({
   onFullscreen,
 }: TopBarProps) {
   const { undo, redo, canUndo, canRedo } = useSettings();
+
+  useKeyboardShortcuts({
+    c: onCompare,
+    f: onFullscreen,
+    z: undo,
+    y: redo,
+  });
+
   return (
     <header className="flex items-center justify-between gap-2 border-b border-zinc-800/80 bg-zinc-950/90 px-3 py-2.5 sm:px-4">
       <div className="flex min-w-0 items-center gap-3">

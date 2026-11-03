@@ -74,7 +74,7 @@ interface BottomBarProps {
 
 export function BottomBar({ active, onSelect }: BottomBarProps) {
   return (
-    <nav className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur">
+    <nav className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur" aria-label="Modules">
       <div className="mx-auto flex max-w-md">
         {NAV_ITEMS.map((item) => (
           <button
@@ -86,9 +86,11 @@ export function BottomBar({ active, onSelect }: BottomBarProps) {
                 ? 'text-emerald-300'
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
+            aria-pressed={active === item.id}
+            aria-label={item.label}
           >
             {item.icon}
-            {item.label}
+            <span className="sr-only">{item.label}</span>
           </button>
         ))}
       </div>

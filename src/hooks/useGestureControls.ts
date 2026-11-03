@@ -97,7 +97,7 @@ export function useGestureControls(
         updateSettings({ [item.key]: newValue } as Partial<Settings>);
       }
     });
-  }, [settings, updateSettings, items, state]);
+  }, [settings, updateSettings, items]);
 
   const endGesture = useCallback(() => {
     isActiveRef.current = false;

@@ -1,4 +1,4 @@
-import { Component, useEffect, useRef, useState, useCallback } from 'react';
+import { Component, useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
@@ -184,19 +184,19 @@ function Studio() {
 
   return (
     <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) void loadFile(file);
-          e.target.value = '';
-        }}
-      />
-      <TopBar status={status} error={loadError ?? error} compare={compare} fullscreen={fullscreen} onCompare={() => setCompare((c) => !c)} onFullscreen={toggleFullscreen} />
-      <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
+      {/* Skip to content link for accessibility */}
+      <a href="#main-content" className="sr-only focus:not-sr-only absolute top-4 left-4 z-50 bg-zinc-950 text-zinc-200 px-4 py-2 rounded-md border border-emerald-500">
+        Skip to content
+      </a>
+
+      <header
+        className="flex items-center justify-between gap-2 border-b border-zinc-800/80 bg-zinc-950/90 px-3 py-2.5 sm:px-4"
+        role="banner"
+      >
+        <TopBar status={status} error={loadError ?? error} compare={compare} fullscreen={fullscreen} onCompare={() => setCompare((c) => !c)} onFullscreen={toggleFullscreen} />
+      </header>
+
+      <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5" id="main-content" aria-label="Image preview canvas">
         {source ? (
           <PreviewCanvas
             source={source}
