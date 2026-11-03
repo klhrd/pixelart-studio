@@ -9,6 +9,7 @@ import type {
 import { renderResult } from '../../renderers';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
+import { GestureList } from './GestureList';
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 8;
@@ -158,9 +159,12 @@ export function PreviewCanvas({
   const gestureItems = useMemo(() => getGestureItems(engine), [engine]);
 
   const {
+    activeIndex,
     activeItem,
     currentValue,
     isActive,
+    direction,
+    listOffset,
     startGesture,
     moveGesture,
     endGesture,
@@ -334,20 +338,25 @@ export function PreviewCanvas({
     y: number;
   } | null>(null);
   const hadPinch = useRef(false);
+  const middlePan = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const lastTap = useRef(0);
 
   const onPointerDown = (e: React.PointerEvent) => {
+    if (e.button === 1) e.preventDefault();
     containerRef.current?.setPointerCapture(e.pointerId);
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
       lastPos.current = { x: e.clientX, y: e.clientY };
-      if (viewRef.current.s <= 1.001) {
+      if (e.button === 1) {
+        middlePan.current = true;
+      } else {
         startGesture(e.clientX, e.clientY);
       }
     }
     if (pointers.current.size === 2) {
       endGesture();
+      middlePan.current = false;
       const [a, b] = [...pointers.current.values()];
       const v = viewRef.current;
       pinch.current = {
@@ -379,8 +388,8 @@ export function PreviewCanvas({
       const wy = (g.cy - g.y) / g.s;
       setView(clampView(ns, cx - wx * ns, cy - wy * ns));
     } else if (pointers.current.size === 1) {
-      const v = viewRef.current;
-      if (v.s > 1) {
+      if (middlePan.current) {
+        const v = viewRef.current;
         const dx = e.clientX - lastPos.current.x;
         const dy = e.clientY - lastPos.current.y;
         setView(clampView(v.s, v.x + dx, v.y + dy));
@@ -400,6 +409,7 @@ export function PreviewCanvas({
     }
     if (pointers.current.size === 0) {
       endGesture();
+      middlePan.current = false;
       if (!hadPinch.current) {
         const now = performance.now();
         if (now - lastTap.current < 300) resetView();
@@ -418,6 +428,18 @@ export function PreviewCanvas({
       const rect = el.getBoundingClientRect();
       const cx = e.clientX - rect.left;
       const cy = e.clientY - rect.top;
+
+      // Trackpad two-finger scroll (horizontal dominant): pan
+      if (
+        !e.ctrlKey &&
+        e.deltaX !== 0 &&
+        Math.abs(e.deltaX) >= Math.abs(e.deltaY)
+      ) {
+        setView(clampView(v.s, v.x - e.deltaX, v.y - e.deltaY));
+        return;
+      }
+
+      // Mouse wheel or trackpad pinch (ctrlKey): zoom around cursor
       const ns = Math.min(
         MAX_SCALE,
         Math.max(MIN_SCALE, v.s * Math.exp(-e.deltaY * 0.0015)),
@@ -475,7 +497,15 @@ export function PreviewCanvas({
           </div>
         </div>
 
-        {isActive && (
+        {isActive && direction === 'vertical' && (
+          <GestureList
+            items={gestureItems}
+            listOffset={listOffset}
+            activeIndex={activeIndex}
+          />
+        )}
+
+        {isActive && direction === 'horizontal' && (
           <div
             className="pointer-events-none absolute top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2"
             role="status"

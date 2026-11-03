@@ -16,10 +16,12 @@ export interface GestureState {
   currentValue: number;
   isActive: boolean;
   direction: 'vertical' | 'horizontal' | null;
+  listOffset: number;
 }
 
+export const GESTURE_ITEM_PITCH = 44;
+
 const LOCK_THRESHOLD = 12;
-const SWITCH_STEP = 40;
 const FULL_RANGE_PX = 200;
 
 export function useGestureControls(
@@ -38,6 +40,7 @@ export function useGestureControls(
       : 0,
     isActive: false,
     direction: null,
+    listOffset: safeIndex,
   }));
 
   const settingsRef = useRef(settings);
@@ -51,7 +54,7 @@ export function useGestureControls(
 
   const draggingRef = useRef(false);
   const dirRef = useRef<'vertical' | 'horizontal' | null>(null);
-  const anchorRef = useRef({ x: 0, y: 0, baseValue: 0, baseIndex: 0 });
+  const anchorRef = useRef({ x: 0, y: 0, baseValue: 0, baseOffset: 0 });
   const rafRef = useRef<number>();
 
   const startGesture = useCallback((x: number, y: number) => {
@@ -61,7 +64,7 @@ export function useGestureControls(
       x,
       y,
       baseValue: 0,
-      baseIndex: activeIndexRef.current,
+      baseOffset: activeIndexRef.current,
     };
   }, []);
 
@@ -87,37 +90,39 @@ export function useGestureControls(
             return;
           }
           dirRef.current = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
+          const current = itemsRef.current[activeIndexRef.current];
+          if (current) {
+            anchorRef.current.baseValue = settingsRef.current[current.key] as number;
+          }
           anchorRef.current.x = x;
           anchorRef.current.y = y;
-          const item = itemsRef.current[activeIndexRef.current];
-          if (!item) return;
-          anchorRef.current.baseValue = settingsRef.current[item.key] as number;
-          anchorRef.current.baseIndex = activeIndexRef.current;
+          anchorRef.current.baseOffset = activeIndexRef.current;
           return;
         }
 
         if (dirRef.current === 'vertical') {
-          if (Math.abs(dy) < SWITCH_STEP) return;
           const len = itemsRef.current.length;
           if (len === 0) return;
-          const dir = dy < 0 ? 1 : -1;
-          const newIndex =
-            ((anchorRef.current.baseIndex + dir) % len + len) % len;
-          const newItem = itemsRef.current[newIndex];
-          anchorRef.current.baseIndex = newIndex;
-          anchorRef.current.y = y;
+          const raw =
+            anchorRef.current.baseOffset -
+            (y - anchorRef.current.y) / GESTURE_ITEM_PITCH;
+          const offset = Math.max(0, Math.min(len - 1, raw));
+          const idx = Math.round(offset);
+          const item = itemsRef.current[idx];
+          if (!item) return;
           setState((prev) => ({
             ...prev,
             isActive: true,
             direction: 'vertical',
-            activeIndex: newIndex,
-            activeItem: newItem,
-            currentValue: settingsRef.current[newItem.key] as number,
+            activeIndex: idx,
+            activeItem: item,
+            listOffset: offset,
+            currentValue: settingsRef.current[item.key] as number,
           }));
           return;
         }
 
-        const item = itemsRef.current[anchorRef.current.baseIndex];
+        const item = itemsRef.current[activeIndexRef.current];
         if (!item) return;
         const sensitivity = (item.max - item.min) / FULL_RANGE_PX;
         const newValue = applyValue(
@@ -128,7 +133,7 @@ export function useGestureControls(
           ...prev,
           isActive: true,
           direction: 'horizontal',
-          activeIndex: anchorRef.current.baseIndex,
+          activeIndex: activeIndexRef.current,
           activeItem: item,
           currentValue: newValue,
         }));
@@ -141,7 +146,12 @@ export function useGestureControls(
     draggingRef.current = false;
     dirRef.current = null;
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    setState((prev) => ({ ...prev, isActive: false, direction: null }));
+    setState((prev) => ({
+      ...prev,
+      isActive: false,
+      direction: null,
+      listOffset: prev.activeIndex,
+    }));
   }, []);
 
   useEffect(() => {
@@ -150,12 +160,19 @@ export function useGestureControls(
       const item = items[idx];
       if (!item) return prev;
       const value = settings[item.key] as number;
-      if (item === prev.activeItem && value === prev.currentValue) return prev;
+      if (
+        item === prev.activeItem &&
+        value === prev.currentValue &&
+        prev.listOffset === idx
+      ) {
+        return prev;
+      }
       return {
         ...prev,
         activeIndex: idx,
         activeItem: item,
         currentValue: value,
+        listOffset: idx,
       };
     });
   }, [settings, items]);
