@@ -15,7 +15,7 @@ import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
 import { parseShareHash } from './utils/shareLink';
-import type { SheetId } from './types';
+import type { EngineId, SheetId } from './types';
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -63,6 +63,8 @@ function Studio() {
   const [exportScale, setExportScale] = useState(2);
   const [exportName, setExportName] = useState('pixelcraft');
   const [sheet, setSheet] = useState<SheetId>(null);
+  const [compare, setCompare] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -75,6 +77,41 @@ function Studio() {
     if (shared.engine) setEngine(shared.engine);
     history.replaceState(null, '', location.pathname + location.search);
   }, [saveCustomPalette, update, setEngine]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const key = e.key;
+      if (key === 'c') setCompare((c) => !c);
+      if (key === 'f') toggleFullscreen();
+      const n = Number(key);
+      if (!isNaN(n) && n >= 1 && n <= 9) {
+        const ids: EngineId[] = [
+          'moon', 'truchet', 'voronoi', 'braille', 'dither', 'stipple', 'flow', 'scanline', 'hanzi',
+        ];
+        const id = ids[n - 1];
+        setEngine(id);
+        setSheet(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setEngine, setSheet]);
+
+  const toggleFullscreen = () => {
+    const el = document.documentElement;
+    if (!document.fullscreenElement) {
+      el.requestFullscreen().then(() => setFullscreen(true));
+    } else {
+      document.exitFullscreen().then(() => setFullscreen(false));
+    }
+  };
+
+  useEffect(() => {
+    const onChange = () => setFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onChange);
+    return () => document.removeEventListener('fullscreenchange', onChange);
+  }, []);
 
   const closeSheet = () => setSheet(null);
 
@@ -105,7 +142,14 @@ function Studio() {
           e.target.value = '';
         }}
       />
-      <TopBar status={status} error={loadError ?? error} />
+      <TopBar
+        status={status}
+        error={loadError ?? error}
+        compare={compare}
+        fullscreen={fullscreen}
+        onCompare={() => setCompare((c) => !c)}
+        onFullscreen={toggleFullscreen}
+      />
       <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
         {source ? (
           <PreviewCanvas
@@ -116,6 +160,7 @@ function Studio() {
             status={status}
             settings={settings}
             palette={palette}
+            compare={compare}
           />
         ) : (
           <DropZone

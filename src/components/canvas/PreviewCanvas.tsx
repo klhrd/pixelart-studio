@@ -16,6 +16,7 @@ interface PreviewCanvasProps {
   status: ProcessorStatus;
   settings: Settings;
   palette: string[];
+  compare: boolean;
 }
 
 const MIN_SCALE = 1;
@@ -29,6 +30,7 @@ export function PreviewCanvas({
   status,
   settings,
   palette,
+  compare,
 }: PreviewCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -79,6 +81,10 @@ export function PreviewCanvas({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (compare && source) {
+      ctx.putImageData(new ImageData(source.bytes, source.width, source.height), 0, 0);
+      return;
+    }
     if (!result || !resultEngine) {
       ctx.fillStyle = '#0b0b0f';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -93,7 +99,7 @@ export function PreviewCanvas({
       source.width,
       source.height,
     );
-  }, [resultEngine, result, palette, source]);
+  }, [resultEngine, result, palette, source, compare]);
 
   useEffect(() => {
     draw();
