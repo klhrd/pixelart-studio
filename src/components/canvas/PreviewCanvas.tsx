@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   EngineId,
   EngineResult,
@@ -8,6 +8,68 @@ import type {
 } from '../../types';
 import { renderResult } from '../../renderers';
 import { WebGLRenderer } from '../../renderers/webgl/WebGLRenderer';
+import { useGestureControls } from '../../hooks/useGestureControls';
+import { useSettings } from '../../store/settingsContext';
+
+const MIN_SCALE = 1;
+const MAX_SCALE = 8;
+
+// Per-engine adjustable controls for gesture mode
+const GESTURE_ITEMS: Record<
+  string,
+  Array<{
+    key: keyof Settings;
+    label: string;
+    min: number;
+    max: number;
+    step: number;
+    format?: (value: number) => string;
+  }>
+> = {
+  moon: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+    { key: 'edgeSensitivity', label: 'Edge Sensitivity', min: 0, max: 1, step: 0.05 },
+    { key: 'animOffset', label: 'Phase Offset', min: 0, max: 1, step: 0.01 },
+  ],
+  truchet: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'strokeWidth', label: 'Stroke Width', min: 0.1, max: 0.9, step: 0.01 },
+    { key: 'blankThreshold', label: 'Blank Threshold', min: 0, max: 1, step: 0.05 },
+  ],
+  voronoi: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'pointDensity', label: 'Point Density', min: 60, max: 1500, step: 20 },
+    { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 4, step: 0.5 },
+  ],
+  braille: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1 },
+  ],
+  dither: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+  ],
+  stipple: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'stippleCount', label: 'Points', min: 100, max: 2000, step: 50 },
+    { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1 },
+  ],
+};
+
+function getGestureItems(engine: EngineId) {
+  return GESTURE_ITEMS[engine] || [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+  ];
+}
 
 interface PreviewCanvasProps {
   source: SourceImage;
@@ -20,9 +82,6 @@ interface PreviewCanvasProps {
   compare: boolean;
   webglRenderer?: WebGLRenderer | null;
 }
-
-const MIN_SCALE = 1;
-const MAX_SCALE = 8;
 
 export function PreviewCanvas({
   source,
@@ -42,6 +101,16 @@ export function PreviewCanvas({
   const thumbRef = useRef<HTMLCanvasElement | null>(null);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
+
+  const { update: updateSettings } = useSettings();
+
+  const gestureItems = useMemo(() => getGestureItems(engine), [engine]);
+
+  const {
+    activeItem,
+    currentValue,
+    isActive,
+  } = useGestureControls(gestureItems, settings, updateSettings, 0);
 
   const [fit, setFit] = useState({ w: 0, h: 0 });
   const [mmSize, setMmSize] = useState({ w: 72, h: 72 });
@@ -117,7 +186,7 @@ export function PreviewCanvas({
     gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
-  }, [engine, result, settings, palette, webglRenderer]);
+  }, [engine, webglRenderer]);
 
   useEffect(() => {
     drawCanvas();
@@ -367,6 +436,29 @@ export function PreviewCanvas({
             <canvas ref={minimapRef} className="block rounded-sm" />
           </div>
         </div>
+
+        {/* HUD - Gesture controls */}
+        {isActive && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none">
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-700 bg-zinc-900/80 backdrop-blur text-zinc-200 text-xs font-mono">
+              <span className="text-zinc-400">{activeItem.label}</span>
+              <span className="text-emerald-400 font-bold">
+                {activeItem.format ? activeItem.format(currentValue) : currentValue}
+              </span>
+            </div>
+            <div className="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-500"
+                style={{
+                  width: `${Math.max(
+                    0,
+                    Math.min(100, ((currentValue as number) / 100) * 100),
+                  )}%`,
+                }}
+              ></div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

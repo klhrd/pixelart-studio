@@ -19,8 +19,11 @@ export interface RenderContext {
 }
 
 export interface EngineRenderer {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render(ctx: CanvasRenderingContext2D, result: any, settings: any, palette: string[], width: number, height: number): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   renderSVG?(result: any, settings: Settings, palette: string[], width: number, height: number): string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   webglRender?(gl: WebGLRenderingContext, result: any, settings: any, palette: string[], width: number, height: number): void;
   isSupported?(): boolean;
 }
@@ -112,5 +115,6 @@ export interface PixelSortResult {
   height: number;
   bytes: Uint8ClampedArray;
 }
+
 
 import type { Settings } from '../../types';
