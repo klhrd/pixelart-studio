@@ -1,4 +1,4 @@
-import { Component, useEffect, useRef, useState } from 'react';
+import { Component, useEffect, useRef, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
@@ -53,7 +53,7 @@ class ErrorBoundary extends Component<
 }
 
 function Studio() {
-  const { engine, setEngine, settings, palette, update, saveCustomPalette, undo, redo } =
+  const { engine, setEngine, settings, palette, update, saveCustomPalette, undo, redo, reset } =
     useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
@@ -80,42 +80,16 @@ function Studio() {
     history.replaceState(null, '', location.pathname + location.search);
   }, [saveCustomPalette, update, setEngine]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-      const key = e.key;
-      if (e.ctrlKey && key === 'z') {
-        e.preventDefault();
-        undo();
-      }
-      if (e.ctrlKey && key === 'y') {
-        e.preventDefault();
-        redo();
-      }
-      if (e.key === 'c') setCompare((c) => !c);
-      if (e.key === 'f') toggleFullscreen();
-      const n = Number(key);
-      if (!isNaN(n) && n >= 1 && n <= 9) {
-        const ids: EngineId[] = [
-          'moon', 'truchet', 'voronoi', 'braille', 'dither', 'stipple', 'flow', 'scanline', 'hanzi',
-        ];
-        const id = ids[n - 1];
-        setEngine(id);
-        setSheet(null);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [setEngine, setSheet, undo, redo]);
+  const closeSheet = () => setSheet(null);
 
-  const toggleFullscreen = () => {
+  const toggleFullscreen = useCallback(() => {
     const el = document.documentElement;
     if (!document.fullscreenElement) {
       el.requestFullscreen().then(() => setFullscreen(true));
     } else {
       document.exitFullscreen().then(() => setFullscreen(false));
     }
-  };
+  }, []);
 
   useEffect(() => {
     const onChange = () => setFullscreen(!!document.fullscreenElement);
@@ -123,9 +97,7 @@ function Studio() {
     return () => document.removeEventListener('fullscreenchange', onChange);
   }, []);
 
-  const closeSheet = () => setSheet(null);
-
-  const handleExport = () => {
+  const handleExport = useCallback(() => {
     if (source && result && status === 'ready') {
       void exportPng(
         source,
@@ -137,7 +109,7 @@ function Studio() {
         exportName,
       );
     }
-  };
+  }, [source, engine, result, status, settings, palette, exportScale, exportName]);
 
   const handleExportSvg = () => {
     if (!source || !result || status !== 'ready') return;
@@ -156,6 +128,46 @@ function Studio() {
     }
   };
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      const key = e.key.toLowerCase();
+      if (e.ctrlKey && key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+      if (e.ctrlKey && key === 'y') {
+        e.preventDefault();
+        redo();
+      }
+      if (key === 'c') setCompare((c) => !c);
+      if (key === 'f') toggleFullscreen();
+      if (key === 's') {
+        e.preventDefault();
+        handleExport();
+      }
+      if (key === 'o') {
+        e.preventDefault();
+        fileInputRef.current?.click();
+      }
+      if (key === 'r') {
+        e.preventDefault();
+        reset();
+      }
+      const n = Number(key);
+      if (!isNaN(n) && n >= 1 && n <= 9) {
+        const ids: EngineId[] = [
+          'moon', 'truchet', 'voronoi', 'braille', 'dither', 'stipple', 'flow', 'scanline', 'hanzi',
+        ];
+        const id = ids[n - 1];
+        setEngine(id);
+        setSheet(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [setEngine, setSheet, undo, redo, setCompare, toggleFullscreen, handleExport, reset]);
+
   return (
     <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">
       <input
@@ -169,14 +181,7 @@ function Studio() {
           e.target.value = '';
         }}
       />
-      <TopBar
-        status={status}
-        error={loadError ?? error}
-        compare={compare}
-        fullscreen={fullscreen}
-        onCompare={() => setCompare((c) => !c)}
-        onFullscreen={toggleFullscreen}
-      />
+      <TopBar status={status} error={loadError ?? error} compare={compare} fullscreen={fullscreen} onCompare={() => setCompare((c) => !c)} onFullscreen={toggleFullscreen} />
       <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5">
         {source ? (
           <PreviewCanvas
@@ -190,24 +195,12 @@ function Studio() {
             compare={compare}
           />
         ) : (
-          <DropZone
-            onFile={(f) => void loadFile(f)}
-            onSample={loadSample}
-          />
+          <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
         )}
       </main>
       <BottomBar active={sheet} onSelect={(id) => setSheet(id)} />
-      <Sheet
-        open={sheet === 'engines'}
-        title="Algorithms"
-        onClose={closeSheet}
-      >
-        <EngineSheet
-          onPick={(id) => {
-            setEngine(id);
-            closeSheet();
-          }}
-        />
+      <Sheet open={sheet === 'engines'} title="Algorithms" onClose={closeSheet}>
+        <EngineSheet onPick={(id) => { setEngine(id); closeSheet(); }} />
       </Sheet>
       <Sheet open={sheet === 'adjust'} title="Tune" onClose={closeSheet}>
         <TuneSheet />
@@ -234,11 +227,7 @@ function Studio() {
 function CustomPaletteSheetMount() {
   const { customSheetOpen, setCustomSheetOpen } = useSettings();
   return (
-    <Sheet
-      open={customSheetOpen}
-      title="Custom Palette"
-      onClose={() => setCustomSheetOpen(false)}
-    >
+    <Sheet open={customSheetOpen} title="Custom Palette" onClose={() => setCustomSheetOpen(false)}>
       <CustomPaletteSheet />
     </Sheet>
   );
