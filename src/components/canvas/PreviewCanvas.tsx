@@ -7,7 +7,6 @@ import type {
   SourceImage,
 } from '../../types';
 import { renderResult } from '../../renderers';
-import { WebGLRenderer } from '../../renderers/webgl/WebGLRenderer';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
 
@@ -42,7 +41,7 @@ const GESTURE_ITEMS: Record<
   voronoi: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
     { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'pointDensity', label: 'Point Density', min: 60, max: 1500, step: 20 },
+    { key: 'pointDensity', label: 'Edge Site Bias', min: 0, max: 150, step: 5 },
     { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 4, step: 0.5 },
   ],
   braille: [
@@ -51,7 +50,7 @@ const GESTURE_ITEMS: Record<
     { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1 },
   ],
   dither: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'cellSize', label: 'Pixel Scale', min: 1, max: 48, step: 1 },
     { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
     { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
   ],
@@ -61,14 +60,69 @@ const GESTURE_ITEMS: Record<
     { key: 'stippleCount', label: 'Points', min: 100, max: 2000, step: 50 },
     { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1 },
   ],
+  flow: [
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'flowParticles', label: 'Particles', min: 500, max: 8000, step: 100 },
+    { key: 'flowSteps', label: 'Trace Length', min: 10, max: 120, step: 2 },
+    { key: 'flowNoise', label: 'Noise Blend', min: 0, max: 1, step: 0.05 },
+  ],
+  scanline: [
+    { key: 'cellSize', label: 'Scan Pitch', min: 3, max: 48, step: 1 },
+    { key: 'scanGlow', label: 'Glow', min: 0, max: 1, step: 0.05 },
+    { key: 'scanAberration', label: 'Aberration', min: 0, max: 10, step: 0.5 },
+    { key: 'scanGlitch', label: 'Glitch', min: 0, max: 1, step: 0.05 },
+  ],
+  hanzi: [
+    { key: 'cellSize', label: 'Glyph Size', min: 6, max: 48, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'blankThreshold', label: 'Blank Above', min: 0, max: 1, step: 0.05 },
+  ],
+  hexdump: [
+    { key: 'cellSize', label: 'Font Size', min: 4, max: 32, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+  ],
+  benday: [
+    { key: 'cellSize', label: 'Screen Pitch', min: 3, max: 32, step: 1 },
+    { key: 'bendayScale', label: 'Dot Scale', min: 0.4, max: 1.1, step: 0.05 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+  ],
+  wave: [
+    { key: 'cellSize', label: 'Line Spacing', min: 4, max: 48, step: 1 },
+    { key: 'waveAmp', label: 'Amplitude', min: 0.1, max: 1.5, step: 0.05 },
+    { key: 'waveFreq', label: 'Wavelength', min: 2, max: 24, step: 1 },
+  ],
+  contour: [
+    { key: 'cellSize', label: 'Smoothing', min: 3, max: 48, step: 1 },
+    { key: 'contourLevels', label: 'Levels', min: 4, max: 20, step: 1 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+  ],
+  stringart: [
+    { key: 'cellSize', label: 'Line Width', min: 3, max: 30, step: 1 },
+    { key: 'stringPoints', label: 'Nails', min: 20, max: 300, step: 10 },
+    { key: 'stringLines', label: 'Threads', min: 50, max: 1000, step: 50 },
+  ],
+  turing: [
+    { key: 'turingFrames', label: 'Frames', min: 10, max: 300, step: 10 },
+    { key: 'turingFeed', label: 'Feed', min: 0.01, max: 0.1, step: 0.005 },
+    { key: 'turingKill', label: 'Kill', min: 0.01, max: 0.1, step: 0.005 },
+  ],
+  pixelsort: [
+    { key: 'pixelSortThreshold', label: 'Threshold', min: 0, max: 254, step: 2 },
+    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+  ],
 };
 
 function getGestureItems(engine: EngineId) {
-  return GESTURE_ITEMS[engine] || [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
-  ];
+  return (
+    GESTURE_ITEMS[engine] ?? [
+      { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
+      { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+      { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+    ]
+  );
 }
 
 interface PreviewCanvasProps {
@@ -80,7 +134,6 @@ interface PreviewCanvasProps {
   settings: Settings;
   palette: string[];
   compare: boolean;
-  webglRenderer?: WebGLRenderer | null;
 }
 
 export function PreviewCanvas({
@@ -92,11 +145,9 @@ export function PreviewCanvas({
   settings,
   palette,
   compare,
-  webglRenderer,
 }: PreviewCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const webglCanvasRef = useRef<HTMLCanvasElement>(null);
   const minimapRef = useRef<HTMLCanvasElement>(null);
   const thumbRef = useRef<HTMLCanvasElement | null>(null);
   const settingsRef = useRef(settings);
@@ -110,6 +161,9 @@ export function PreviewCanvas({
     activeItem,
     currentValue,
     isActive,
+    startGesture,
+    moveGesture,
+    endGesture,
   } = useGestureControls(gestureItems, settings, updateSettings, 0);
 
   const [fit, setFit] = useState({ w: 0, h: 0 });
@@ -174,27 +228,9 @@ export function PreviewCanvas({
     );
   }, [resultEngine, result, palette, source, compare]);
 
-  const drawWebGL = useCallback(() => {
-    const glRenderer = webglRenderer;
-    if (!glRenderer?.isSupported) return;
-    const gl = glRenderer.gl;
-    if (!gl) return;
-    const program = glRenderer.getProgram(engine);
-    if (!program) return;
-
-    gl.useProgram(program);
-    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-    gl.clearColor(0, 0, 0, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-  }, [engine, webglRenderer]);
-
   useEffect(() => {
     drawCanvas();
   }, [drawCanvas]);
-
-  useEffect(() => {
-    drawWebGL();
-  }, [drawWebGL]);
 
   useEffect(() => {
     if (engine !== 'moon' || resultEngine !== 'moon' || !settings.animate)
@@ -210,12 +246,11 @@ export function PreviewCanvas({
         animOffset: (s.animOffset + dt * s.animSpeed) % 1,
       };
       drawCanvas();
-      drawWebGL();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [engine, resultEngine, settings.animate, drawCanvas, drawWebGL]);
+  }, [engine, resultEngine, settings.animate, drawCanvas]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -307,8 +342,12 @@ export function PreviewCanvas({
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.current.size === 1) {
       lastPos.current = { x: e.clientX, y: e.clientY };
+      if (viewRef.current.s <= 1.001) {
+        startGesture(e.clientX, e.clientY);
+      }
     }
     if (pointers.current.size === 2) {
+      endGesture();
       const [a, b] = [...pointers.current.values()];
       const v = viewRef.current;
       pinch.current = {
@@ -345,6 +384,8 @@ export function PreviewCanvas({
         const dx = e.clientX - lastPos.current.x;
         const dy = e.clientY - lastPos.current.y;
         setView(clampView(v.s, v.x + dx, v.y + dy));
+      } else {
+        moveGesture(e.clientX, e.clientY);
       }
       lastPos.current = { x: e.clientX, y: e.clientY };
     }
@@ -358,6 +399,7 @@ export function PreviewCanvas({
       lastPos.current = { x: p.x, y: p.y };
     }
     if (pointers.current.size === 0) {
+      endGesture();
       if (!hadPinch.current) {
         const now = performance.now();
         if (now - lastTap.current < 300) resetView();
@@ -388,7 +430,8 @@ export function PreviewCanvas({
     return () => el.removeEventListener('wheel', onWheel);
   }, [clampView]);
 
-  const pixelated = engine === 'dither' || engine === 'braille';
+  const pixelated =
+    engine === 'dither' || engine === 'braille' || engine === 'scanline';
 
   return (
     <div className="relative h-full w-full">
@@ -414,14 +457,9 @@ export function PreviewCanvas({
             className={`h-full w-full rounded-lg border border-zinc-800 shadow-2xl shadow-black/50 ${
               pixelated ? '[image-rendering:pixelated]' : ''
             }`}
+            aria-label={`Preview of ${engine} styling result`}
+            role="img"
           />
-          {webglRenderer && webglRenderer.isSupported && (
-            <canvas
-              ref={webglCanvasRef}
-              className="absolute inset-0 w-full h-full"
-              style={{ pointerEvents: 'none' }}
-            />
-          )}
         </div>
 
         {status === 'processing' && (
@@ -433,29 +471,41 @@ export function PreviewCanvas({
 
         <div className="absolute bottom-3 left-3 z-10">
           <div className="pointer-events-none rounded-md border border-zinc-700/80 bg-zinc-900/80 p-0.5 shadow-lg shadow-black/40">
-            <canvas ref={minimapRef} className="block rounded-sm" />
+            <canvas ref={minimapRef} className="block rounded-sm" aria-hidden="true" />
           </div>
         </div>
 
-        {/* HUD - Gesture controls */}
         {isActive && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-2 pointer-events-none">
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full border border-zinc-700 bg-zinc-900/80 backdrop-blur text-zinc-200 text-xs font-mono">
+          <div
+            className="pointer-events-none absolute top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/80 px-3 py-1 font-mono text-xs text-zinc-200 backdrop-blur">
               <span className="text-zinc-400">{activeItem.label}</span>
-              <span className="text-emerald-400 font-bold">
-                {activeItem.format ? activeItem.format(currentValue) : currentValue}
+              <span className="font-bold text-emerald-400">
+                {activeItem.format
+                  ? activeItem.format(currentValue)
+                  : Number.isInteger(currentValue)
+                    ? currentValue
+                    : currentValue.toFixed(2)}
               </span>
             </div>
-            <div className="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-1 w-32 overflow-hidden rounded-full bg-zinc-800">
               <div
                 className="h-full bg-emerald-500"
                 style={{
                   width: `${Math.max(
                     0,
-                    Math.min(100, ((currentValue as number) / 100) * 100),
+                    Math.min(
+                      100,
+                      ((currentValue - activeItem.min) /
+                        Math.max(1e-6, activeItem.max - activeItem.min)) *
+                        100,
+                    ),
                   )}%`,
                 }}
-              ></div>
+              />
             </div>
           </div>
         )}

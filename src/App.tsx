@@ -16,7 +16,6 @@ import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
-import { WebGLRenderer } from './renderers/webgl/WebGLRenderer';
 import { parseShareHash } from './utils/shareLink';
 import type { EngineId, SheetId } from './types';
 
@@ -69,19 +68,6 @@ function Studio() {
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const webglCanvasRef = useRef<HTMLCanvasElement>(null);
-  const webglRendererRef = useRef<WebGLRenderer | null>(null);
-
-  // Initialize WebGL renderer when canvas is available
-  useEffect(() => {
-    const canvas = webglCanvasRef.current;
-    if (canvas && !webglRendererRef.current) {
-      const renderer = new WebGLRenderer(canvas);
-      if (renderer.isSupported) {
-        webglRendererRef.current = renderer;
-      }
-    }
-  }, []);
 
   useEffect(() => {
     const shared = parseShareHash(location.hash);
@@ -189,14 +175,21 @@ function Studio() {
         Skip to content
       </a>
 
-      <header
-        className="flex items-center justify-between gap-2 border-b border-zinc-800/80 bg-zinc-950/90 px-3 py-2.5 sm:px-4"
-        role="banner"
-      >
-        <TopBar status={status} error={loadError ?? error} compare={compare} fullscreen={fullscreen} onCompare={() => setCompare((c) => !c)} onFullscreen={toggleFullscreen} />
-      </header>
+      <TopBar
+        status={status}
+        error={loadError ?? error}
+        compare={compare}
+        fullscreen={fullscreen}
+        onCompare={() => setCompare((c) => !c)}
+        onFullscreen={toggleFullscreen}
+      />
 
-      <main className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5" id="main-content" aria-label="Image preview canvas">
+      <main
+        className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5"
+        id="main-content"
+        tabIndex={-1}
+        aria-label="Image preview canvas"
+      >
         {source ? (
           <PreviewCanvas
             source={source}
@@ -207,7 +200,6 @@ function Studio() {
             settings={settings}
             palette={palette}
             compare={compare}
-            webglRenderer={webglRendererRef.current}
           />
         ) : (
           <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
