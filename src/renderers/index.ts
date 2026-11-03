@@ -38,8 +38,11 @@ import { renderWave } from './waveRenderer';
 import { renderContour } from './contourRenderer';
 import { renderContourSVG } from './contourRenderer';
 import { renderStringArt } from './stringartRenderer';
+import { renderStringArtSVG } from './stringartRenderer';
 import { renderTuring } from './turingRenderer';
+import { renderTuringSVG } from './turingRenderer';
 import { renderPixelSort } from './pixelsortRenderer';
+import { renderPixelSortSVG } from './pixelsortRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -249,6 +252,30 @@ export function renderSVG(
         width,
         height,
       );
+    case 'stringart':
+      return renderStringArtSVG(
+        result as StringArtResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'turing':
+      return renderTuringSVG(
+        result as TuringResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'pixelsort':
+      return renderPixelSortSVG(
+        result as PixelSortResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
     default:
       throw new Error(`SVG export not supported for engine: ${engine}`);
   }
@@ -277,4 +304,7 @@ export {
   renderStippleSVG,
   renderFlowSVG,
   renderContourSVG,
+  renderStringArtSVG,
+  renderTuringSVG,
+  renderPixelSortSVG,
 };
