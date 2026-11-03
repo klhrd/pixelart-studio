@@ -45,63 +45,66 @@ export function TopBar({
         <button
           type="button"
           onClick={onCompare}
-          className={`rounded-md border border-zinc-700 bg-zinc-900/80 px-2 py-1.5 font-mono text-[10px] transition active:scale-95 ${
+          className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
             compare
               ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
-              : 'border-zinc-700 text-zinc-400 hover:border-zinc-600'
+              : 'border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
           }`}
           aria-pressed={compare}
+          aria-label="Toggle compare view"
           title="Compare (C)"
         >
-          A/B
+          <span className="material-symbols-rounded" aria-hidden="true">
+            compare
+          </span>
         </button>
         <button
           type="button"
           onClick={onFullscreen}
-          className={`rounded-md border border-zinc-700 bg-zinc-900/80 px-2 py-1.5 font-mono text-[10px] transition active:scale-95 ${
+          className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
             fullscreen
               ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
-              : 'border-zinc-700 text-zinc-400 hover:border-zinc-600'
+              : 'border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
           }`}
           aria-pressed={fullscreen}
+          aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
           title="Fullscreen (F)"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            className="h-4 w-4"
-            aria-hidden="true"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 7.5L12 3m0 0l4.5 4.5M12 3v13.5" />
-          </svg>
+          <span className="material-symbols-rounded" aria-hidden="true">
+            {fullscreen ? 'fullscreen_exit' : 'fullscreen'}
+          </span>
         </button>
         <button
           type="button"
           onClick={undo}
           disabled={!canUndo}
-          className={`rounded-md border border-zinc-700 bg-zinc-900/80 px-2 py-1.5 font-mono text-[10px] transition active:scale-95 ${
+          className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
             canUndo
-              ? 'text-zinc-400 hover:border-zinc-600'
-              : 'border-zinc-800 bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
+              ? 'border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+              : 'cursor-not-allowed border-zinc-800 bg-zinc-800/50 text-zinc-600'
           }`}
+          aria-label="Undo"
           title="Undo (Ctrl+Z)"
         >
-          ↩
+          <span className="material-symbols-rounded" aria-hidden="true">
+            undo
+          </span>
         </button>
         <button
           type="button"
           onClick={redo}
           disabled={!canRedo}
-          className={`rounded-md border border-zinc-700 bg-zinc-900/80 px-2 py-1.5 font-mono text-[10px] transition active:scale-95 ${
+          className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
             canRedo
-              ? 'text-zinc-400 hover:border-zinc-600'
-              : 'border-zinc-800 bg-zinc-800/50 text-zinc-600 cursor-not-allowed'
+              ? 'border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
+              : 'cursor-not-allowed border-zinc-800 bg-zinc-800/50 text-zinc-600'
           }`}
+          aria-label="Redo"
           title="Redo (Ctrl+Y)"
         >
-          ↪
+          <span className="material-symbols-rounded" aria-hidden="true">
+            redo
+          </span>
         </button>
       </div>
     </header>

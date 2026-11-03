@@ -31,6 +31,13 @@
 }
 
 @layer components {
+  .material-symbols-rounded {
+    font-size: 20px;
+    line-height: 1;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
   .panel {
     @apply rounded-xl border border-zinc-800 bg-zinc-900/60;
   }
