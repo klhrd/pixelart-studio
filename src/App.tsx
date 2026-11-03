@@ -16,6 +16,7 @@ import { useSettings } from './store/settingsContext';
 import { exportPng } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
+import { WebGLRenderer } from './renderers/webgl/WebGLRenderer';
 import { parseShareHash } from './utils/shareLink';
 import type { EngineId, SheetId } from './types';
 
@@ -68,6 +69,19 @@ function Studio() {
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const webglCanvasRef = useRef<HTMLCanvasElement>(null);
+  const webglRendererRef = useRef<WebGLRenderer | null>(null);
+
+  // Initialize WebGL renderer when canvas is available
+  useEffect(() => {
+    const canvas = webglCanvasRef.current;
+    if (canvas && !webglRendererRef.current) {
+      const renderer = new WebGLRenderer(canvas);
+      if (renderer.isSupported) {
+        webglRendererRef.current = renderer;
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const shared = parseShareHash(location.hash);
@@ -193,6 +207,7 @@ function Studio() {
             settings={settings}
             palette={palette}
             compare={compare}
+            webglRenderer={webglRendererRef.current}
           />
         ) : (
           <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />

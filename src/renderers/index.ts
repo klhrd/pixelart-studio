@@ -43,6 +43,8 @@ import { renderTuring } from './turingRenderer';
 import { renderTuringSVG } from './turingRenderer';
 import { renderPixelSort } from './pixelsortRenderer';
 import { renderPixelSortSVG } from './pixelsortRenderer';
+import { GLRenderer } from './webgl/GLRenderer';
+import { WebGLRenderer } from './webgl/WebGLRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -307,4 +309,16 @@ export {
   renderStringArtSVG,
   renderTuringSVG,
   renderPixelSortSVG,
+  GLRenderer,
+  WebGLRenderer,
 };
+
+export function createWebGLRenderer(canvas: HTMLCanvasElement): WebGLRenderer | null {
+  try {
+    const renderer = new WebGLRenderer(canvas);
+    if (!renderer.isSupported) return null;
+    return renderer;
+  } catch {
+    return null;
+  }
+}

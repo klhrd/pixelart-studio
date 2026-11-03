@@ -7,6 +7,7 @@ import type {
   SourceImage,
 } from '../../types';
 import { renderResult } from '../../renderers';
+import { WebGLRenderer } from '../../renderers/webgl/WebGLRenderer';
 
 interface PreviewCanvasProps {
   source: SourceImage;
@@ -17,6 +18,7 @@ interface PreviewCanvasProps {
   settings: Settings;
   palette: string[];
   compare: boolean;
+  webglRenderer?: WebGLRenderer | null;
 }
 
 const MIN_SCALE = 1;
@@ -31,9 +33,11 @@ export function PreviewCanvas({
   settings,
   palette,
   compare,
+  webglRenderer,
 }: PreviewCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const webglCanvasRef = useRef<HTMLCanvasElement>(null);
   const minimapRef = useRef<HTMLCanvasElement>(null);
   const thumbRef = useRef<HTMLCanvasElement | null>(null);
   const settingsRef = useRef(settings);
@@ -73,7 +77,7 @@ export function PreviewCanvas({
     });
   }, [fit]);
 
-  const draw = useCallback(() => {
+  const drawCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     if (canvas.width !== source.width) canvas.width = source.width;
@@ -101,9 +105,27 @@ export function PreviewCanvas({
     );
   }, [resultEngine, result, palette, source, compare]);
 
+  const drawWebGL = useCallback(() => {
+    const glRenderer = webglRenderer;
+    if (!glRenderer?.isSupported) return;
+    const gl = glRenderer.gl;
+    if (!gl) return;
+    const program = glRenderer.getProgram(engine);
+    if (!program) return;
+
+    gl.useProgram(program);
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+    gl.clearColor(0, 0, 0, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  }, [engine, result, settings, palette, webglRenderer]);
+
   useEffect(() => {
-    draw();
-  }, [draw]);
+    drawCanvas();
+  }, [drawCanvas]);
+
+  useEffect(() => {
+    drawWebGL();
+  }, [drawWebGL]);
 
   useEffect(() => {
     if (engine !== 'moon' || resultEngine !== 'moon' || !settings.animate)
@@ -118,12 +140,13 @@ export function PreviewCanvas({
         ...s,
         animOffset: (s.animOffset + dt * s.animSpeed) % 1,
       };
-      draw();
+      drawCanvas();
+      drawWebGL();
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [engine, resultEngine, settings.animate, draw]);
+  }, [engine, resultEngine, settings.animate, drawCanvas, drawWebGL]);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -323,6 +346,13 @@ export function PreviewCanvas({
               pixelated ? '[image-rendering:pixelated]' : ''
             }`}
           />
+          {webglRenderer && webglRenderer.isSupported && (
+            <canvas
+              ref={webglCanvasRef}
+              className="absolute inset-0 w-full h-full"
+              style={{ pointerEvents: 'none' }}
+            />
+          )}
         </div>
 
         {status === 'processing' && (
