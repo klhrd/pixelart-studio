@@ -1,7 +1,7 @@
 {
   "name": "pixelcraft-studio",
   "private": true,
-  "version": "2.4.1",
+  "version": "2.4.2",
   "type": "module",
   "description": "Algorithm & geometry driven image styling tool - fully client-side PWA",
   "scripts": {

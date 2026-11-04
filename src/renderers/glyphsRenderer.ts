@@ -67,7 +67,9 @@ export function renderGlyphs(
       const L = luminance[r * cols + c];
       const scale = 1 - L;
       if (scale < 0.06) continue;
-      const rad = cell * 0.5 * scale;
+      // Oversized so the darkest areas fill their cells instead of staying
+      // mostly paper (stars/triangles only cover part of a small radius).
+      const rad = cell * 0.62 * (0.35 + 0.65 * scale);
       const d = glyphPath(shape, c * cw + cw / 2, r * ch + ch / 2, rad);
       if (!d) continue;
       ctx.fill(new Path2D(d), 'evenodd');
@@ -97,7 +99,7 @@ export function renderGlyphsSVG(
       const L = luminance[r * cols + c];
       const scale = 1 - L;
       if (scale < 0.06) continue;
-      const rad = cell * 0.5 * scale;
+      const rad = cell * 0.62 * (0.35 + 0.65 * scale);
       const d = glyphPath(shape, c * cw + cw / 2, r * ch + ch / 2, rad);
       if (!d) continue;
       parts.push(

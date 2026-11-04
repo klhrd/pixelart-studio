@@ -22,7 +22,7 @@ export const DEFAULT_SETTINGS: Settings = {
   threshold: 128,
   invert: false,
   serpentine: true,
-  stippleCount: 1200,
+  stippleCount: 2000,
   stippleSteps: 8,
   flowParticles: 2500,
   flowSteps: 60,

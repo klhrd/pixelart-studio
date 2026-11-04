@@ -107,7 +107,7 @@ export function computeStipple(
   swAvg = posCount > 0 ? swAvg / posCount : 1;
   for (let k = 0; k < n; k++) {
     const norm = Math.min(1, sw[k] / (swAvg * 2));
-    radii[k] = 0.4 + 1.3 * Math.sqrt(norm);
+    radii[k] = 0.9 + 2.9 * Math.sqrt(norm);
   }
 
   return {
