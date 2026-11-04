@@ -27,14 +27,19 @@ import { renderVoronoiSVG } from './voronoiRenderer';
 import { renderBraille } from './brailleRenderer';
 import { renderBrailleSVG } from './brailleRenderer';
 import { renderPixels } from './pixelRenderer';
+import { renderImageSVG } from './pixelRenderer';
 import { renderStipple } from './stippleRenderer';
 import { renderStippleSVG } from './stippleRenderer';
 import { renderFlow } from './flowRenderer';
 import { renderFlowSVG } from './flowRenderer';
 import { renderHanzi } from './hanziRenderer';
+import { renderHanziSVG } from './hanziRenderer';
 import { renderHexDump } from './hexdumpRenderer';
+import { renderHexDumpSVG } from './hexdumpRenderer';
 import { renderBenday } from './bendayRenderer';
+import { renderBendaySVG } from './bendayRenderer';
 import { renderWave } from './waveRenderer';
+import { renderWaveSVG } from './waveRenderer';
 import { renderContour } from './contourRenderer';
 import { renderContourSVG } from './contourRenderer';
 import { renderStringArt } from './stringartRenderer';
@@ -278,8 +283,47 @@ export function renderSVG(
         width,
         height,
       );
-    default:
-      throw new Error(`SVG export not supported for engine: ${engine}`);
+    case 'dither':
+    case 'scanline':
+      return renderImageSVG(
+        result as DitherResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'hanzi':
+      return renderHanziSVG(
+        result as HanziResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'hexdump':
+      return renderHexDumpSVG(
+        result as HexDumpResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'benday':
+      return renderBendaySVG(
+        result as BendayResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'wave':
+      return renderWaveSVG(
+        result as WaveResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
   }
 }
 
@@ -309,6 +353,11 @@ export {
   renderStringArtSVG,
   renderTuringSVG,
   renderPixelSortSVG,
+  renderImageSVG,
+  renderHanziSVG,
+  renderHexDumpSVG,
+  renderBendaySVG,
+  renderWaveSVG,
   GLRenderer,
   WebGLRenderer,
 };

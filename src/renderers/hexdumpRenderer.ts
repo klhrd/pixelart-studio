@@ -40,3 +40,32 @@ export function renderHexDump(
     }
   }
 }
+
+export function renderHexDumpSVG(
+  res: HexDumpResult,
+  _settings: Settings,
+  palette: string[],
+  width: number,
+  height: number,
+): string {
+  const { cols, rows, rgb, luma } = res;
+  const cellH = height / rows;
+  const n = palette.length;
+  const fontSize = Math.max(6, Math.floor(cellH * 0.68));
+
+  const parts: string[] = [];
+  parts.push(`<rect width="${width}" height="${height}" fill="${palette[0]}"/>`);
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const i = row * cols + col;
+      const colorIdx = Math.min(n - 1, Math.round(luma[i] * (n - 1)));
+      const o = i * 3;
+      parts.push(
+        `<text x="${(((col + 0.5) * width) / cols).toFixed(1)}" y="${(((row + 0.5) * height) / rows).toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="${fontSize}" fill="${palette[colorIdx]}">#${hex2(rgb[o])}${hex2(rgb[o + 1])}${hex2(rgb[o + 2])}</text>`,
+      );
+    }
+  }
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${parts.join('')}</svg>`;
+}

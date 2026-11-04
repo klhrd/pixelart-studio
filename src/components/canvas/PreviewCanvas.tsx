@@ -42,7 +42,7 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1, group: 'engine' },
   ],
   dither: [
-    { key: 'cellSize', label: 'Pixel Scale', min: 1, max: 48, step: 1, group: 'engine' },
+    { key: 'cellSize', label: 'Pixel Size', min: 14, max: 48, step: 1, group: 'engine' },
   ],
   stipple: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },

@@ -201,8 +201,8 @@ export function EnginePanel() {
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
             Quantization error is diffused to neighboring pixels with weights
-            7/16, 3/16, 5/16 and 1/16. Cell Size controls the pixel scale for
-            chunkier output.
+            7/16, 3/16, 5/16 and 1/16. Raising Cell Size above 14 enlarges the
+            pixel blocks for a chunkier look.
           </p>
         </PanelSection>
       )}

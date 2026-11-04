@@ -33,3 +33,31 @@ export function renderBenday(
   }
   ctx.restore();
 }
+
+export function renderBendaySVG(
+  res: BendayResult,
+  _settings: Settings,
+  palette: string[],
+  width: number,
+  height: number,
+): string {
+  const parts: string[] = [];
+  parts.push(
+    `<rect width="${width}" height="${height}" fill="${palette[palette.length - 1]}"/>`,
+  );
+  for (const ink of INKS) {
+    const data = res[ink.dots];
+    const circles: string[] = [];
+    for (let i = 0; i < data.length; i += 3) {
+      const r = data[i + 2];
+      if (r < 0.3) continue;
+      circles.push(
+        `<circle cx="${data[i].toFixed(1)}" cy="${data[i + 1].toFixed(1)}" r="${r.toFixed(2)}"/>`,
+      );
+    }
+    parts.push(
+      `<g fill="${ink.color}" style="mix-blend-mode:multiply">${circles.join('')}</g>`,
+    );
+  }
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${parts.join('')}</svg>`;
+}

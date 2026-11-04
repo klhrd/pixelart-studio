@@ -175,6 +175,20 @@ function Studio() {
         Skip to content
       </a>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        aria-hidden="true"
+        tabIndex={-1}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void loadFile(file);
+          e.target.value = '';
+        }}
+      />
+
       <TopBar
         status={status}
         error={loadError ?? error}

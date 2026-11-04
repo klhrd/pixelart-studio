@@ -36,7 +36,9 @@ export function computeStringArt(
   const step = perimeter / n;
   let dist = 0;
   for (let i = 0; i < n; i++) {
-    const d = dist;
+    // Anchor coordinates must be integers: Bresenham terminates only when the
+    // running pixel lands exactly on the endpoint.
+    const d = Math.round(dist);
     if (d < w) { anchorsX[i] = d; anchorsY[i] = 0; }
     else if (d < w + h) { anchorsX[i] = w - 1; anchorsY[i] = d - w; }
     else if (d < 2 * w + h) { anchorsX[i] = w - 1 - (d - w - h); anchorsY[i] = h - 1; }
