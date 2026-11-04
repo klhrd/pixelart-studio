@@ -1,14 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Settings } from '../types';
 
+export type GestureGroup = 'general' | 'engine';
+
 export interface GestureItem {
   key: keyof Settings;
   label: string;
   min: number;
   max: number;
   step: number;
+  group: GestureGroup;
   format?: (value: number) => string;
 }
+
+export const GESTURE_GROUP_LABELS: Record<GestureGroup, string> = {
+  general: 'Image Adjustments',
+  engine: 'Engine Settings',
+};
 
 export interface GestureState {
   activeIndex: number;

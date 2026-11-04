@@ -8,122 +8,98 @@ import type {
 } from '../../types';
 import { renderResult } from '../../renderers';
 import { useGestureControls } from '../../hooks/useGestureControls';
+import type { GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
 import { GestureList } from './GestureList';
 
 const MIN_SCALE = 1;
 const MAX_SCALE = 8;
 
-// Per-engine adjustable controls for gesture mode
-const GESTURE_ITEMS: Record<
-  string,
-  Array<{
-    key: keyof Settings;
-    label: string;
-    min: number;
-    max: number;
-    step: number;
-    format?: (value: number) => string;
-  }>
-> = {
+const GENERAL_GESTURE_ITEMS: GestureItem[] = [
+  { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1, group: 'general' },
+  { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1, group: 'general' },
+  { key: 'saturation', label: 'Saturation', min: -100, max: 100, step: 1, group: 'general' },
+];
+
+const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   moon: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
-    { key: 'edgeSensitivity', label: 'Edge Sensitivity', min: 0, max: 1, step: 0.05 },
-    { key: 'animOffset', label: 'Phase Offset', min: 0, max: 1, step: 0.01 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'edgeSensitivity', label: 'Edge Sensitivity', min: 0, max: 1, step: 0.05, group: 'engine' },
+    { key: 'animOffset', label: 'Phase Offset', min: 0, max: 1, step: 0.01, group: 'engine' },
   ],
   truchet: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'strokeWidth', label: 'Stroke Width', min: 0.1, max: 0.9, step: 0.01 },
-    { key: 'blankThreshold', label: 'Blank Threshold', min: 0, max: 1, step: 0.05 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'strokeWidth', label: 'Stroke Width', min: 0.1, max: 0.9, step: 0.01, group: 'engine' },
+    { key: 'blankThreshold', label: 'Blank Threshold', min: 0, max: 1, step: 0.05, group: 'engine' },
   ],
   voronoi: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'pointDensity', label: 'Edge Site Bias', min: 0, max: 150, step: 5 },
-    { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 4, step: 0.5 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'pointDensity', label: 'Edge Site Bias', min: 0, max: 150, step: 5, group: 'engine' },
+    { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 4, step: 0.5, group: 'engine' },
   ],
   braille: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1, group: 'engine' },
   ],
   dither: [
-    { key: 'cellSize', label: 'Pixel Scale', min: 1, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+    { key: 'cellSize', label: 'Pixel Scale', min: 1, max: 48, step: 1, group: 'engine' },
   ],
   stipple: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'stippleCount', label: 'Points', min: 100, max: 2000, step: 50 },
-    { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'stippleCount', label: 'Points', min: 100, max: 2000, step: 50, group: 'engine' },
+    { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1, group: 'engine' },
   ],
   flow: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'flowParticles', label: 'Particles', min: 500, max: 8000, step: 100 },
-    { key: 'flowSteps', label: 'Trace Length', min: 10, max: 120, step: 2 },
-    { key: 'flowNoise', label: 'Noise Blend', min: 0, max: 1, step: 0.05 },
+    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'flowParticles', label: 'Particles', min: 500, max: 8000, step: 100, group: 'engine' },
+    { key: 'flowSteps', label: 'Trace Length', min: 10, max: 120, step: 2, group: 'engine' },
+    { key: 'flowNoise', label: 'Noise Blend', min: 0, max: 1, step: 0.05, group: 'engine' },
   ],
   scanline: [
-    { key: 'cellSize', label: 'Scan Pitch', min: 3, max: 48, step: 1 },
-    { key: 'scanGlow', label: 'Glow', min: 0, max: 1, step: 0.05 },
-    { key: 'scanAberration', label: 'Aberration', min: 0, max: 10, step: 0.5 },
-    { key: 'scanGlitch', label: 'Glitch', min: 0, max: 1, step: 0.05 },
+    { key: 'cellSize', label: 'Scan Pitch', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'scanGlow', label: 'Glow', min: 0, max: 1, step: 0.05, group: 'engine' },
+    { key: 'scanAberration', label: 'Aberration', min: 0, max: 10, step: 0.5, group: 'engine' },
+    { key: 'scanGlitch', label: 'Glitch', min: 0, max: 1, step: 0.05, group: 'engine' },
   ],
   hanzi: [
-    { key: 'cellSize', label: 'Glyph Size', min: 6, max: 48, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'blankThreshold', label: 'Blank Above', min: 0, max: 1, step: 0.05 },
+    { key: 'cellSize', label: 'Glyph Size', min: 6, max: 48, step: 1, group: 'engine' },
+    { key: 'blankThreshold', label: 'Blank Above', min: 0, max: 1, step: 0.05, group: 'engine' },
   ],
   hexdump: [
-    { key: 'cellSize', label: 'Font Size', min: 4, max: 32, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+    { key: 'cellSize', label: 'Font Size', min: 4, max: 32, step: 1, group: 'engine' },
   ],
   benday: [
-    { key: 'cellSize', label: 'Screen Pitch', min: 3, max: 32, step: 1 },
-    { key: 'bendayScale', label: 'Dot Scale', min: 0.4, max: 1.1, step: 0.05 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'cellSize', label: 'Screen Pitch', min: 3, max: 32, step: 1, group: 'engine' },
+    { key: 'bendayScale', label: 'Dot Scale', min: 0.4, max: 1.1, step: 0.05, group: 'engine' },
   ],
   wave: [
-    { key: 'cellSize', label: 'Line Spacing', min: 4, max: 48, step: 1 },
-    { key: 'waveAmp', label: 'Amplitude', min: 0.1, max: 1.5, step: 0.05 },
-    { key: 'waveFreq', label: 'Wavelength', min: 2, max: 24, step: 1 },
+    { key: 'cellSize', label: 'Line Spacing', min: 4, max: 48, step: 1, group: 'engine' },
+    { key: 'waveAmp', label: 'Amplitude', min: 0.1, max: 1.5, step: 0.05, group: 'engine' },
+    { key: 'waveFreq', label: 'Wavelength', min: 2, max: 24, step: 1, group: 'engine' },
   ],
   contour: [
-    { key: 'cellSize', label: 'Smoothing', min: 3, max: 48, step: 1 },
-    { key: 'contourLevels', label: 'Levels', min: 4, max: 20, step: 1 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
+    { key: 'cellSize', label: 'Smoothing', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'contourLevels', label: 'Levels', min: 4, max: 20, step: 1, group: 'engine' },
   ],
   stringart: [
-    { key: 'cellSize', label: 'Line Width', min: 3, max: 30, step: 1 },
-    { key: 'stringPoints', label: 'Nails', min: 20, max: 300, step: 10 },
-    { key: 'stringLines', label: 'Threads', min: 50, max: 1000, step: 50 },
+    { key: 'cellSize', label: 'Line Width', min: 3, max: 30, step: 1, group: 'engine' },
+    { key: 'stringPoints', label: 'Nails', min: 20, max: 300, step: 10, group: 'engine' },
+    { key: 'stringLines', label: 'Threads', min: 50, max: 1000, step: 50, group: 'engine' },
   ],
   turing: [
-    { key: 'turingFrames', label: 'Frames', min: 10, max: 300, step: 10 },
-    { key: 'turingFeed', label: 'Feed', min: 0.01, max: 0.1, step: 0.005 },
-    { key: 'turingKill', label: 'Kill', min: 0.01, max: 0.1, step: 0.005 },
+    { key: 'turingFrames', label: 'Frames', min: 10, max: 300, step: 10, group: 'engine' },
+    { key: 'turingFeed', label: 'Feed', min: 0.01, max: 0.1, step: 0.005, group: 'engine' },
+    { key: 'turingKill', label: 'Kill', min: 0.01, max: 0.1, step: 0.005, group: 'engine' },
   ],
   pixelsort: [
-    { key: 'pixelSortThreshold', label: 'Threshold', min: 0, max: 254, step: 2 },
-    { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-    { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
+    { key: 'pixelSortThreshold', label: 'Threshold', min: 0, max: 254, step: 2, group: 'engine' },
   ],
 };
 
-function getGestureItems(engine: EngineId) {
-  return (
-    GESTURE_ITEMS[engine] ?? [
-      { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1 },
-      { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1 },
-      { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1 },
-    ]
-  );
+function getGestureItems(engine: EngineId): GestureItem[] {
+  const engineItems =
+    ENGINE_GESTURE_ITEMS[engine] ?? ENGINE_GESTURE_ITEMS.moon ?? [];
+  return [...GENERAL_GESTURE_ITEMS, ...engineItems];
 }
 
 interface PreviewCanvasProps {
