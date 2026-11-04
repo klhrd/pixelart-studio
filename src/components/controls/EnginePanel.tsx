@@ -7,6 +7,16 @@ import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
 
+const GLYPH_SHAPES: { value: string; label: string }[] = [
+  { value: 'star', label: 'Star' },
+  { value: 'cross', label: 'Cross' },
+  { value: 'diamond', label: 'Diamond' },
+  { value: 'circle', label: 'Circle' },
+  { value: 'triangle', label: 'Tri' },
+  { value: 'square', label: 'Square' },
+  { value: 'smiley', label: 'Smiley' },
+];
+
 export function EnginePanel() {
   const { engine, settings, update, reset } = useSettings();
   const meta = engineMeta(engine);
@@ -500,6 +510,81 @@ export function EnginePanel() {
             Grayscale is treated as a smoothed heightmap and Marching Squares
             extracts contour lines at fixed elevation intervals. Cell Size
             scales the smoothing radius.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'hatch' && (
+        <PanelSection title="Cross-Hatching">
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Engraving-style linework: bright cells get a single sparse pass,
+            while darker cells stack up to four cross-hatched layers at 0°, 45°,
+            90° and 135°. Cell Size sets the grid.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'glyphs' && (
+        <PanelSection title="Glyph Halftone">
+          <div>
+            <span className="mb-1.5 block text-xs text-zinc-400">Shape</span>
+            <div className="grid grid-cols-4 gap-1.5">
+              {GLYPH_SHAPES.map((shape) => (
+                <button
+                  key={shape.value}
+                  type="button"
+                  onClick={() => update({ glyphShape: shape.value })}
+                  className={`rounded-lg border py-1.5 font-mono text-[10px] capitalize transition ${
+                    settings.glyphShape === shape.value
+                      ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
+                      : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                >
+                  {shape.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            Each cell stamps the chosen glyph scaled by darkness — bright areas
+            shrink to nothing, shadows swell to fill. Cell Size sets the grid.
+          </p>
+        </PanelSection>
+      )}
+
+      {engine === 'moire' && (
+        <PanelSection title="Moiré Interference">
+          <Segmented
+            value={settings.moirePattern}
+            onChange={(v) => update({ moirePattern: v })}
+            options={[
+              { value: 'rings', label: 'Rings' },
+              { value: 'lines', label: 'Lines' },
+              { value: 'spiral', label: 'Spiral' },
+            ]}
+          />
+          <Slider
+            label="Frequency"
+            min={0.2}
+            max={4}
+            step={0.1}
+            value={settings.moireFreq}
+            onChange={(v) => update({ moireFreq: v })}
+            display={settings.moireFreq.toFixed(1)}
+          />
+          <Slider
+            label="Phase Shift"
+            min={0}
+            max={10}
+            step={0.5}
+            value={settings.moirePhase}
+            onChange={(v) => update({ moirePhase: v })}
+            display={settings.moirePhase.toFixed(1)}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            High-frequency optical grating whose phase is shifted by image
+            luminance, warping the pattern around contours. Cell Size scales the
+            grating.
           </p>
         </PanelSection>
       )}

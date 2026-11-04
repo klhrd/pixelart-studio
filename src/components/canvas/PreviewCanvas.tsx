@@ -94,6 +94,17 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   pixelsort: [
     { key: 'pixelSortThreshold', label: 'Threshold', min: 0, max: 254, step: 2, group: 'engine' },
   ],
+  hatch: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 40, step: 1, group: 'engine' },
+  ],
+  glyphs: [
+    { key: 'cellSize', label: 'Cell Size', min: 6, max: 48, step: 1, group: 'engine' },
+  ],
+  moire: [
+    { key: 'cellSize', label: 'Grating', min: 4, max: 40, step: 1, group: 'engine' },
+    { key: 'moireFreq', label: 'Frequency', min: 0.2, max: 4, step: 0.1, group: 'engine' },
+    { key: 'moirePhase', label: 'Phase Shift', min: 0, max: 10, step: 0.5, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

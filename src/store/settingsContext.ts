@@ -43,6 +43,10 @@ export const DEFAULT_SETTINGS: Settings = {
   pixelSortThreshold: 128,
   pixelSortDirection: 'horizontal',
   pixelSortMode: 'asc',
+  glyphShape: 'star',
+  moirePattern: 'rings',
+  moireFreq: 1.2,
+  moirePhase: 3,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

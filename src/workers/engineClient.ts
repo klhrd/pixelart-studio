@@ -14,6 +14,9 @@ import ContourWorker from './contour.worker?worker';
 import StringartWorker from './stringart.worker?worker';
 import TuringWorker from './turing.worker?worker';
 import PixelsortWorker from './pixelsort.worker?worker';
+import HatchWorker from './hatch.worker?worker';
+import GlyphsWorker from './glyphs.worker?worker';
+import MoireWorker from './moire.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -40,6 +43,9 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   stringart: StringartWorker,
   turing: TuringWorker,
   pixelsort: PixelsortWorker,
+  hatch: HatchWorker,
+  glyphs: GlyphsWorker,
+  moire: MoireWorker,
 };
 
 export class EngineClient {

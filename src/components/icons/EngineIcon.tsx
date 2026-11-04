@@ -180,6 +180,38 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           />
         </svg>
       );
+    case 'hatch':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" strokeWidth="1.4" />
+          <path {...stroke} strokeWidth="1.1" d="M5 9.5l6.5-3.5M5 14l9.5-5M6 18l11-6M10 19l8-4.5" />
+        </svg>
+      );
+    case 'glyphs':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path
+            d="M12 3.5l1.9 5.6 5.6 1.9-5.6 1.9-1.9 5.6-1.9-5.6L4.5 11l5.6-1.9z"
+            fill="currentColor"
+          />
+        </svg>
+      );
+    case 'moire':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          {[2.6, 5.2, 7.8, 10.4].map((r) => (
+            <circle
+              key={r}
+              cx="12"
+              cy="12"
+              r={r}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.3"
+            />
+          ))}
+        </svg>
+      );
     case 'stringart':
       return (
         <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">

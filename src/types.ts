@@ -14,7 +14,10 @@ export type EngineId =
   | 'contour'
   | 'stringart'
   | 'turing'
-  | 'pixelsort';
+  | 'pixelsort'
+  | 'hatch'
+  | 'glyphs'
+  | 'moire';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -59,6 +62,10 @@ export interface Settings {
   pixelSortThreshold: number;
   pixelSortDirection: 'horizontal' | 'vertical';
   pixelSortMode: 'asc' | 'desc';
+  glyphShape: string;
+  moirePattern: 'lines' | 'rings' | 'spiral';
+  moireFreq: number;
+  moirePhase: number;
 }
 
 export interface SourceImage {
@@ -174,6 +181,18 @@ export interface PixelSortResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface HatchResult {
+  cols: number;
+  rows: number;
+  luminance: Float32Array;
+}
+
+export interface GlyphResult {
+  cols: number;
+  rows: number;
+  luminance: Float32Array;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -189,7 +208,9 @@ export type EngineResult =
   | ContourResult
   | StringArtResult
   | TuringResult
-  | PixelSortResult;
+  | PixelSortResult
+  | HatchResult
+  | GlyphResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

@@ -104,6 +104,24 @@ export const ENGINES: EngineMeta[] = [
     name: 'Pixel Sorting',
     tagline: 'Cyberpunk glitch sort',
   },
+  {
+    id: 'hatch',
+    code: 'Q',
+    name: 'Cross-Hatching',
+    tagline: 'Layered engraving linework',
+  },
+  {
+    id: 'glyphs',
+    code: 'R',
+    name: 'Glyph Halftone',
+    tagline: 'Custom shapes scaled by luminance',
+  },
+  {
+    id: 'moire',
+    code: 'S',
+    name: 'Moiré Interference',
+    tagline: 'Op-art optical phase patterns',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

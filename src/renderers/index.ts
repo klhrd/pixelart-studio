@@ -17,6 +17,8 @@ import type {
   StringArtResult,
   TuringResult,
   PixelSortResult,
+  HatchResult,
+  GlyphResult,
 } from '../types';
 import { renderMoon } from './moonRenderer';
 import { renderMoonSVG } from './moonRenderer';
@@ -48,6 +50,10 @@ import { renderTuring } from './turingRenderer';
 import { renderTuringSVG } from './turingRenderer';
 import { renderPixelSort } from './pixelsortRenderer';
 import { renderPixelSortSVG } from './pixelsortRenderer';
+import { renderCrossHatch } from './crossHatchRenderer';
+import { renderCrossHatchSVG } from './crossHatchRenderer';
+import { renderGlyphs } from './glyphsRenderer';
+import { renderGlyphsSVG } from './glyphsRenderer';
 import { GLRenderer } from './webgl/GLRenderer';
 import { WebGLRenderer } from './webgl/WebGLRenderer';
 
@@ -191,6 +197,36 @@ export function renderResult(
         height,
       );
       break;
+    case 'hatch':
+      renderCrossHatch(
+        ctx,
+        result as HatchResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'glyphs':
+      renderGlyphs(
+        ctx,
+        result as GlyphResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
+    case 'moire':
+      renderPixels(
+        ctx,
+        result as DitherResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
   }
 }
 
@@ -324,6 +360,30 @@ export function renderSVG(
         width,
         height,
       );
+    case 'hatch':
+      return renderCrossHatchSVG(
+        result as HatchResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'glyphs':
+      return renderGlyphsSVG(
+        result as GlyphResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+    case 'moire':
+      return renderImageSVG(
+        result as DitherResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
   }
 }
 
@@ -358,6 +418,10 @@ export {
   renderHexDumpSVG,
   renderBendaySVG,
   renderWaveSVG,
+  renderCrossHatch,
+  renderCrossHatchSVG,
+  renderGlyphs,
+  renderGlyphsSVG,
   GLRenderer,
   WebGLRenderer,
 };
