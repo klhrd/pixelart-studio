@@ -29,33 +29,30 @@ export function computeStringArt(
   const weight = new Float32Array(w * h);
   for (let i = 0; i < w * h; i++) weight[i] = 255 - lum[i];
 
-  const n = Math.max(4, Math.round(s.stringPoints));
+  const n = Math.max(8, Math.round(s.stringPoints));
   const anchorsX = new Float32Array(n);
   const anchorsY = new Float32Array(n);
-  const perimeter = 2 * (w + h);
-  const step = perimeter / n;
-  let dist = 0;
+  // Classic string-art: nails evenly spaced on a circle, so threads cross the
+  // interior instead of hugging the frame. Coordinates are integers so
+  // Bresenham terminates exactly on the endpoint.
+  const cx0 = (w - 1) / 2;
+  const cy0 = (h - 1) / 2;
+  const radius = Math.min(w, h) / 2 - 1;
   for (let i = 0; i < n; i++) {
-    // Anchor coordinates must be integers: Bresenham terminates only when the
-    // running pixel lands exactly on the endpoint.
-    const d = Math.round(dist);
-    if (d < w) { anchorsX[i] = d; anchorsY[i] = 0; }
-    else if (d < w + h) { anchorsX[i] = w - 1; anchorsY[i] = d - w; }
-    else if (d < 2 * w + h) { anchorsX[i] = w - 1 - (d - w - h); anchorsY[i] = h - 1; }
-    else { anchorsX[i] = 0; anchorsY[i] = h - 1 - (d - 2 * w - h); }
-    dist += step;
+    const a = -Math.PI / 2 + (i / n) * Math.PI * 2;
+    anchorsX[i] = Math.round(cx0 + Math.cos(a) * radius);
+    anchorsY[i] = Math.round(cy0 + Math.sin(a) * radius);
   }
 
-  const linesX1 = new Float32Array(n);
-  const linesY1 = new Float32Array(n);
-  const linesX2 = new Float32Array(n);
-  const linesY2 = new Float32Array(n);
+  const lineCountTarget = Math.max(1, Math.round(s.stringLines));
+  const linesX1 = new Float32Array(lineCountTarget);
+  const linesY1 = new Float32Array(lineCountTarget);
+  const linesX2 = new Float32Array(lineCountTarget);
+  const linesY2 = new Float32Array(lineCountTarget);
   let lineCount = 0;
   let cur = 0;
   const remaining = new Float32Array(weight);
-
-  const lineCountTarget = Math.round(s.stringLines);
-  const costScale = 0.5;
+  const costScale = 2.5;
 
   for (let step = 0; step < lineCountTarget; step++) {
     let best = -1;
