@@ -26,6 +26,7 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   moon: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
     { key: 'edgeSensitivity', label: 'Edge Sensitivity', min: 0, max: 1, step: 0.05, group: 'engine' },
+    { key: 'moonEdgeBias', label: 'Edge Bias', min: 0, max: 1, step: 0.05, group: 'engine' },
     { key: 'animOffset', label: 'Phase Offset', min: 0, max: 1, step: 0.01, group: 'engine' },
   ],
   truchet: [

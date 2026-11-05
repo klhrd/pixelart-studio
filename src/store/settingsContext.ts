@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS: Settings = {
   saturation: 0,
   paletteId: 'cga',
   edgeSensitivity: 0.7,
+  moonEdgeBias: 0.5,
   animOffset: 0,
   animSpeed: 0.25,
   animate: false,

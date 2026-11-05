@@ -31,17 +31,20 @@ export function TopBar({
         <span className="shrink-0 font-mono text-[10px] text-zinc-600">
           v{__APP_VERSION__}
         </span>
-        {status === 'processing' && (
-          <span className="flex items-center gap-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            {t('Computing')}
-          </span>
-        )}
-        {error && (
-          <span className="truncate rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 font-mono text-[10px] text-red-300">
-            {error}
-          </span>
-        )}
+        {/* Fixed-size status slot so the processing/error chip never nudges the layout. */}
+        <span className="flex h-6 w-24 shrink-0 items-center overflow-hidden">
+          {status === 'processing' && (
+            <span className="flex items-center gap-2 whitespace-nowrap rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+              {t('Computing')}
+            </span>
+          )}
+          {error && (
+            <span className="truncate whitespace-nowrap rounded-full border border-red-500/40 bg-red-500/10 px-2.5 py-1 font-mono text-[10px] text-red-300">
+              {error}
+            </span>
+          )}
+        </span>
       </div>
       <div className="flex items-center gap-1.5">
         <button

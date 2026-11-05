@@ -28,6 +28,7 @@ export interface Settings {
   saturation: number;
   paletteId: string;
   edgeSensitivity: number;
+  moonEdgeBias: number;
   animOffset: number;
   animSpeed: number;
   animate: boolean;

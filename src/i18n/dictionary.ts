@@ -91,6 +91,7 @@ export const zhTW: Record<string, string> = {
   'Reset': '重設',
   'Cell Size': '網格大小',
   'Edge Sensitivity': '邊緣靈敏度',
+  'Edge Bias': '邊緣偏重',
   'Staggered Grid': '交錯網格',
   'Animate Phase': '動畫相位',
   'Animation Speed': '動畫速度',

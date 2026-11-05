@@ -72,6 +72,15 @@ export function EnginePanel() {
             onChange={(v) => update({ edgeSensitivity: v })}
             display={`${Math.round(settings.edgeSensitivity * 100)}%`}
           />
+          <Slider
+            label="Edge Bias"
+            min={0}
+            max={1}
+            step={0.05}
+            value={settings.moonEdgeBias}
+            onChange={(v) => update({ moonEdgeBias: v })}
+            display={`${Math.round(settings.moonEdgeBias * 100)}%`}
+          />
           <Switch
             label="Staggered Grid"
             checked={settings.staggered}
