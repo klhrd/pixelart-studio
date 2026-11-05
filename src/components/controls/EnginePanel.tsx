@@ -358,9 +358,9 @@ export function EnginePanel() {
           />
           <Slider
             label="Threads"
-            min={50}
-            max={1000}
-            step={50}
+            min={100}
+            max={8000}
+            step={100}
             value={settings.stringLines}
             onChange={(v) => update({ stringLines: v })}
             display={`${settings.stringLines}`}

@@ -84,7 +84,7 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   stringart: [
     { key: 'cellSize', label: 'Line Width', min: 3, max: 30, step: 1, group: 'engine' },
     { key: 'stringPoints', label: 'Nails', min: 20, max: 300, step: 10, group: 'engine' },
-    { key: 'stringLines', label: 'Threads', min: 50, max: 1000, step: 50, group: 'engine' },
+    { key: 'stringLines', label: 'Threads', min: 100, max: 8000, step: 100, group: 'engine' },
   ],
   turing: [
     { key: 'turingFrames', label: 'Frames', min: 10, max: 300, step: 10, group: 'engine' },
