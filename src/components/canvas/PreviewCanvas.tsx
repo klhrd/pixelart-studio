@@ -46,7 +46,7 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Pixel Size', min: 14, max: 48, step: 1, group: 'engine' },
   ],
   stipple: [
-    { key: 'cellSize', label: 'Density', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'cellSize', label: 'Cell Size', min: 1, max: 48, step: 1, group: 'engine' },
     { key: 'stippleSize', label: 'Dot Size', min: 0.2, max: 4, step: 0.1, group: 'engine' },
     { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1, group: 'engine' },
   ],
@@ -67,7 +67,7 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'blankThreshold', label: 'Blank Above', min: 0, max: 1, step: 0.05, group: 'engine' },
   ],
   hexdump: [
-    { key: 'cellSize', label: 'Font Size', min: 4, max: 32, step: 1, group: 'engine' },
+    { key: 'cellSize', label: 'Font Size', min: 2, max: 32, step: 1, group: 'engine' },
   ],
   benday: [
     { key: 'cellSize', label: 'Screen Pitch', min: 3, max: 32, step: 1, group: 'engine' },

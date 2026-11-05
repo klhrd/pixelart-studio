@@ -8,8 +8,11 @@ export function computeHexDump(
   s: Settings,
 ): HexDumpResult {
   const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
-  const cw = Math.max(4, Math.round(s.cellSize * 4.6));
-  const ch = Math.max(3, Math.round(s.cellSize));
+  // Cell size maps directly to the monospace font size so the 7-character
+  // hex strings (#RRGGBB) tile tightly with minimal gaps.
+  const f = Math.max(2, Math.round(s.cellSize));
+  const cw = Math.max(3, Math.round(f * 4.2));
+  const ch = Math.max(2, Math.round(f * 1.05));
   const cols = Math.max(1, Math.round(w / cw));
   const rows = Math.max(1, Math.round(h / ch));
   const cellW = w / cols;

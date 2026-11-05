@@ -13,8 +13,9 @@ export function computeStipple(
   const lum = grayscale(tone);
   const rand = mulberry32(Math.imul(s.seed, 40503));
   // Point count is driven by Cell Size: smaller cells => more points (inverse).
-  const cell = Math.max(3, Math.round(s.cellSize));
-  const n = Math.max(200, Math.min(24000, Math.round((w * h) / (cell * cell))));
+  const cell = Math.max(1, Math.round(s.cellSize));
+  const area = w * h;
+  const n = Math.max(200, Math.min(60000, Math.round(area / (cell * cell))));
 
   const BX = 32;
   const BY = Math.max(2, Math.round((BX * h) / w));
@@ -66,7 +67,9 @@ export function computeStipple(
   }
 
   const del = new Delaunay(coords);
-  const stride = w * h > 400000 ? 2 : 1;
+  // Sample a bounded number of pixels per relaxation pass so the cost stays
+  // flat even with tens of thousands of points (Delaunay.find is the hotspot).
+  const stride = Math.max(1, Math.round(Math.sqrt(area / 12000)));
   const sx = new Float64Array(n);
   const sy = new Float64Array(n);
   const sw = new Float64Array(n);

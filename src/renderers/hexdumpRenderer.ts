@@ -21,7 +21,7 @@ export function renderHexDump(
 
   ctx.fillStyle = palette[0];
   ctx.fillRect(0, 0, width, height);
-  ctx.font = `${Math.max(6, Math.floor(cellH * 0.68))}px ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace`;
+  ctx.font = `${Math.max(3, Math.floor(cellH * 0.95))}px ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 
@@ -51,7 +51,7 @@ export function renderHexDumpSVG(
   const { cols, rows, rgb, luma } = res;
   const cellH = height / rows;
   const n = palette.length;
-  const fontSize = Math.max(6, Math.floor(cellH * 0.68));
+  const fontSize = Math.max(3, Math.floor(cellH * 0.95));
 
   const parts: string[] = [];
   parts.push(`<rect width="${width}" height="${height}" fill="${palette[0]}"/>`);

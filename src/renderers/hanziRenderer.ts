@@ -21,7 +21,7 @@ export function renderHanzi(
   ctx.fillStyle = palette[0];
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `${Math.floor(cell * 0.94)}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Hiragino Sans", sans-serif`;
+  ctx.font = `${Math.floor(cell * 1.12)}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Hiragino Sans", sans-serif`;
 
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
@@ -47,7 +47,7 @@ export function renderHanziSVG(
   const cw = width / cols;
   const ch = height / rows;
   const cell = Math.min(cw, ch);
-  const fontSize = Math.floor(cell * 0.94);
+  const fontSize = Math.floor(cell * 1.12);
 
   const parts: string[] = [];
   parts.push(
