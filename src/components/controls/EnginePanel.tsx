@@ -220,13 +220,13 @@ export function EnginePanel() {
       {engine === 'stipple' && (
         <PanelSection title="Stippling">
           <Slider
-            label="Points"
-            min={300}
-            max={4000}
-            step={50}
-            value={settings.stippleCount}
-            onChange={(v) => update({ stippleCount: v })}
-            display={`${settings.stippleCount}`}
+            label="Dot Size"
+            min={0.2}
+            max={4}
+            step={0.1}
+            value={settings.stippleSize}
+            onChange={(v) => update({ stippleSize: v })}
+            display={`${settings.stippleSize.toFixed(1)}×`}
           />
           <Slider
             label="Relax Steps"
@@ -237,8 +237,10 @@ export function EnginePanel() {
             display={`${settings.stippleSteps}`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Weighted Centroidal Voronoi relaxation drifts points toward mass
-            centers: dark regions crowd with dots, bright regions stay empty.
+            Cell Size sets point density (smaller cells = more dots). Dot Size
+            scales each mark. Weighted Centroidal Voronoi relaxation drifts
+            points toward mass centers: dark regions crowd with dots, bright
+            regions stay empty.
             Cell Size scales the dot radius.
           </p>
         </PanelSection>

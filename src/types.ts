@@ -41,7 +41,7 @@ export interface Settings {
   threshold: number;
   invert: boolean;
   serpentine: boolean;
-  stippleCount: number;
+  stippleSize: number;
   stippleSteps: number;
   flowParticles: number;
   flowSteps: number;

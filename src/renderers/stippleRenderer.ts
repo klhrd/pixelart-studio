@@ -3,7 +3,7 @@ import type { Settings, StippleResult } from '../types';
 export function renderStipple(
   ctx: CanvasRenderingContext2D,
   res: StippleResult,
-  settings: Settings,
+  _settings: Settings,
   palette: string[],
   _width: number,
   _height: number,
@@ -16,18 +16,16 @@ export function renderStipple(
   ctx.fillRect(0, 0, _width, _height);
   ctx.fillStyle = ink;
 
-  const scale = Math.max(0.4, settings.cellSize / 14);
   for (let k = 0; k < radii.length; k++) {
-    const r = radii[k] * scale;
     ctx.beginPath();
-    ctx.arc(points[k * 2], points[k * 2 + 1], r, 0, Math.PI * 2, false);
+    ctx.arc(points[k * 2], points[k * 2 + 1], radii[k], 0, Math.PI * 2, false);
     ctx.fill();
   }
 }
 
 export function renderStippleSVG(
   res: StippleResult,
-  settings: Settings,
+  _settings: Settings,
   palette: string[],
   width: number,
   height: number,
@@ -39,11 +37,9 @@ export function renderStippleSVG(
   const parts: string[] = [];
   parts.push(`<rect width="${width}" height="${height}" fill="${bg}"/>`);
 
-  const scale = Math.max(0.4, settings.cellSize / 14);
   for (let k = 0; k < radii.length; k++) {
-    const r = radii[k] * scale;
     parts.push(
-      `<circle cx="${points[k * 2]}" cy="${points[k * 2 + 1]}" r="${r}" fill="${ink}"/>`,
+      `<circle cx="${points[k * 2]}" cy="${points[k * 2 + 1]}" r="${radii[k].toFixed(2)}" fill="${ink}"/>`,
     );
   }
 

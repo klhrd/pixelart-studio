@@ -45,8 +45,8 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Pixel Size', min: 14, max: 48, step: 1, group: 'engine' },
   ],
   stipple: [
-    { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
-    { key: 'stippleCount', label: 'Points', min: 100, max: 2000, step: 50, group: 'engine' },
+    { key: 'cellSize', label: 'Density', min: 3, max: 48, step: 1, group: 'engine' },
+    { key: 'stippleSize', label: 'Dot Size', min: 0.2, max: 4, step: 0.1, group: 'engine' },
     { key: 'stippleSteps', label: 'Relax Steps', min: 1, max: 20, step: 1, group: 'engine' },
   ],
   flow: [

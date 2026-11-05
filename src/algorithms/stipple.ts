@@ -12,7 +12,9 @@ export function computeStipple(
   const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
   const lum = grayscale(tone);
   const rand = mulberry32(Math.imul(s.seed, 40503));
-  const n = Math.round(s.stippleCount);
+  // Point count is driven by Cell Size: smaller cells => more points (inverse).
+  const cell = Math.max(3, Math.round(s.cellSize));
+  const n = Math.max(200, Math.min(24000, Math.round((w * h) / (cell * cell))));
 
   const BX = 32;
   const BY = Math.max(2, Math.round((BX * h) / w));
@@ -105,9 +107,10 @@ export function computeStipple(
     }
   }
   swAvg = posCount > 0 ? swAvg / posCount : 1;
+  const size = Math.max(0.2, s.stippleSize);
   for (let k = 0; k < n; k++) {
     const norm = Math.min(1, sw[k] / (swAvg * 2));
-    radii[k] = 0.9 + 2.9 * Math.sqrt(norm);
+    radii[k] = (0.9 + 2.9 * Math.sqrt(norm)) * size;
   }
 
   return {
