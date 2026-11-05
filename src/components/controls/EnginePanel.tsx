@@ -339,7 +339,7 @@ export function EnginePanel() {
             display={settings.blankThreshold.toFixed(2)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            {t('Each cell maps its darkness onto one of twelve Chinese characters ordered by stroke density, from 一 to 鑫? Cell Size sets the glyph size.')}
+            {t('Each cell maps its darkness onto one of twelve Chinese characters ordered by stroke density, from 一 to 鑫. Cell Size sets the glyph size.')}
           </p>
         </PanelSection>
       )}

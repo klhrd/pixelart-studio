@@ -40,6 +40,7 @@ export const zhTW: Record<string, string> = {
   // Export sheet
   'Output': '輸出',
   'Resolution Scale': '解析度倍率',
+  'Custom scale': '自訂倍率',
   'File Name': '檔名',
   'Saved': '已儲存',
   'Export PNG': '匯出 PNG',

@@ -250,7 +250,7 @@ export function PalettePicker() {
           ))}
         </div>
         <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
-          {t('Starred palettes appear in the quick picker. Use the arrows to reorder ??order is fully manual, nothing is sorted alphabetically.')}
+            {t('Starred palettes appear in the quick picker. Use the arrows to reorder — order is fully manual, nothing is sorted alphabetically.')}
         </p>
       </Sheet>
     </div>

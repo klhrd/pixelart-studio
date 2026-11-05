@@ -16,7 +16,8 @@ interface ExportSheetProps {
   outputHeight: number;
 }
 
-const SCALES = [1, 2, 3, 4];
+const SCALES = [1, 2, 3, 4, 6, 8];
+const MAX_SCALE = 16;
 
 export function ExportSheet({
   scale,
@@ -86,7 +87,7 @@ export function ExportSheet({
           {t('Output')}
         </div>
         <div className="mt-1 font-mono text-lg text-zinc-100">
-          {outputWidth} ? {outputHeight} px
+          {outputWidth} × {outputHeight} px
         </div>
       </div>
 
@@ -110,6 +111,23 @@ export function ExportSheet({
             </button>
           ))}
         </div>
+        <label className="mt-1.5 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2">
+          <span className="text-xs text-zinc-400">{t('Custom scale')}</span>
+          <span className="flex items-center gap-1">
+            <input
+              type="number"
+              min={1}
+              max={MAX_SCALE}
+              value={scale}
+              onChange={(e) => {
+                const v = Math.round(Number(e.target.value) || 1);
+                onScale(Math.max(1, Math.min(MAX_SCALE, v)));
+              }}
+              className="w-12 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1 text-center font-mono text-sm text-zinc-200 outline-none focus:border-emerald-500"
+            />
+            <span className="font-mono text-xs text-zinc-500">x</span>
+          </span>
+        </label>
       </div>
 
       <label className="block">
