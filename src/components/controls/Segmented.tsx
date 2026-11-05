@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/core';
+
 interface SegmentedProps<T extends string> {
   options: { value: T; label: string }[];
   value: T;
@@ -9,6 +11,7 @@ export function Segmented<T extends string>({
   value,
   onChange,
 }: SegmentedProps<T>) {
+  const { t } = useI18n();
   return (
     <div className="flex rounded-lg border border-zinc-700 bg-zinc-900 p-0.5">
       {options.map((opt) => (
@@ -22,7 +25,7 @@ export function Segmented<T extends string>({
               : 'text-zinc-400 hover:text-zinc-200'
           }`}
         >
-          {opt.label}
+          {t(opt.label)}
         </button>
       ))}
     </div>

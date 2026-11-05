@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/core';
+
 interface SliderProps {
   label: string;
   value: number;
@@ -17,10 +19,11 @@ export function Slider({
   onChange,
   display,
 }: SliderProps) {
+  const { t } = useI18n();
   return (
     <label className="block">
       <span className="mb-1.5 flex items-center justify-between text-xs">
-        <span className="text-zinc-400">{label}</span>
+        <span className="text-zinc-400">{t(label)}</span>
         <span className="font-mono text-emerald-400">
           {display ?? value}
         </span>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { EnginePanel } from './EnginePanel';
 import { GeneralPanel } from './GeneralPanel';
 
@@ -37,12 +38,13 @@ function SubHeader({
 export function TuneSheet() {
   const [view, setView] = useState<TuneView>('menu');
   const { engine } = useSettings();
+  const { t } = useI18n();
   const meta = engineMeta(engine);
 
   if (view === 'general') {
     return (
       <div className="space-y-3">
-        <SubHeader title="General Adjustments" onBack={() => setView('menu')} />
+        <SubHeader title={t('General Adjustments')} onBack={() => setView('menu')} />
         <GeneralPanel />
       </div>
     );
@@ -52,7 +54,7 @@ export function TuneSheet() {
     return (
       <div className="space-y-3">
         <SubHeader
-          title={`${meta.code} · ${meta.name}`}
+          title={`${meta.code} · ${t(meta.name)}`}
           onBack={() => setView('menu')}
         />
         <EnginePanel />
@@ -85,10 +87,10 @@ export function TuneSheet() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-zinc-100">
-            General Adjustments
+            {t('General Adjustments')}
           </span>
           <span className="block truncate text-xs text-zinc-500">
-            Brightness · Contrast · Saturation · Palette
+            {t('Brightness · Contrast · Saturation · Palette')}
           </span>
         </span>
         <svg
@@ -126,10 +128,10 @@ export function TuneSheet() {
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-zinc-100">
-            Engine Settings
+            {t('Engine Settings')}
           </span>
               <span className="block truncate text-xs text-zinc-500">
-                {meta.name}
+                {t(meta.name)}
               </span>
         </span>
         <svg

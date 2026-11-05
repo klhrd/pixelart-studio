@@ -1,4 +1,5 @@
 import type { SheetId } from '../../types';
+import { useI18n } from '../../i18n/core';
 
 const NAV_ITEMS: {
   id: Exclude<SheetId, null>;
@@ -73,8 +74,9 @@ interface BottomBarProps {
 }
 
 export function BottomBar({ active, onSelect }: BottomBarProps) {
+  const { t } = useI18n();
   return (
-    <nav className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur" aria-label="Modules">
+    <nav className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur" aria-label={t('Modules')}>
       <div className="mx-auto flex max-w-md">
         {NAV_ITEMS.map((item) => (
           <button
@@ -87,10 +89,10 @@ export function BottomBar({ active, onSelect }: BottomBarProps) {
                 : 'text-zinc-400 hover:text-zinc-200'
             }`}
             aria-pressed={active === item.id}
-            aria-label={item.label}
+            aria-label={t(item.label)}
           >
             {item.icon}
-            <span className="sr-only">{item.label}</span>
+            <span className="sr-only">{t(item.label)}</span>
           </button>
         ))}
       </div>

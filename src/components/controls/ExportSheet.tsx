@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { buildShareHash } from '../../utils/shareLink';
 
 interface ExportSheetProps {
@@ -30,6 +31,7 @@ export function ExportSheet({
   outputHeight,
 }: ExportSheetProps) {
   const { engine, settings, customPalettes } = useSettings();
+  const { t } = useI18n();
   const [saved, setSaved] = useState(false);
   const [linkState, setLinkState] = useState<'idle' | 'copied' | 'shared'>(
     'idle',
@@ -81,16 +83,16 @@ export function ExportSheet({
     <div className="space-y-4">
       <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-3">
         <div className="font-mono text-[10px] uppercase tracking-widest text-zinc-500">
-          Output
+          {t('Output')}
         </div>
         <div className="mt-1 font-mono text-lg text-zinc-100">
-          {outputWidth} × {outputHeight} px
+          {outputWidth} ? {outputHeight} px
         </div>
       </div>
 
       <div>
         <span className="mb-1.5 block text-xs text-zinc-400">
-          Resolution Scale
+          {t('Resolution Scale')}
         </span>
         <div className="flex gap-1.5">
           {SCALES.map((s) => (
@@ -111,7 +113,7 @@ export function ExportSheet({
       </div>
 
       <label className="block">
-        <span className="mb-1.5 block text-xs text-zinc-400">File Name</span>
+        <span className="mb-1.5 block text-xs text-zinc-400">{t('File Name')}</span>
         <input
           type="text"
           value={filename}
@@ -144,10 +146,10 @@ export function ExportSheet({
                 d="M4.5 12.75l6 6 9-13.5"
               />
             </svg>
-            Saved
+            {t('Saved')}
           </>
         ) : (
-          'Export PNG'
+          t('Export PNG')
         )}
       </button>
 
@@ -176,7 +178,7 @@ export function ExportSheet({
             d="M4 11a2 2 0 012-2h4a2 2 0 012 2v2M4 7a2 2 0 012-2h4a2 2 0 012 2v2"
           />
         </svg>
-        Export SVG
+        {t('Export SVG')}
       </button>
 
       <div className="flex gap-1.5 border-t border-zinc-800 pt-3">
@@ -199,7 +201,7 @@ export function ExportSheet({
               d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M7.5 7.5L12 3m0 0l4.5 4.5M12 3v13.5"
             />
           </svg>
-          Upload
+          {t('Upload')}
         </button>
         <button
           type="button"
@@ -221,19 +223,18 @@ export function ExportSheet({
             />
           </svg>
           {linkState === 'copied'
-            ? 'Link Copied'
+            ? t('Link Copied')
             : linkState === 'shared'
-              ? 'Shared'
-              : 'Share Link'}
+              ? t('Shared')
+              : t('Share Link')}
         </button>
       </div>
       <p className="text-center text-[11px] leading-relaxed text-zinc-500">
-        Share Link packs every setting and the palette into the URL. The
-        recipient opens it with any image to reproduce this exact look.
+        {t('Share Link packs every setting and the palette into the URL. The recipient opens it with any image to reproduce this exact look.')}
       </p>
       {disabled && (
         <p className="text-center text-[11px] text-zinc-500">
-          Load an image and wait for processing to finish.
+          {t('Load an image and wait for processing to finish.')}
         </p>
       )}
     </div>

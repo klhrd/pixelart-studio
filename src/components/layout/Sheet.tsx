@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useI18n } from '../../i18n/core';
 
 interface SheetProps {
   open: boolean;
@@ -8,6 +9,7 @@ interface SheetProps {
 }
 
 export function Sheet({ open, title, onClose, children }: SheetProps) {
+  const { t } = useI18n();
   if (!open) return null;
   return (
     <>
@@ -29,7 +31,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close"
+              aria-label={t('Close')}
               className="absolute right-3 top-3 flex h-9 w-9 touch-manipulation select-none items-center justify-center rounded-full text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-100 active:scale-95"
             >
               <svg

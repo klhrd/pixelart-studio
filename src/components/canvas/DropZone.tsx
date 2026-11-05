@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useI18n } from '../../i18n/core';
 
 interface DropZoneProps {
   onFile: (file: File) => void;
@@ -6,6 +7,7 @@ interface DropZoneProps {
 }
 
 export function DropZone({ onFile, onSample }: DropZoneProps) {
+  const { t } = useI18n();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
 
@@ -43,11 +45,10 @@ export function DropZone({ onFile, onSample }: DropZoneProps) {
         />
       </svg>
       <h2 className="text-lg font-semibold text-zinc-200">
-        Drop an image to begin
+        {t('Drop an image to begin')}
       </h2>
       <p className="mt-1 max-w-sm text-sm text-zinc-500">
-        Everything runs locally in your browser. Your image never leaves this
-        device.
+        {t('Everything runs locally in your browser. Your image never leaves this device.')}
       </p>
       <div className="mt-6 flex gap-2">
         <button
@@ -55,10 +56,10 @@ export function DropZone({ onFile, onSample }: DropZoneProps) {
           className="btn-primary"
           onClick={() => inputRef.current?.click()}
         >
-          Select Image
+          {t('Select Image')}
         </button>
         <button type="button" className="btn" onClick={onSample}>
-          Load Sample
+          {t('Load Sample')}
         </button>
       </div>
       <input

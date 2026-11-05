@@ -13,6 +13,8 @@ import { useImageProcessor } from './hooks/useImageProcessor';
 import { useSourceImage } from './hooks/useSourceImage';
 import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
+import { I18nProvider } from './i18n';
+import { useI18n } from './i18n/core';
 import { exportPng } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
@@ -32,27 +34,40 @@ class ErrorBoundary extends Component<
   render() {
     if (this.state.error) {
       return (
-        <div className="flex h-full items-center justify-center p-8">
-          <div className="text-center">
-            <p className="font-mono text-sm text-red-400">
-              Render error: {this.state.error.message}
-            </p>
-            <button
-              type="button"
-              className="btn mt-4"
-              onClick={() => this.setState({ error: null })}
-            >
-              Reload View
-            </button>
-          </div>
-        </div>
+        <ErrorFallback
+          message={this.state.error.message}
+          onReset={() => this.setState({ error: null })}
+        />
       );
     }
     return this.props.children;
   }
 }
 
+function ErrorFallback({
+  message,
+  onReset,
+}: {
+  message: string;
+  onReset: () => void;
+}) {
+  const { t } = useI18n();
+  return (
+    <div className="flex h-full items-center justify-center p-8">
+      <div className="text-center">
+        <p className="font-mono text-sm text-red-400">
+          {t('Render error')}: {message}
+        </p>
+        <button type="button" className="btn mt-4" onClick={onReset}>
+          {t('Reload View')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Studio() {
+  const { t } = useI18n();
   const { engine, setEngine, settings, palette, update, saveCustomPalette, undo, redo, reset } =
     useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
@@ -172,7 +187,7 @@ function Studio() {
     <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">
       {/* Skip to content link for accessibility */}
       <a href="#main-content" className="sr-only focus:not-sr-only absolute top-4 left-4 z-50 bg-zinc-950 text-zinc-200 px-4 py-2 rounded-md border border-emerald-500">
-        Skip to content
+        {t('Skip to content')}
       </a>
 
       <input
@@ -202,7 +217,7 @@ function Studio() {
         className="relative flex min-h-0 flex-1 items-center justify-center p-3 sm:p-5"
         id="main-content"
         tabIndex={-1}
-        aria-label="Image preview canvas"
+        aria-label={t('Image preview canvas')}
       >
         {source ? (
           <PreviewCanvas
@@ -220,13 +235,13 @@ function Studio() {
         )}
       </main>
       <BottomBar active={sheet} onSelect={(id) => setSheet(id)} />
-      <Sheet open={sheet === 'engines'} title="Algorithms" onClose={closeSheet}>
+      <Sheet open={sheet === 'engines'} title={t('Algorithms')} onClose={closeSheet}>
         <EngineSheet onPick={(id) => { setEngine(id); closeSheet(); }} />
       </Sheet>
-      <Sheet open={sheet === 'adjust'} title="Tune" onClose={closeSheet}>
+      <Sheet open={sheet === 'adjust'} title={t('Tune')} onClose={closeSheet}>
         <TuneSheet />
       </Sheet>
-      <Sheet open={sheet === 'export'} title="Export" onClose={closeSheet}>
+      <Sheet open={sheet === 'export'} title={t('Export')} onClose={closeSheet}>
         <ExportSheet
           scale={exportScale}
           onScale={setExportScale}
@@ -246,9 +261,10 @@ function Studio() {
 }
 
 function CustomPaletteSheetMount() {
+  const { t } = useI18n();
   const { customSheetOpen, setCustomSheetOpen } = useSettings();
   return (
-    <Sheet open={customSheetOpen} title="Custom Palette" onClose={() => setCustomSheetOpen(false)}>
+    <Sheet open={customSheetOpen} title={t('Custom Palette')} onClose={() => setCustomSheetOpen(false)}>
       <CustomPaletteSheet />
     </Sheet>
   );
@@ -256,10 +272,12 @@ function CustomPaletteSheetMount() {
 
 export default function App() {
   return (
-    <SettingsProvider>
-      <ErrorBoundary>
-        <Studio />
-      </ErrorBoundary>
-    </SettingsProvider>
+    <I18nProvider>
+      <SettingsProvider>
+        <ErrorBoundary>
+          <Studio />
+        </ErrorBoundary>
+      </SettingsProvider>
+    </I18nProvider>
   );
 }

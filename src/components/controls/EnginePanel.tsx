@@ -1,5 +1,6 @@
 import { engineMeta } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { EngineIcon } from '../icons/EngineIcon';
 import { PalettePicker } from './PalettePicker';
 import { PanelSection } from './PanelSection';
@@ -19,6 +20,7 @@ const GLYPH_SHAPES: { value: string; label: string }[] = [
 
 export function EnginePanel() {
   const { engine, settings, update, reset } = useSettings();
+  const { t } = useI18n();
   const meta = engineMeta(engine);
 
   return (
@@ -30,9 +32,9 @@ export function EnginePanel() {
           </span>
           <div>
             <div className="text-sm font-semibold text-zinc-100">
-              {meta.name}
+              {t(meta.name)}
             </div>
-            <div className="text-[11px] text-zinc-500">{meta.tagline}</div>
+            <div className="text-[11px] text-zinc-500">{t(meta.tagline)}</div>
           </div>
         </div>
         <button
@@ -40,7 +42,7 @@ export function EnginePanel() {
           onClick={reset}
           className="rounded-md border border-zinc-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200"
         >
-          Reset
+          {t('Reset')}
         </button>
       </div>
 
@@ -107,7 +109,7 @@ export function EnginePanel() {
         <PanelSection title="Truchet Tiles">
           <div className="flex items-end justify-between gap-2">
             <label className="block text-xs text-zinc-400">
-              <span className="mb-1.5 block">Seed</span>
+              <span className="mb-1.5 block">{t('Seed')}</span>
               <input
                 type="number"
                 min={1}
@@ -125,7 +127,7 @@ export function EnginePanel() {
                 update({ seed: Math.floor(Math.random() * 999999) + 1 })
               }
             >
-              New Seed
+              {t('New Seed')}
             </button>
           </div>
           <Slider
@@ -175,7 +177,7 @@ export function EnginePanel() {
             step={0.5}
             value={settings.edgeWidth}
             onChange={(v) => update({ edgeWidth: v })}
-            display={settings.edgeWidth === 0 ? 'Off' : `${settings.edgeWidth}px`}
+            display={settings.edgeWidth === 0 ? t('Off') : `${settings.edgeWidth}px`}
           />
         </PanelSection>
       )}
@@ -196,8 +198,7 @@ export function EnginePanel() {
             onChange={(v) => update({ invert: v })}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Each cell maps a 2x4 pixel block onto the Unicode Braille range
-            U+2800-U+28FF, rendered as geometric dots.
+            {t('Each cell maps a 2x4 pixel block onto the Unicode Braille range U+2800-U+28FF, rendered as geometric dots.')}
           </p>
         </PanelSection>
       )}
@@ -210,9 +211,7 @@ export function EnginePanel() {
             onChange={(v) => update({ serpentine: v })}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Quantization error is diffused to neighboring pixels with weights
-            7/16, 3/16, 5/16 and 1/16. Raising Cell Size above 14 enlarges the
-            pixel blocks for a chunkier look.
+            {t('Quantization error is diffused to neighboring pixels with weights 7/16, 3/16, 5/16 and 1/16. Raising Cell Size above 14 enlarges the pixel blocks for a chunkier look.')}
           </p>
         </PanelSection>
       )}
@@ -237,11 +236,7 @@ export function EnginePanel() {
             display={`${settings.stippleSteps}`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Cell Size sets point density (smaller cells = more dots). Dot Size
-            scales each mark. Weighted Centroidal Voronoi relaxation drifts
-            points toward mass centers: dark regions crowd with dots, bright
-            regions stay empty.
-            Cell Size scales the dot radius.
+            {t('Cell Size sets point density (smaller cells = more dots). Dot Size scales each mark. Weighted Centroidal Voronoi relaxation drifts points toward mass centers: dark regions crowd with dots, bright regions stay empty.')}
           </p>
         </PanelSection>
       )}
@@ -284,8 +279,7 @@ export function EnginePanel() {
             display={settings.flowWidth.toFixed(1)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Particles ride a vector field built from image gradients blended
-            with Perlin-style noise, leaving silky ink trails.
+            {t('Particles ride a vector field built from image gradients blended with Perlin-style noise, leaving silky ink trails.')}
           </p>
         </PanelSection>
       )}
@@ -319,9 +313,7 @@ export function EnginePanel() {
             display={`${Math.round(settings.scanGlitch * 100)}%`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Scanline pitch follows Cell Size. Rows are darkened and glowing
-            bands by luminance, with RGB channel shift and seeded glitch
-            blocks.
+            {t('Scanline pitch follows Cell Size. Rows are darkened and glowing bands by luminance, with RGB channel shift and seeded glitch blocks.')}
           </p>
         </PanelSection>
       )}
@@ -338,9 +330,7 @@ export function EnginePanel() {
             display={settings.blankThreshold.toFixed(2)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Each cell maps its darkness onto one of twelve Chinese characters
-            ordered by stroke density, from 一 to 鑫. Cell Size sets the glyph
-            size.
+            {t('Each cell maps its darkness onto one of twelve Chinese characters ordered by stroke density, from 一 to 鑫? Cell Size sets the glyph size.')}
           </p>
         </PanelSection>
       )}
@@ -366,9 +356,7 @@ export function EnginePanel() {
             display={`${settings.stringLines}`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            A greedy thread is pulled between perimeter nails to cover the
-            darkest pixels first — a single continuous string weaving a
-            portrait. Cell Size scales the line width.
+            {t('A greedy thread is pulled between perimeter nails to cover the darkest pixels first — a single continuous string weaving a portrait. Cell Size scales the line width.')}
           </p>
         </PanelSection>
       )}
@@ -403,8 +391,7 @@ export function EnginePanel() {
             display={settings.turingKill.toFixed(3)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Gray-Scott reaction-diffusion: chemicals A and B diffuse and react,
-            growing organic cellular patterns guided by image luminance.
+            {t('Gray-Scott reaction-diffusion: chemicals A and B diffuse and react, growing organic cellular patterns guided by image luminance.')}
           </p>
         </PanelSection>
       )}
@@ -436,8 +423,7 @@ export function EnginePanel() {
             ]}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Pixel runs above/below the threshold are sorted by luminance,
-            melting the image into horizontal or vertical streaks.
+            {t('Pixel runs above/below the threshold are sorted by luminance, melting the image into horizontal or vertical streaks.')}
           </p>
         </PanelSection>
       )}
@@ -445,9 +431,7 @@ export function EnginePanel() {
       {engine === 'hexdump' && (
         <PanelSection title="Hex Dump">
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Every cell prints the average pixel color as a raw hex code
-            (#RRGGBB). Text brightness follows luminance — bright areas glow
-            with light code, shadows stay dark. Cell Size sets the font size.
+            {t('Every cell prints the average pixel color as a raw hex code (#RRGGBB). Text brightness follows luminance — bright areas glow with light code, shadows stay dark. Cell Size sets the font size.')}
           </p>
         </PanelSection>
       )}
@@ -464,9 +448,7 @@ export function EnginePanel() {
             display={settings.bendayScale.toFixed(2)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Naive CMYK separation printed as angled dot screens (C 15°, M 75°,
-            Y 0°, K 45°) overprinted with multiply blending for that retro
-            comic feel. Cell Size sets the screen pitch.
+            {t('Naive CMYK separation printed as angled dot screens (C 15°, M 75°, Y 0°, K 45°) overprinted with multiply blending for that retro comic feel. Cell Size sets the screen pitch.')}
           </p>
         </PanelSection>
       )}
@@ -491,9 +473,7 @@ export function EnginePanel() {
             display={`${settings.waveFreq}`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Parallel sine lines whose local amplitude follows column
-            luminance. Push wavelength near the line spacing to trigger moiré
-            interference. Cell Size sets the line spacing.
+            {t('Parallel sine lines whose local amplitude follows column luminance. Push wavelength near the line spacing to trigger moiré interference. Cell Size sets the line spacing.')}
           </p>
         </PanelSection>
       )}
@@ -509,9 +489,7 @@ export function EnginePanel() {
             display={`${settings.contourLevels}`}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Grayscale is treated as a smoothed heightmap and Marching Squares
-            extracts contour lines at fixed elevation intervals. Cell Size
-            scales the smoothing radius.
+            {t('Grayscale is treated as a smoothed heightmap and Marching Squares extracts contour lines at fixed elevation intervals. Cell Size scales the smoothing radius.')}
           </p>
         </PanelSection>
       )}
@@ -519,9 +497,7 @@ export function EnginePanel() {
       {engine === 'hatch' && (
         <PanelSection title="Cross-Hatching">
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Engraving-style linework: bright cells get a single sparse pass,
-            while darker cells stack up to four cross-hatched layers at 0°, 45°,
-            90° and 135°. Cell Size sets the grid.
+            {t('Engraving-style linework: bright cells get a single sparse pass, while darker cells stack up to four cross-hatched layers at 0°, 45°, 90° and 135°. Cell Size sets the grid.')}
           </p>
         </PanelSection>
       )}
@@ -529,7 +505,7 @@ export function EnginePanel() {
       {engine === 'glyphs' && (
         <PanelSection title="Glyph Halftone">
           <div>
-            <span className="mb-1.5 block text-xs text-zinc-400">Shape</span>
+            <span className="mb-1.5 block text-xs text-zinc-400">{t('Shape')}</span>
             <div className="grid grid-cols-4 gap-1.5">
               {GLYPH_SHAPES.map((shape) => (
                 <button
@@ -542,14 +518,13 @@ export function EnginePanel() {
                       : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
                   }`}
                 >
-                  {shape.label}
+                  {t(shape.label)}
                 </button>
               ))}
             </div>
           </div>
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            Each cell stamps the chosen glyph scaled by darkness — bright areas
-            shrink to nothing, shadows swell to fill. Cell Size sets the grid.
+            {t('Each cell stamps the chosen glyph scaled by darkness — bright areas shrink to nothing, shadows swell to fill. Cell Size sets the grid.')}
           </p>
         </PanelSection>
       )}
@@ -584,9 +559,7 @@ export function EnginePanel() {
             display={settings.moirePhase.toFixed(1)}
           />
           <p className="text-[11px] leading-relaxed text-zinc-500">
-            High-frequency optical grating whose phase is shifted by image
-            luminance, warping the pattern around contours. Cell Size scales the
-            grating.
+            {t('High-frequency optical grating whose phase is shifted by image luminance, warping the pattern around contours. Cell Size scales the grating.')}
           </p>
         </PanelSection>
       )}

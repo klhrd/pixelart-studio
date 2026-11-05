@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { Sheet } from '../layout/Sheet';
 import type { Palette } from '../../algorithms/palettes';
 
@@ -33,6 +34,7 @@ function ManagerRow({ p }: { p: Palette }) {
     setEditingPaletteId,
     setCustomSheetOpen,
   } = useSettings();
+  const { t } = useI18n();
   const isCustom = p.id.startsWith('custom-');
   const starred = featured.includes(p.id);
 
@@ -61,7 +63,7 @@ function ManagerRow({ p }: { p: Palette }) {
       <button
         type="button"
         onClick={() => togglePaletteFeatured(p.id)}
-        aria-label={starred ? 'Unstar palette' : 'Star palette'}
+        aria-label={starred ? t('Unstar palette') : t('Star palette')}
         disabled={isCustom}
         className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-md transition hover:bg-zinc-800 disabled:cursor-default disabled:opacity-70 ${
           starred ? 'text-amber-400' : 'text-zinc-600'
@@ -72,7 +74,7 @@ function ManagerRow({ p }: { p: Palette }) {
       <button
         type="button"
         onClick={() => movePalette(p.id, -1)}
-        aria-label="Move up"
+        aria-label={t('Move up')}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-200"
       >
         <svg
@@ -89,7 +91,7 @@ function ManagerRow({ p }: { p: Palette }) {
       <button
         type="button"
         onClick={() => movePalette(p.id, 1)}
-        aria-label="Move down"
+        aria-label={t('Move down')}
         className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-200"
       >
         <svg
@@ -111,7 +113,7 @@ function ManagerRow({ p }: { p: Palette }) {
               setEditingPaletteId(p.id);
               setCustomSheetOpen(true);
             }}
-            aria-label={`Edit ${p.name}`}
+            aria-label={t('Edit {name}', { name: p.name })}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-emerald-300"
           >
             <svg
@@ -132,7 +134,7 @@ function ManagerRow({ p }: { p: Palette }) {
           <button
             type="button"
             onClick={() => deleteCustomPalette(p.id)}
-            aria-label={`Delete ${p.name}`}
+            aria-label={t('Delete {name}', { name: p.name })}
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-red-300"
           >
             <svg
@@ -165,6 +167,7 @@ export function PalettePicker() {
     setCustomSheetOpen,
     setEditingPaletteId,
   } = useSettings();
+  const { t } = useI18n();
   const [manageOpen, setManageOpen] = useState(false);
 
   const openNewCustom = () => {
@@ -178,13 +181,13 @@ export function PalettePicker() {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-zinc-400">Palette</span>
+        <span className="text-xs text-zinc-400">{t('Palette')}</span>
         <button
           type="button"
           onClick={() => setManageOpen(true)}
           className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 transition hover:text-emerald-300"
         >
-          Manage
+          {t('Manage')}
         </button>
       </div>
       <div className="grid grid-cols-2 gap-1.5">
@@ -217,7 +220,7 @@ export function PalettePicker() {
 
       <Sheet
         open={manageOpen}
-        title="Palette Manager"
+        title={t('Palette Manager')}
         onClose={() => setManageOpen(false)}
       >
         <button
@@ -239,7 +242,7 @@ export function PalettePicker() {
               d="M12 4.5v15m7.5-7.5h-15"
             />
           </svg>
-          New Custom Palette
+          {t('New Custom Palette')}
         </button>
         <div className="space-y-1.5">
           {allPalettes.map((p) => (
@@ -247,8 +250,7 @@ export function PalettePicker() {
           ))}
         </div>
         <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
-          Starred palettes appear in the quick picker. Use the arrows to
-          reorder — order is fully manual, nothing is sorted alphabetically.
+          {t('Starred palettes appear in the quick picker. Use the arrows to reorder ??order is fully manual, nothing is sorted alphabetically.')}
         </p>
       </Sheet>
     </div>

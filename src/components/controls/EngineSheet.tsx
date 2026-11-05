@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ENGINES } from '../../engines';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { EngineIcon } from '../icons/EngineIcon';
 import type { EngineId } from '../../types';
 
@@ -30,6 +31,7 @@ interface EngineSheetProps {
 
 export function EngineSheet({ onPick }: EngineSheetProps) {
   const { engine } = useSettings();
+  const { t } = useI18n();
   const [view, setView] = useState<ViewMode>(loadView);
 
   const switchView = (mode: ViewMode) => {
@@ -44,7 +46,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
           <button
             type="button"
             onClick={() => switchView('grid')}
-            aria-label="Grid view"
+            aria-label={t('Grid view')}
             className={`flex h-8 w-9 items-center justify-center rounded-md transition ${
               view === 'grid'
                 ? 'bg-emerald-500/20 text-emerald-300'
@@ -69,7 +71,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
           <button
             type="button"
             onClick={() => switchView('list')}
-            aria-label="List view"
+            aria-label={t('List view')}
             className={`flex h-8 w-9 items-center justify-center rounded-md transition ${
               view === 'list'
                 ? 'bg-emerald-500/20 text-emerald-300'
@@ -112,7 +114,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
                 className={engine === e.id ? 'h-7 w-7' : 'h-7 w-7 text-zinc-400'}
               />
               <span className="text-center text-[11px] font-medium leading-tight">
-                {e.name}
+                {t(e.name)}
               </span>
             </button>
           ))}
@@ -145,10 +147,10 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
                     engine === e.id ? 'text-emerald-300' : 'text-zinc-200'
                   }`}
                 >
-                  {e.name}
+                  {t(e.name)}
                 </span>
               <span className="block truncate text-xs text-zinc-500">
-                {e.tagline}
+                {t(e.tagline)}
               </span>
               </span>
               {engine === e.id && (

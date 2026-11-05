@@ -3,6 +3,7 @@ import {
   GESTURE_GROUP_LABELS,
   GESTURE_ITEM_PITCH,
 } from '../../hooks/useGestureControls';
+import { useI18n } from '../../i18n/core';
 
 interface GestureListProps {
   items: GestureItem[];
@@ -11,6 +12,7 @@ interface GestureListProps {
 }
 
 export function GestureList({ items, listOffset, activeIndex }: GestureListProps) {
+  const { t } = useI18n();
   const groupStarts: number[] = [];
   for (let i = 0; i < items.length; i++) {
     if (i === 0 || items[i].group !== items[i - 1].group) {
@@ -24,7 +26,7 @@ export function GestureList({ items, listOffset, activeIndex }: GestureListProps
       data-gesture-list=""
       role="status"
       aria-live="polite"
-      aria-label="Parameter selector"
+      aria-label={t('Parameter selector')}
     >
       <div
         className="relative mx-auto h-[260px] w-full max-w-md overflow-hidden bg-zinc-950/75 backdrop-blur-sm"
@@ -52,7 +54,7 @@ export function GestureList({ items, listOffset, activeIndex }: GestureListProps
             >
               <span className="h-px w-8 bg-zinc-700/80" />
               <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-zinc-500">
-                {GESTURE_GROUP_LABELS[items[start].group]}
+                {t(GESTURE_GROUP_LABELS[items[start].group])}
               </span>
               <span className="h-px w-8 bg-zinc-700/80" />
             </div>
@@ -84,7 +86,7 @@ export function GestureList({ items, listOffset, activeIndex }: GestureListProps
                 }`}
                 style={{ opacity, transform: `scale(${scale})` }}
               >
-                {item.label}
+                {t(item.label)}
               </span>
             </div>
           );

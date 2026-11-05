@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import type { Palette } from '../../algorithms/palettes';
 
 export function CustomPaletteSheet() {
@@ -13,6 +14,7 @@ export function CustomPaletteSheet() {
     updateCustomPalette,
     deleteCustomPalette,
   } = useSettings();
+  const { t } = useI18n();
 
   const editTarget = editingPaletteId
     ? customPalettes.find((p) => p.id === editingPaletteId)
@@ -58,32 +60,32 @@ export function CustomPaletteSheet() {
       {editingId && (
         <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">
           <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-300">
-            Editing existing palette
+            {t('Editing existing palette')}
           </span>
           <button
             type="button"
             onClick={discardEdit}
             className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 transition hover:text-zinc-100"
           >
-            Discard
+            {t('Discard')}
           </button>
         </div>
       )}
 
       <label className="block">
-        <span className="mb-1.5 block text-xs text-zinc-400">Name</span>
+        <span className="mb-1.5 block text-xs text-zinc-400">{t('Name')}</span>
         <input
           type="text"
           value={name}
           maxLength={16}
-          placeholder="Custom palette"
+          placeholder={t('Custom palette')}
           onChange={(e) => setName(e.target.value)}
           className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
         />
       </label>
 
       <div className="space-y-2">
-        <span className="block text-xs text-zinc-400">Color Stops</span>
+        <span className="block text-xs text-zinc-400">{t('Color Stops')}</span>
         {colors.map((c, i) => (
           <div key={i} className="flex items-center gap-2">
             <input
@@ -91,7 +93,7 @@ export function CustomPaletteSheet() {
               value={c}
               onChange={(e) => setColor(i, e.target.value)}
               className="h-9 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900"
-              aria-label={`Color ${i + 1}`}
+              aria-label={t('Color {n}', { n: i + 1 })}
             />
             <span className="flex-1 font-mono text-xs text-zinc-400">
               {c.toUpperCase()}
@@ -103,7 +105,7 @@ export function CustomPaletteSheet() {
                 setColors((prev) => prev.filter((_, j) => j !== i))
               }
               className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 text-zinc-400 transition hover:border-red-500/60 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-30"
-              aria-label="Remove color"
+              aria-label={t('Remove color')}
             >
               <svg
                 viewBox="0 0 24 24"
@@ -126,7 +128,7 @@ export function CustomPaletteSheet() {
           }
           className="btn w-full justify-center"
         >
-          Add Color
+          {t('Add Color')}
         </button>
       </div>
 
@@ -135,12 +137,12 @@ export function CustomPaletteSheet() {
         className="btn-primary w-full justify-center py-2.5"
         onClick={handleSave}
       >
-        {editingId ? 'Update Palette' : 'Save to History'}
+        {editingId ? t('Update Palette') : t('Save to History')}
       </button>
 
       {customPalettes.length > 0 && (
         <div className="space-y-1.5 border-t border-zinc-800 pt-3">
-          <span className="block text-xs text-zinc-400">History</span>
+          <span className="block text-xs text-zinc-400">{t('History')}</span>
           {customPalettes.map((p) => (
             <div
               key={p.id}
@@ -168,7 +170,7 @@ export function CustomPaletteSheet() {
                 type="button"
                 onClick={() => startEdit(p)}
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-emerald-300"
-                aria-label={`Edit ${p.name}`}
+                aria-label={t('Edit {name}', { name: p.name })}
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -189,7 +191,7 @@ export function CustomPaletteSheet() {
                 type="button"
                 onClick={() => deleteCustomPalette(p.id)}
                 className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-red-300"
-                aria-label={`Delete ${p.name}`}
+                aria-label={t('Delete {name}', { name: p.name })}
               >
                 <svg
                   viewBox="0 0 24 24"

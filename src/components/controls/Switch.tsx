@@ -1,3 +1,5 @@
+import { useI18n } from '../../i18n/core';
+
 interface SwitchProps {
   label: string;
   checked: boolean;
@@ -5,6 +7,7 @@ interface SwitchProps {
 }
 
 export function Switch({ label, checked, onChange }: SwitchProps) {
+  const { t } = useI18n();
   return (
     <button
       type="button"
@@ -13,7 +16,7 @@ export function Switch({ label, checked, onChange }: SwitchProps) {
       onClick={() => onChange(!checked)}
       className="flex w-full items-center justify-between text-xs text-zinc-400"
     >
-      <span>{label}</span>
+      <span>{t(label)}</span>
       <span
         className={`relative h-5 w-9 rounded-full border transition ${
           checked

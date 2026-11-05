@@ -10,6 +10,7 @@ import { renderResult } from '../../renderers';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import type { GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
+import { useI18n } from '../../i18n/core';
 import { GestureList } from './GestureList';
 
 const MIN_SCALE = 1;
@@ -142,6 +143,7 @@ export function PreviewCanvas({
   settingsRef.current = settings;
 
   const { update: updateSettings } = useSettings();
+  const { t } = useI18n();
 
   const gestureItems = useMemo(() => getGestureItems(engine), [engine]);
 
@@ -466,7 +468,7 @@ export function PreviewCanvas({
             className={`h-full w-full rounded-lg border border-zinc-800 shadow-2xl shadow-black/50 ${
               pixelated ? '[image-rendering:pixelated]' : ''
             }`}
-            aria-label={`Preview of ${engine} styling result`}
+            aria-label={t('Preview of {engine} styling result', { engine })}
             role="img"
           />
         </div>
@@ -474,7 +476,7 @@ export function PreviewCanvas({
         {status === 'processing' && (
           <span className="absolute right-6 top-6 z-10 flex items-center gap-2 rounded-full border border-emerald-500/40 bg-zinc-900/90 px-3 py-1 font-mono text-[10px] uppercase tracking-widest text-emerald-300">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-            Computing
+            {t('Computing')}
           </span>
         )}
 
@@ -499,7 +501,7 @@ export function PreviewCanvas({
             aria-live="polite"
           >
             <div className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/80 px-3 py-1 font-mono text-xs text-zinc-200 backdrop-blur">
-              <span className="text-zinc-400">{activeItem.label}</span>
+              <span className="text-zinc-400">{t(activeItem.label)}</span>
               <span className="font-bold text-emerald-400">
                 {activeItem.format
                   ? activeItem.format(currentValue)
