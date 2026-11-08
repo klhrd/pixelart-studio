@@ -2,16 +2,19 @@ import type { GestureItem } from '../../hooks/useGestureControls';
 import {
   GESTURE_GROUP_LABELS,
   GESTURE_ITEM_PITCH,
+  gestureItemValue,
 } from '../../hooks/useGestureControls';
+import type { Settings } from '../../types';
 import { useI18n } from '../../i18n/core';
 
 interface GestureListProps {
   items: GestureItem[];
   listOffset: number;
   activeIndex: number;
+  settings: Settings;
 }
 
-export function GestureList({ items, listOffset, activeIndex }: GestureListProps) {
+export function GestureList({ items, listOffset, activeIndex, settings }: GestureListProps) {
   const { t } = useI18n();
   const groupStarts: number[] = [];
   for (let i = 0; i < items.length; i++) {
@@ -68,6 +71,24 @@ export function GestureList({ items, listOffset, activeIndex }: GestureListProps
           const scale = Math.max(0.78, 1 - dist * 0.1);
           const isCenter = i === activeIndex;
           const isGeneral = item.group === 'general';
+          const value =
+            item.choices && item.choices.length
+              ? t(
+                  item.choices[
+                    Math.max(
+                      0,
+                      Math.min(
+                        item.choices.length - 1,
+                        Math.round(gestureItemValue(item, settings)),
+                      ),
+                    )
+                  ].label,
+                )
+              : item.toggle
+                ? settings[item.key]
+                  ? t('On')
+                  : t('Off')
+                : null;
           return (
             <div
               key={String(item.key)}
@@ -87,6 +108,9 @@ export function GestureList({ items, listOffset, activeIndex }: GestureListProps
                 style={{ opacity, transform: `scale(${scale})` }}
               >
                 {t(item.label)}
+                {value !== null && (
+                  <span className="ml-2 text-[0.82em] text-zinc-500">{value}</span>
+                )}
               </span>
             </div>
           );

@@ -8,7 +8,7 @@ import type {
 } from '../../types';
 import { renderResult } from '../../renderers';
 import { useGestureControls } from '../../hooks/useGestureControls';
-import type { GestureItem } from '../../hooks/useGestureControls';
+import type { GestureChoice, GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { GestureList } from './GestureList';
@@ -22,12 +22,25 @@ const GENERAL_GESTURE_ITEMS: GestureItem[] = [
   { key: 'saturation', label: 'Saturation', min: -100, max: 100, step: 1, group: 'general' },
 ];
 
+const GLYPH_SHAPE_CHOICES: GestureChoice[] = [
+  { value: 'star', label: 'Star' },
+  { value: 'cross', label: 'Cross' },
+  { value: 'diamond', label: 'Diamond' },
+  { value: 'circle', label: 'Circle' },
+  { value: 'triangle', label: 'Tri' },
+  { value: 'square', label: 'Square' },
+  { value: 'smiley', label: 'Smiley' },
+];
+
 const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   moon: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
     { key: 'edgeSensitivity', label: 'Edge Sensitivity', min: 0, max: 1, step: 0.05, group: 'engine' },
     { key: 'moonEdgeBias', label: 'Edge Bias', min: 0, max: 1, step: 0.05, group: 'engine' },
     { key: 'animOffset', label: 'Phase Offset', min: 0, max: 1, step: 0.01, group: 'engine' },
+    { key: 'animSpeed', label: 'Animation Speed', min: 0.05, max: 1, step: 0.05, group: 'engine' },
+    { key: 'staggered', label: 'Staggered Grid', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
+    { key: 'animate', label: 'Animate Phase', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
   ],
   truchet: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
@@ -38,13 +51,22 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
     { key: 'pointDensity', label: 'Edge Site Bias', min: 0, max: 150, step: 5, group: 'engine' },
     { key: 'edgeWidth', label: 'Edge Width', min: 0, max: 4, step: 0.5, group: 'engine' },
+    {
+      key: 'voronoiMode', label: 'Mode', min: 0, max: 1, step: 1, group: 'engine',
+      choices: [
+        { value: 'voronoi', label: 'Voronoi' },
+        { value: 'delaunay', label: 'Delaunay' },
+      ],
+    },
   ],
   braille: [
     { key: 'cellSize', label: 'Cell Size', min: 3, max: 48, step: 1, group: 'engine' },
     { key: 'threshold', label: 'Threshold', min: 1, max: 254, step: 1, group: 'engine' },
+    { key: 'invert', label: 'Invert', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
   ],
   dither: [
     { key: 'cellSize', label: 'Pixel Size', min: 14, max: 48, step: 1, group: 'engine' },
+    { key: 'serpentine', label: 'Serpentine Scan', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
   ],
   stipple: [
     { key: 'cellSize', label: 'Cell Size', min: 1, max: 48, step: 1, group: 'engine' },
@@ -95,17 +117,40 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   ],
   pixelsort: [
     { key: 'pixelSortThreshold', label: 'Threshold', min: 0, max: 254, step: 2, group: 'engine' },
+    {
+      key: 'pixelSortDirection', label: 'Direction', min: 0, max: 1, step: 1, group: 'engine',
+      choices: [
+        { value: 'horizontal', label: 'Horizontal' },
+        { value: 'vertical', label: 'Vertical' },
+      ],
+    },
+    {
+      key: 'pixelSortMode', label: 'Sort Mode', min: 0, max: 1, step: 1, group: 'engine',
+      choices: [
+        { value: 'asc', label: 'Dark→Bright' },
+        { value: 'desc', label: 'Bright→Dark' },
+      ],
+    },
   ],
   hatch: [
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 40, step: 1, group: 'engine' },
   ],
   glyphs: [
     { key: 'cellSize', label: 'Cell Size', min: 6, max: 48, step: 1, group: 'engine' },
+    { key: 'glyphShape', label: 'Shape', min: 0, max: 1, step: 1, group: 'engine', choices: GLYPH_SHAPE_CHOICES },
   ],
   moire: [
     { key: 'cellSize', label: 'Grating', min: 4, max: 40, step: 1, group: 'engine' },
     { key: 'moireFreq', label: 'Frequency', min: 0.2, max: 4, step: 0.1, group: 'engine' },
     { key: 'moirePhase', label: 'Phase Shift', min: 0, max: 10, step: 0.5, group: 'engine' },
+    {
+      key: 'moirePattern', label: 'Pattern', min: 0, max: 1, step: 1, group: 'engine',
+      choices: [
+        { value: 'rings', label: 'Rings' },
+        { value: 'lines', label: 'Lines' },
+        { value: 'spiral', label: 'Spiral' },
+      ],
+    },
   ],
 };
 
@@ -147,6 +192,26 @@ export function PreviewCanvas({
   const { t } = useI18n();
 
   const gestureItems = useMemo(() => getGestureItems(engine), [engine]);
+
+  const displayValue = (item: GestureItem, value: number): string => {
+    if (item.choices && item.choices.length) {
+      const idx = Math.max(0, Math.min(item.choices.length - 1, Math.round(value)));
+      return t(item.choices[idx].label);
+    }
+    if (item.toggle) return value >= 0.5 ? t('On') : t('Off');
+    return item.format
+      ? item.format(value)
+      : Number.isInteger(value)
+        ? String(value)
+        : value.toFixed(2);
+  };
+  const valueFraction = (item: GestureItem, value: number): number => {
+    if (item.choices && item.choices.length) {
+      return item.choices.length > 1 ? value / (item.choices.length - 1) : 0;
+    }
+    if (item.toggle) return value >= 0.5 ? 1 : 0;
+    return (value - item.min) / Math.max(1e-6, item.max - item.min);
+  };
 
   const {
     activeIndex,
@@ -492,6 +557,7 @@ export function PreviewCanvas({
             items={gestureItems}
             listOffset={listOffset}
             activeIndex={activeIndex}
+            settings={settings}
           />
         )}
 
@@ -504,26 +570,14 @@ export function PreviewCanvas({
             <div className="flex items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900/80 px-3 py-1 font-mono text-xs text-zinc-200 backdrop-blur">
               <span className="text-zinc-400">{t(activeItem.label)}</span>
               <span className="font-bold text-emerald-400">
-                {activeItem.format
-                  ? activeItem.format(currentValue)
-                  : Number.isInteger(currentValue)
-                    ? currentValue
-                    : currentValue.toFixed(2)}
+                {displayValue(activeItem, currentValue)}
               </span>
             </div>
             <div className="h-1 w-32 overflow-hidden rounded-full bg-zinc-800">
               <div
                 className="h-full bg-emerald-500"
                 style={{
-                  width: `${Math.max(
-                    0,
-                    Math.min(
-                      100,
-                      ((currentValue - activeItem.min) /
-                        Math.max(1e-6, activeItem.max - activeItem.min)) *
-                        100,
-                    ),
-                  )}%`,
+                  width: `${Math.max(0, Math.min(100, valueFraction(activeItem, currentValue) * 100))}%`,
                 }}
               />
             </div>

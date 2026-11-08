@@ -3,6 +3,11 @@ import type { Settings } from '../types';
 
 export type GestureGroup = 'general' | 'engine';
 
+export interface GestureChoice {
+  value: string;
+  label: string;
+}
+
 export interface GestureItem {
   key: keyof Settings;
   label: string;
@@ -11,6 +16,10 @@ export interface GestureItem {
   step: number;
   group: GestureGroup;
   format?: (value: number) => string;
+  /** Present => discrete string setting; drag horizontally to switch option. */
+  choices?: GestureChoice[];
+  /** Present => boolean setting; drag right = on, left = off. */
+  toggle?: boolean;
 }
 
 export const GESTURE_GROUP_LABELS: Record<GestureGroup, string> = {
@@ -31,6 +40,18 @@ export const GESTURE_ITEM_PITCH = 44;
 
 const LOCK_THRESHOLD = 12;
 const FULL_RANGE_PX = 200;
+const CHOICE_PITCH = 44;
+const TOGGLE_THRESHOLD = 20;
+
+/** Current value of an item expressed as a number (index for choices, 0/1 for toggles). */
+export function gestureItemValue(item: GestureItem, settings: Settings): number {
+  if (item.choices && item.choices.length) {
+    const idx = item.choices.findIndex((c) => c.value === settings[item.key]);
+    return idx < 0 ? 0 : idx;
+  }
+  if (item.toggle) return settings[item.key] ? 1 : 0;
+  return settings[item.key] as number;
+}
 
 export function useGestureControls(
   items: GestureItem[],
@@ -44,7 +65,7 @@ export function useGestureControls(
     activeIndex: safeIndex,
     activeItem: items[safeIndex] ?? items[0],
     currentValue: items[safeIndex]
-      ? (settings[items[safeIndex].key] as number)
+      ? gestureItemValue(items[safeIndex], settings)
       : 0,
     isActive: false,
     direction: null,
@@ -76,7 +97,7 @@ export function useGestureControls(
     };
   }, []);
 
-  const applyValue = useCallback((item: GestureItem, value: number) => {
+  const applyNumeric = useCallback((item: GestureItem, value: number) => {
     const stepped = Math.round(value / item.step) * item.step;
     const clamped = Math.min(item.max, Math.max(item.min, stepped));
     const precision = item.step < 1 ? 2 : 0;
@@ -84,6 +105,26 @@ export function useGestureControls(
     updateRef.current({ [item.key]: final } as Partial<Settings>);
     return final;
   }, []);
+
+  const applyItem = useCallback(
+    (item: GestureItem, base: number, dx: number) => {
+      if (item.choices && item.choices.length) {
+        const len = item.choices.length;
+        const steps = Math.round(dx / CHOICE_PITCH);
+        const idx = Math.max(0, Math.min(len - 1, base + steps));
+        updateRef.current({ [item.key]: item.choices[idx].value } as Partial<Settings>);
+        return idx;
+      }
+      if (item.toggle) {
+        const on = Math.abs(dx) > TOGGLE_THRESHOLD ? dx > 0 : base >= 0.5;
+        updateRef.current({ [item.key]: on } as Partial<Settings>);
+        return on ? 1 : 0;
+      }
+      const sensitivity = (item.max - item.min) / FULL_RANGE_PX;
+      return applyNumeric(item, base + dx * sensitivity);
+    },
+    [applyNumeric],
+  );
 
   const moveGesture = useCallback(
     (x: number, y: number) => {
@@ -100,7 +141,7 @@ export function useGestureControls(
           dirRef.current = Math.abs(dx) > Math.abs(dy) ? 'horizontal' : 'vertical';
           const current = itemsRef.current[activeIndexRef.current];
           if (current) {
-            anchorRef.current.baseValue = settingsRef.current[current.key] as number;
+            anchorRef.current.baseValue = gestureItemValue(current, settingsRef.current);
           }
           anchorRef.current.x = x;
           anchorRef.current.y = y;
@@ -125,18 +166,14 @@ export function useGestureControls(
             activeIndex: idx,
             activeItem: item,
             listOffset: offset,
-            currentValue: settingsRef.current[item.key] as number,
+            currentValue: gestureItemValue(item, settingsRef.current),
           }));
           return;
         }
 
         const item = itemsRef.current[activeIndexRef.current];
         if (!item) return;
-        const sensitivity = (item.max - item.min) / FULL_RANGE_PX;
-        const newValue = applyValue(
-          item,
-          anchorRef.current.baseValue + dx * sensitivity,
-        );
+        const newValue = applyItem(item, anchorRef.current.baseValue, dx);
         setState((prev) => ({
           ...prev,
           isActive: true,
@@ -147,7 +184,7 @@ export function useGestureControls(
         }));
       });
     },
-    [applyValue],
+    [applyItem],
   );
 
   const endGesture = useCallback(() => {
@@ -167,7 +204,7 @@ export function useGestureControls(
       const idx = Math.min(prev.activeIndex, Math.max(items.length - 1, 0));
       const item = items[idx];
       if (!item) return prev;
-      const value = settings[item.key] as number;
+      const value = gestureItemValue(item, settings);
       if (
         item === prev.activeItem &&
         value === prev.currentValue &&
