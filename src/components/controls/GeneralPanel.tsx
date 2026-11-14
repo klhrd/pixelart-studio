@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { engineMeta } from '../../engines';
+import { clearBrushMask } from '../../renderers/brushMask';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
@@ -48,9 +49,38 @@ export function GeneralPanel() {
             { value: 'ellipse', label: 'Ellipse' },
             { value: 'rect', label: 'Rect' },
             { value: 'linear', label: 'Linear' },
+            { value: 'brush', label: 'Brush' },
           ]}
         />
-        {settings.maskShape !== 'none' && (
+        {settings.maskShape === 'brush' && (
+          <>
+            <Slider
+              label="Brush size"
+              min={0.02}
+              max={0.3}
+              step={0.01}
+              value={settings.maskBrushSize}
+              onChange={(v) => update({ maskBrushSize: v })}
+              display={`${Math.round(settings.maskBrushSize * 100)}%`}
+            />
+            <Switch
+              label="Erase"
+              checked={settings.maskErase}
+              onChange={(v) => update({ maskErase: v })}
+            />
+            <button
+              type="button"
+              className="btn w-full justify-center"
+              onClick={() => clearBrushMask()}
+            >
+              {t('Clear mask')}
+            </button>
+            <p className="text-[11px] leading-relaxed text-zinc-500">
+              {t('Tap the brush button on the canvas, then drag on the image to paint where the effect applies.')}
+            </p>
+          </>
+        )}
+        {settings.maskShape !== 'none' && settings.maskShape !== 'brush' && (
           <>
             <Slider
               label="Mask X"

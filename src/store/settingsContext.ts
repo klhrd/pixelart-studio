@@ -54,6 +54,8 @@ export const DEFAULT_SETTINGS: Settings = {
   maskSize: 0.6,
   maskFeather: 0.35,
   maskInvert: false,
+  maskBrushSize: 0.08,
+  maskErase: false,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

@@ -1,4 +1,5 @@
 import type { Settings } from '../types';
+import { getBrushMask } from './brushMask';
 
 export function sourceToCanvas(
   bytes: Uint8ClampedArray,
@@ -75,7 +76,13 @@ export function applyMask(
   shape.height = height;
   const sctx = shape.getContext('2d');
   if (!sctx) return;
-  drawMaskShape(sctx, width, height, s);
+  if (s.maskShape === 'brush') {
+    const brush = getBrushMask();
+    if (!brush) return;
+    sctx.drawImage(brush, 0, 0, width, height);
+  } else {
+    drawMaskShape(sctx, width, height, s);
+  }
 
   let mask = shape;
   if (s.maskInvert) {

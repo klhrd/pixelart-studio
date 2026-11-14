@@ -67,12 +67,14 @@ export interface Settings {
   moirePattern: 'lines' | 'rings' | 'spiral';
   moireFreq: number;
   moirePhase: number;
-  maskShape: 'none' | 'ellipse' | 'rect' | 'linear';
+  maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;
   maskSize: number;
   maskFeather: number;
   maskInvert: boolean;
+  maskBrushSize: number;
+  maskErase: boolean;
 }
 
 export interface SourceImage {

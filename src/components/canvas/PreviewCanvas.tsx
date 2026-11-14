@@ -8,6 +8,12 @@ import type {
 } from '../../types';
 import { renderResult } from '../../renderers';
 import { applyMask, sourceToCanvas } from '../../renderers/mask';
+import {
+  loadBrushMaskDataUrl,
+  onBrushMaskChange,
+  saveBrushMaskDataUrl,
+  setBrushMask,
+} from '../../renderers/brushMask';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import type { GestureChoice, GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
@@ -28,6 +34,7 @@ const GENERAL_GESTURE_ITEMS: GestureItem[] = [
       { value: 'ellipse', label: 'Ellipse' },
       { value: 'rect', label: 'Rect' },
       { value: 'linear', label: 'Linear' },
+      { value: 'brush', label: 'Brush' },
     ],
   },
   { key: 'maskX', label: 'Mask X', min: 0, max: 1, step: 0.02, group: 'general' },
@@ -35,6 +42,8 @@ const GENERAL_GESTURE_ITEMS: GestureItem[] = [
   { key: 'maskSize', label: 'Mask Size', min: 0.05, max: 1, step: 0.02, group: 'general' },
   { key: 'maskFeather', label: 'Mask Feather', min: 0, max: 1, step: 0.02, group: 'general' },
   { key: 'maskInvert', label: 'Mask Invert', min: 0, max: 1, step: 1, group: 'general', toggle: true },
+  { key: 'maskBrushSize', label: 'Brush size', min: 0.02, max: 0.3, step: 0.01, group: 'general' },
+  { key: 'maskErase', label: 'Erase', min: 0, max: 1, step: 1, group: 'general', toggle: true },
 ];
 
 const GLYPH_SHAPE_CHOICES: GestureChoice[] = [
@@ -200,6 +209,11 @@ export function PreviewCanvas({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const minimapRef = useRef<HTMLCanvasElement>(null);
   const thumbRef = useRef<HTMLCanvasElement | null>(null);
+  const brushCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const drawCanvasRef = useRef<() => void>(() => {});
+  const paintingRef = useRef(false);
+  const lastPaintRef = useRef<{ x: number; y: number } | null>(null);
+  const [paintMode, setPaintMode] = useState(false);
   const settingsRef = useRef(settings);
   settingsRef.current = settings;
 
@@ -306,6 +320,69 @@ export function PreviewCanvas({
     );
     applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settingsRef.current);
   }, [resultEngine, result, palette, source, compare, sourceCanvas]);
+
+  drawCanvasRef.current = drawCanvas;
+
+  // Brush mask: one canvas at working resolution, persisted as a PNG data URL.
+  useEffect(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = source.width;
+    canvas.height = source.height;
+    brushCanvasRef.current = canvas;
+    setBrushMask(canvas);
+    const saved = loadBrushMaskDataUrl();
+    if (saved) {
+      const img = new Image();
+      img.onload = () => {
+        canvas
+          .getContext('2d')
+          ?.drawImage(img, 0, 0, source.width, source.height);
+        drawCanvasRef.current();
+      };
+      img.src = saved;
+    }
+    return () => setBrushMask(null);
+  }, [source]);
+
+  useEffect(
+    () => onBrushMaskChange(() => drawCanvasRef.current()),
+    [],
+  );
+
+  const paintAt = (clientX: number, clientY: number) => {
+    const canvas = brushCanvasRef.current;
+    const el = containerRef.current;
+    if (!canvas || !el) return;
+    const rect = el.getBoundingClientRect();
+    const v = viewRef.current;
+    const x = (clientX - rect.left - v.x) / v.s;
+    const y = (clientY - rect.top - v.y) / v.s;
+    const bctx = canvas.getContext('2d');
+    if (!bctx) return;
+    const r = Math.max(
+      1,
+      settingsRef.current.maskBrushSize * Math.min(source.width, source.height),
+    );
+    bctx.globalCompositeOperation = settingsRef.current.maskErase
+      ? 'destination-out'
+      : 'source-over';
+    bctx.strokeStyle = '#ffffff';
+    bctx.fillStyle = '#ffffff';
+    bctx.lineWidth = r * 2;
+    bctx.lineCap = 'round';
+    bctx.lineJoin = 'round';
+    const last = lastPaintRef.current;
+    bctx.beginPath();
+    if (last) {
+      bctx.moveTo(last.x, last.y);
+      bctx.lineTo(x, y);
+      bctx.stroke();
+    }
+    bctx.arc(x, y, r, 0, Math.PI * 2);
+    bctx.fill();
+    lastPaintRef.current = { x, y };
+    drawCanvas();
+  };
 
   useEffect(() => {
     drawCanvas();
@@ -425,11 +502,17 @@ export function PreviewCanvas({
       lastPos.current = { x: e.clientX, y: e.clientY };
       if (e.button === 1) {
         middlePan.current = true;
+      } else if (paintMode && settingsRef.current.maskShape === 'brush') {
+        paintingRef.current = true;
+        lastPaintRef.current = null;
+        paintAt(e.clientX, e.clientY);
       } else {
         startGesture(e.clientX, e.clientY);
       }
     }
     if (pointers.current.size === 2) {
+      paintingRef.current = false;
+      lastPaintRef.current = null;
       endGesture();
       middlePan.current = false;
       const [a, b] = [...pointers.current.values()];
@@ -449,6 +532,11 @@ export function PreviewCanvas({
   const onPointerMove = (e: React.PointerEvent) => {
     if (!pointers.current.has(e.pointerId)) return;
     pointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (paintingRef.current && pointers.current.size === 1) {
+      paintAt(e.clientX, e.clientY);
+      lastPos.current = { x: e.clientX, y: e.clientY };
+      return;
+    }
     if (pointers.current.size >= 2 && pinch.current) {
       const [a, b] = [...pointers.current.values()];
       const dist = Math.hypot(a.x - b.x, a.y - b.y);
@@ -483,6 +571,12 @@ export function PreviewCanvas({
       lastPos.current = { x: p.x, y: p.y };
     }
     if (pointers.current.size === 0) {
+      if (paintingRef.current) {
+        paintingRef.current = false;
+        lastPaintRef.current = null;
+        const c = brushCanvasRef.current;
+        if (c) saveBrushMaskDataUrl(c.toDataURL('image/png'));
+      }
       endGesture();
       middlePan.current = false;
       if (!hadPinch.current) {
@@ -571,6 +665,24 @@ export function PreviewCanvas({
             <canvas ref={minimapRef} className="block rounded-sm" aria-hidden="true" />
           </div>
         </div>
+
+        {settings.maskShape === 'brush' && (
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => setPaintMode((p) => !p)}
+            className={`absolute bottom-4 right-4 z-20 flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-medium shadow-lg shadow-black/40 backdrop-blur transition active:scale-95 ${
+              paintMode
+                ? 'border-emerald-500/60 bg-emerald-500/20 text-emerald-100'
+                : 'border-zinc-700 bg-zinc-900/85 text-zinc-200 hover:border-zinc-500'
+            }`}
+          >
+            <span className="material-symbols-rounded text-[18px]" aria-hidden="true">
+              {paintMode ? 'close' : 'brush'}
+            </span>
+            {t(paintMode ? 'Painting' : 'Paint mask')}
+          </button>
+        )}
 
         {isActive && direction === 'vertical' && (
           <GestureList
