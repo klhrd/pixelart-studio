@@ -2,14 +2,26 @@ import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { buildShareHash } from '../../utils/shareLink';
+import type { ExportFormat } from '../../utils/exportImage';
+import { Segmented } from './Segmented';
+import { Slider } from './Slider';
+import { Switch } from './Switch';
 
 interface ExportSheetProps {
   scale: number;
   onScale: (scale: number) => void;
+  sourceWidth: number;
   filename: string;
   onFilenameChange: (name: string) => void;
+  format: ExportFormat;
+  onFormat: (format: ExportFormat) => void;
+  quality: number;
+  onQuality: (quality: number) => void;
+  transparent: boolean;
+  onTransparent: (value: boolean) => void;
   onExport: () => void;
   onExportSvg: () => void;
+  onCopy: () => void;
   onUpload: () => void;
   disabled: boolean;
   outputWidth: number;
@@ -18,14 +30,23 @@ interface ExportSheetProps {
 
 const SCALES = [1, 2, 3, 4, 6, 8];
 const MAX_SCALE = 16;
+const TARGET_WIDTHS = [1080, 1920, 2560, 3840];
 
 export function ExportSheet({
   scale,
   onScale,
+  sourceWidth,
   filename,
   onFilenameChange,
+  format,
+  onFormat,
+  quality,
+  onQuality,
+  transparent,
+  onTransparent,
   onExport,
   onExportSvg,
+  onCopy,
   onUpload,
   disabled,
   outputWidth,
@@ -34,9 +55,13 @@ export function ExportSheet({
   const { engine, settings, customPalettes } = useSettings();
   const { t } = useI18n();
   const [saved, setSaved] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [linkState, setLinkState] = useState<'idle' | 'copied' | 'shared'>(
     'idle',
   );
+
+  const lossy = format === 'jpeg' || format === 'webp';
+  const supportsAlpha = format !== 'jpeg';
 
   const handleExport = () => {
     onExport();
@@ -48,6 +73,18 @@ export function ExportSheet({
     onExportSvg();
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const handleCopy = () => {
+    onCopy();
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const fitWidth = (target: number) => {
+    if (sourceWidth <= 0) return;
+    const s = Math.round((target / sourceWidth) * 100) / 100;
+    onScale(Math.max(1, Math.min(MAX_SCALE, s)));
   };
 
   const handleShare = async () => {
@@ -92,6 +129,41 @@ export function ExportSheet({
       </div>
 
       <div>
+        <span className="mb-1.5 block text-xs text-zinc-400">{t('Format')}</span>
+        <Segmented
+          value={format}
+          onChange={(v) => onFormat(v as ExportFormat)}
+          options={[
+            { value: 'png', label: 'PNG' },
+            { value: 'jpeg', label: 'JPEG' },
+            { value: 'webp', label: 'WebP' },
+          ]}
+        />
+        {lossy && (
+          <div className="mt-2">
+            <Slider
+              label="Quality"
+              min={0.5}
+              max={1}
+              step={0.01}
+              value={quality}
+              onChange={onQuality}
+              display={`${Math.round(quality * 100)}%`}
+            />
+          </div>
+        )}
+        {supportsAlpha && (
+          <div className="mt-2">
+            <Switch
+              label="Transparent background"
+              checked={transparent}
+              onChange={onTransparent}
+            />
+          </div>
+        )}
+      </div>
+
+      <div>
         <span className="mb-1.5 block text-xs text-zinc-400">
           {t('Resolution Scale')}
         </span>
@@ -111,6 +183,20 @@ export function ExportSheet({
             </button>
           ))}
         </div>
+        {sourceWidth > 0 && (
+          <div className="mt-1.5 flex gap-1.5">
+            {TARGET_WIDTHS.map((w) => (
+              <button
+                key={w}
+                type="button"
+                onClick={() => fitWidth(w)}
+                className="flex-1 touch-manipulation select-none rounded-lg border border-zinc-800 bg-zinc-950/50 py-2 font-mono text-[11px] text-zinc-400 transition hover:border-zinc-600 active:scale-95"
+              >
+                {w}w
+              </button>
+            ))}
+          </div>
+        )}
         <label className="mt-1.5 flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2">
           <span className="text-xs text-zinc-400">{t('Custom scale')}</span>
           <span className="flex items-center gap-1">
@@ -167,37 +253,42 @@ export function ExportSheet({
             {t('Saved')}
           </>
         ) : (
-          t('Export PNG')
+          `${t('Export')} ${format.toUpperCase()}`
         )}
       </button>
 
-      <button
-        type="button"
-        className="btn w-full justify-center py-3"
-        disabled={disabled}
-        onClick={handleExportSvg}
-      >
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          className="h-5 w-5"
-          aria-hidden="true"
+      <div className="flex gap-1.5">
+        <button
+          type="button"
+          className="btn flex-1 justify-center py-3"
+          disabled={disabled}
+          onClick={handleCopy}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 19.5v-2a2 2 0 012-2h4a2 2 0 012 2v2M14 19.5v-2a2 2 0 012-2h4a2 2 0 012 2v2"
-          />
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 11a2 2 0 012-2h4a2 2 0 012 2v2M4 7a2 2 0 012-2h4a2 2 0 012 2v2"
-          />
-        </svg>
-        {t('Export SVG')}
-      </button>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75"
+            />
+          </svg>
+          {copied ? t('Copied') : t('Copy to clipboard')}
+        </button>
+        <button
+          type="button"
+          className="btn flex-1 justify-center py-3"
+          disabled={disabled}
+          onClick={handleExportSvg}
+        >
+          {t('Export SVG')}
+        </button>
+      </div>
 
       <div className="flex gap-1.5 border-t border-zinc-800 pt-3">
         <button

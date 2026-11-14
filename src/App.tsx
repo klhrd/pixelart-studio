@@ -15,7 +15,8 @@ import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
 import { I18nProvider } from './i18n';
 import { useI18n } from './i18n/core';
-import { exportPng } from './utils/exportImage';
+import { copyImageToClipboard, exportRaster } from './utils/exportImage';
+import type { ExportFormat } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
 import { parseShareHash } from './utils/shareLink';
@@ -79,6 +80,9 @@ function Studio() {
   );
   const [exportScale, setExportScale] = useState(2);
   const [exportName, setExportName] = useState('pixelcraft');
+  const [exportFormat, setExportFormat] = useState<ExportFormat>('png');
+  const [exportQuality, setExportQuality] = useState(0.92);
+  const [exportTransparent, setExportTransparent] = useState(false);
   const [sheet, setSheet] = useState<SheetId>(null);
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -114,17 +118,43 @@ function Studio() {
 
   const handleExport = useCallback(() => {
     if (source && result && status === 'ready') {
-      void exportPng(
+      void exportRaster(source, engine, result, settings, palette, {
+        scale: exportScale,
+        filename: exportName,
+        format: exportFormat,
+        quality: exportQuality,
+        transparent: exportTransparent,
+      });
+    }
+  }, [
+    source,
+    engine,
+    result,
+    status,
+    settings,
+    palette,
+    exportScale,
+    exportName,
+    exportFormat,
+    exportQuality,
+    exportTransparent,
+  ]);
+
+  const handleCopy = useCallback(() => {
+    if (source && result && status === 'ready') {
+      void copyImageToClipboard(
         source,
         engine,
         result,
         settings,
         palette,
         exportScale,
-        exportName,
-      );
+        exportTransparent,
+      ).catch((err: unknown) => {
+        console.warn('Copy to clipboard failed:', err);
+      });
     }
-  }, [source, engine, result, status, settings, palette, exportScale, exportName]);
+  }, [source, engine, result, status, settings, palette, exportScale, exportTransparent]);
 
   const handleExportSvg = () => {
     if (!source || !result || status !== 'ready') return;
@@ -245,10 +275,18 @@ function Studio() {
         <ExportSheet
           scale={exportScale}
           onScale={setExportScale}
+          sourceWidth={source?.width ?? 0}
           filename={exportName}
           onFilenameChange={setExportName}
+          format={exportFormat}
+          onFormat={setExportFormat}
+          quality={exportQuality}
+          onQuality={setExportQuality}
+          transparent={exportTransparent}
+          onTransparent={setExportTransparent}
           onExport={handleExport}
           onExportSvg={handleExportSvg}
+          onCopy={handleCopy}
           onUpload={() => fileInputRef.current?.click()}
           disabled={!source || !result || status !== 'ready'}
           outputWidth={(source?.width ?? 0) * exportScale}
