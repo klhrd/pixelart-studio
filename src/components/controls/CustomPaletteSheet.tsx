@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
+import { extractPalette } from '../../utils/extractPalette';
 import type { Palette } from '../../algorithms/palettes';
+import type { SourceImage } from '../../types';
 
-export function CustomPaletteSheet() {
+interface CustomPaletteSheetProps {
+  source: SourceImage | null;
+}
+
+export function CustomPaletteSheet({ source }: CustomPaletteSheetProps) {
   const {
     settings,
     update,
@@ -56,6 +62,24 @@ export function CustomPaletteSheet() {
           <span key={i} className="flex-1" style={{ background: c }} />
         ))}
       </div>
+
+      <button
+        type="button"
+        className="btn w-full justify-center"
+        disabled={!source}
+        onClick={() => {
+          if (!source) return;
+          const extracted = extractPalette(
+            source.bytes,
+            source.width,
+            source.height,
+            6,
+          );
+          if (extracted.length > 0) setColors(extracted);
+        }}
+      >
+        {t('Extract from image')}
+      </button>
 
       {editingId && (
         <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2">

@@ -20,7 +20,7 @@ import type { ExportFormat } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
 import { parseShareHash } from './utils/shareLink';
-import type { EngineId, SheetId } from './types';
+import type { EngineId, SheetId, SourceImage } from './types';
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -308,17 +308,17 @@ function Studio() {
           outputHeight={(source?.height ?? 0) * exportScale}
         />
       </Sheet>
-      <CustomPaletteSheetMount />
+      <CustomPaletteSheetMount source={source} />
     </div>
   );
 }
 
-function CustomPaletteSheetMount() {
+function CustomPaletteSheetMount({ source }: { source: SourceImage | null }) {
   const { t } = useI18n();
   const { customSheetOpen, setCustomSheetOpen } = useSettings();
   return (
     <Sheet open={customSheetOpen} title={t('Custom Palette')} onClose={() => setCustomSheetOpen(false)}>
-      <CustomPaletteSheet />
+      <CustomPaletteSheet source={source} />
     </Sheet>
   );
 }
