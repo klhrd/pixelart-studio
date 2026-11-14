@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { EngineId, Settings } from '../types';
+import type { EngineId, Preset, Settings } from '../types';
 import type { Palette } from '../algorithms/palettes';
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -100,6 +100,10 @@ export interface SettingsContextValue {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  presets: Preset[];
+  savePreset: (name: string) => void;
+  applyPreset: (id: string) => void;
+  deletePreset: (id: string) => void;
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);

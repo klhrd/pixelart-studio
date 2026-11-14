@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { EngineId, Settings } from '../types';
+import type { EngineId, Preset, Settings } from '../types';
 import {
   MAX_CUSTOM_PALETTES,
   PALETTES,
@@ -16,7 +16,37 @@ const ORDER_KEY = 'pixelcraft-palette-order';
 const FEATURED_KEY = 'pixelcraft-palette-featured';
 const SETTINGS_KEY = 'pixelcraft-settings';
 const ENGINE_KEY = 'pixelcraft-engine';
+const PRESETS_KEY = 'pixelcraft-presets';
 const HISTORY_MAX = 50;
+const PRESETS_MAX = 50;
+
+function loadPresets(): Preset[] {
+  try {
+    const raw = localStorage.getItem(PRESETS_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) return [];
+    return list.filter(
+      (p): p is Preset =>
+        !!p &&
+        typeof p.id === 'string' &&
+        typeof p.name === 'string' &&
+        typeof p.engine === 'string' &&
+        !!p.settings &&
+        typeof p.settings === 'object',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistPresets(list: Preset[]): void {
+  try {
+    localStorage.setItem(PRESETS_KEY, JSON.stringify(list));
+  } catch {
+    /* storage unavailable */
+  }
+}
 
 const ENGINE_IDS = new Set<string>(ENGINES.map((e) => e.id));
 
@@ -88,6 +118,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
   const [history, setHistory] = useState<Settings[]>([]);
   const [future, setFuture] = useState<Settings[]>([]);
+  const [presets, setPresets] = useState<Preset[]>(loadPresets);
 
   // Persist tuning + selected engine so a reload resumes exactly where you left off.
   useEffect(() => {
@@ -266,6 +297,41 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const savePreset = useCallback(
+    (name: string) => {
+      setPresets((prev) => {
+        const entry: Preset = {
+          id: `preset-${Date.now()}`,
+          name: name.trim() || `Preset ${prev.length + 1}`,
+          engine,
+          settings: { ...settings },
+        };
+        const next = [entry, ...prev].slice(0, PRESETS_MAX);
+        persistPresets(next);
+        return next;
+      });
+    },
+    [engine, settings],
+  );
+
+  const applyPreset = useCallback(
+    (id: string) => {
+      const preset = presets.find((p) => p.id === id);
+      if (!preset) return;
+      setEngine(preset.engine);
+      update(preset.settings);
+    },
+    [presets, update],
+  );
+
+  const deletePreset = useCallback((id: string) => {
+    setPresets((prev) => {
+      const next = prev.filter((p) => p.id !== id);
+      persistPresets(next);
+      return next;
+    });
+  }, []);
+
   const canUndo = history.length > 0;
   const canRedo = future.length > 0;
 
@@ -293,6 +359,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       featured,
       canUndo,
       canRedo,
+      presets,
+      savePreset,
+      applyPreset,
+      deletePreset,
     }),
     [
       engine,
@@ -315,6 +385,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       featured,
       canUndo,
       canRedo,
+      presets,
+      savePreset,
+      applyPreset,
+      deletePreset,
     ],
   );
 

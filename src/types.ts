@@ -81,6 +81,13 @@ export interface SourceImage {
   bytes: Uint8ClampedArray;
 }
 
+export interface Preset {
+  id: string;
+  name: string;
+  engine: EngineId;
+  settings: Settings;
+}
+
 export interface WorkerRequest {
   width: number;
   height: number;
