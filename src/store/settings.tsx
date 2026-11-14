@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { EngineId, Settings } from '../types';
 import {
@@ -9,11 +9,45 @@ import {
   persistCustomPalettes,
 } from '../algorithms/palettes';
 import type { Palette } from '../algorithms/palettes';
+import { ENGINES } from '../engines';
 import { DEFAULT_SETTINGS, DEFAULT_FEATURED, DEFAULT_PALETTE_ORDER, SettingsContext } from './settingsContext';
 
 const ORDER_KEY = 'pixelcraft-palette-order';
 const FEATURED_KEY = 'pixelcraft-palette-featured';
+const SETTINGS_KEY = 'pixelcraft-settings';
+const ENGINE_KEY = 'pixelcraft-engine';
 const HISTORY_MAX = 50;
+
+const ENGINE_IDS = new Set<string>(ENGINES.map((e) => e.id));
+
+function loadStoredSettings(): Settings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return DEFAULT_SETTINGS;
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    if (!parsed || typeof parsed !== 'object') return DEFAULT_SETTINGS;
+    const merged: Settings = { ...DEFAULT_SETTINGS };
+    for (const key of Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[]) {
+      if (key in parsed && typeof parsed[key] === typeof DEFAULT_SETTINGS[key]) {
+        // Preserve only values whose type matches the default (guards corruption).
+        (merged as unknown as Record<string, unknown>)[key] = parsed[key];
+      }
+    }
+    return merged;
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+function loadStoredEngine(): EngineId {
+  try {
+    const v = localStorage.getItem(ENGINE_KEY);
+    if (v && ENGINE_IDS.has(v)) return v as EngineId;
+  } catch {
+    /* storage unavailable */
+  }
+  return 'moon';
+}
 
 function loadIdList(key: string): string[] {
   try {
@@ -35,8 +69,8 @@ function persistIdList(key: string, list: string[]): void {
 }
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [engine, setEngine] = useState<EngineId>('moon');
-  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [engine, setEngine] = useState<EngineId>(loadStoredEngine);
+  const [settings, setSettings] = useState<Settings>(loadStoredSettings);
   const [customPalettes, setCustomPalettes] = useState<Palette[]>(
     () => loadCustomPalettes(),
   );
@@ -54,6 +88,23 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
   const [history, setHistory] = useState<Settings[]>([]);
   const [future, setFuture] = useState<Settings[]>([]);
+
+  // Persist tuning + selected engine so a reload resumes exactly where you left off.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    } catch {
+      /* storage unavailable */
+    }
+  }, [settings]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(ENGINE_KEY, engine);
+    } catch {
+      /* storage unavailable */
+    }
+  }, [engine]);
 
   const pushHistory = useCallback((current: Settings) => {
     setHistory(prev => {
