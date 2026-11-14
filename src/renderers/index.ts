@@ -54,8 +54,6 @@ import { renderCrossHatch } from './crossHatchRenderer';
 import { renderCrossHatchSVG } from './crossHatchRenderer';
 import { renderGlyphs } from './glyphsRenderer';
 import { renderGlyphsSVG } from './glyphsRenderer';
-import { GLRenderer } from './webgl/GLRenderer';
-import { WebGLRenderer } from './webgl/WebGLRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -422,16 +420,4 @@ export {
   renderCrossHatchSVG,
   renderGlyphs,
   renderGlyphsSVG,
-  GLRenderer,
-  WebGLRenderer,
 };
-
-export function createWebGLRenderer(canvas: HTMLCanvasElement): WebGLRenderer | null {
-  try {
-    const renderer = new WebGLRenderer(canvas);
-    if (!renderer.isSupported) return null;
-    return renderer;
-  } catch {
-    return null;
-  }
-}
