@@ -17,6 +17,8 @@ export const zhTW: Record<string, string> = {
   'Reload View': '重新載入',
   'Skip to content': '跳至內容',
   'Parameter selector': '參數選擇器',
+  'Adjust parameters with the arrow keys or by dragging on the image.':
+    '用方向鍵或在圖片上拖曳來調整參數。',
   'Grid view': '格狀檢視',
   'List view': '清單檢視',
   'Image preview canvas': '影像預覽畫布',

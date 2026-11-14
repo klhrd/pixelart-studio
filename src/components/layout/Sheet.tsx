@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { useI18n } from '../../i18n/core';
 
@@ -10,6 +11,10 @@ interface SheetProps {
 
 export function Sheet({ open, title, onClose, children }: SheetProps) {
   const { t } = useI18n();
+  const closeRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (open) closeRef.current?.focus();
+  }, [open]);
   if (!open) return null;
   return (
     <>
@@ -22,6 +27,9 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
         <div
           className="rounded-t-2xl border-x border-t border-zinc-700/80 bg-zinc-900 shadow-2xl shadow-black/60"
           style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)' }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
         >
           <div className="relative flex items-center justify-center px-4 pb-2 pt-4">
             <span className="absolute top-1.5 h-1 w-10 -translate-x-1/2 rounded-full bg-zinc-700" />
@@ -29,6 +37,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
               {title}
             </h2>
             <button
+              ref={closeRef}
               type="button"
               onClick={onClose}
               aria-label={t('Close')}

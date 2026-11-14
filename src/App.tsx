@@ -69,8 +69,18 @@ function ErrorFallback({
 
 function Studio() {
   const { t } = useI18n();
-  const { engine, setEngine, settings, palette, update, saveCustomPalette, undo, redo, reset } =
-    useSettings();
+  const {
+    engine,
+    setEngine,
+    settings,
+    palette,
+    update,
+    saveCustomPalette,
+    undo,
+    redo,
+    reset,
+    setCustomSheetOpen,
+  } = useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
     source,
@@ -177,6 +187,11 @@ function Studio() {
     const onKey = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       const key = e.key.toLowerCase();
+      if (key === 'escape') {
+        setSheet(null);
+        setCustomSheetOpen(false);
+        return;
+      }
       if (e.ctrlKey && key === 'z') {
         e.preventDefault();
         undo();
@@ -211,7 +226,7 @@ function Studio() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [setEngine, setSheet, undo, redo, setCompare, toggleFullscreen, handleExport, reset]);
+  }, [setEngine, setSheet, undo, redo, setCompare, toggleFullscreen, handleExport, reset, setCustomSheetOpen]);
 
   return (
     <div className="flex h-full flex-col bg-zinc-950 text-zinc-200">

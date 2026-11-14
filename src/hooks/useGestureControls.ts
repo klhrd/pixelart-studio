@@ -222,5 +222,50 @@ export function useGestureControls(
     });
   }, [settings, items]);
 
-  return { ...state, startGesture, moveGesture, endGesture };
+  const stepActive = useCallback((dir: number) => {
+    const len = itemsRef.current.length;
+    if (len === 0) return;
+    const idx = Math.max(0, Math.min(len - 1, activeIndexRef.current + dir));
+    const item = itemsRef.current[idx];
+    if (!item) return;
+    setState((prev) => ({
+      ...prev,
+      activeIndex: idx,
+      activeItem: item,
+      listOffset: idx,
+      currentValue: gestureItemValue(item, settingsRef.current),
+    }));
+  }, []);
+
+  const adjustActive = useCallback(
+    (steps: number) => {
+      const item = itemsRef.current[activeIndexRef.current];
+      if (!item) return;
+      const current = gestureItemValue(item, settingsRef.current);
+      let next: number;
+      if (item.choices && item.choices.length) {
+        const len = item.choices.length;
+        const idx = Math.max(0, Math.min(len - 1, current + steps));
+        updateRef.current({ [item.key]: item.choices[idx].value } as Partial<Settings>);
+        next = idx;
+      } else if (item.toggle) {
+        const on = steps > 0;
+        updateRef.current({ [item.key]: on } as Partial<Settings>);
+        next = on ? 1 : 0;
+      } else {
+        next = applyNumeric(item, current + steps * item.step);
+      }
+      setState((prev) => ({ ...prev, activeItem: item, currentValue: next }));
+    },
+    [applyNumeric],
+  );
+
+  return {
+    ...state,
+    startGesture,
+    moveGesture,
+    endGesture,
+    stepActive,
+    adjustActive,
+  };
 }

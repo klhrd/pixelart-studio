@@ -256,7 +256,28 @@ export function PreviewCanvas({
     startGesture,
     moveGesture,
     endGesture,
+    stepActive,
+    adjustActive,
   } = useGestureControls(gestureItems, settings, updateSettings, 0);
+  const [kbHud, setKbHud] = useState(false);
+  const kbTimer = useRef<number | undefined>(undefined);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    const map: Record<string, [number, number]> = {
+      ArrowUp: [-1, 0],
+      ArrowDown: [1, 0],
+      ArrowLeft: [0, -1],
+      ArrowRight: [0, 1],
+    };
+    const m = map[e.key];
+    if (!m) return;
+    e.preventDefault();
+    if (m[0]) stepActive(m[0]);
+    if (m[1]) adjustActive(m[1]);
+    setKbHud(true);
+    if (kbTimer.current) window.clearTimeout(kbTimer.current);
+    kbTimer.current = window.setTimeout(() => setKbHud(false), 1400);
+  };
 
   const [fit, setFit] = useState({ w: 0, h: 0 });
   const [mmSize, setMmSize] = useState({ w: 72, h: 72 });
@@ -391,6 +412,12 @@ export function PreviewCanvas({
   useEffect(() => {
     if (engine !== 'moon' || resultEngine !== 'moon' || !settings.animate)
       return;
+    if (
+      typeof window !== 'undefined' &&
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    ) {
+      return;
+    }
     let raf = 0;
     let last = performance.now();
     const tick = (t: number) => {
@@ -628,7 +655,11 @@ export function PreviewCanvas({
     <div className="relative h-full w-full">
       <div
         ref={containerRef}
-        className="relative h-full w-full touch-none select-none overflow-hidden"
+        className="relative h-full w-full touch-none select-none overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60"
+        tabIndex={0}
+        role="application"
+        aria-label={t('Adjust parameters with the arrow keys or by dragging on the image.')}
+        onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -693,7 +724,7 @@ export function PreviewCanvas({
           />
         )}
 
-        {isActive && direction === 'horizontal' && (
+        {((isActive && direction === 'horizontal') || kbHud) && (
           <div
             className="pointer-events-none absolute top-1/2 left-1/2 z-50 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2"
             role="status"
