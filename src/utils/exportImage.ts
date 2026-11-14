@@ -5,6 +5,7 @@ import type {
   SourceImage,
 } from '../types';
 import { renderResult } from '../renderers';
+import { applyMask, sourceToCanvas } from '../renderers/mask';
 
 export async function exportPng(
   source: SourceImage,
@@ -30,6 +31,16 @@ export async function exportPng(
     source.width,
     source.height,
   );
+  if (settings.maskShape !== 'none') {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    applyMask(
+      ctx,
+      canvas.width,
+      canvas.height,
+      sourceToCanvas(source.bytes, source.width, source.height),
+      settings,
+    );
+  }
 
   const blob = await new Promise<Blob | null>((resolve) =>
     canvas.toBlob(resolve, 'image/png'),

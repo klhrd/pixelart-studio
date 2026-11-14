@@ -67,6 +67,12 @@ export interface Settings {
   moirePattern: 'lines' | 'rings' | 'spiral';
   moireFreq: number;
   moirePhase: number;
+  maskShape: 'none' | 'ellipse' | 'rect' | 'linear';
+  maskX: number;
+  maskY: number;
+  maskSize: number;
+  maskFeather: number;
+  maskInvert: boolean;
 }
 
 export interface SourceImage {

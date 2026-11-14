@@ -48,6 +48,12 @@ export const DEFAULT_SETTINGS: Settings = {
   moirePattern: 'rings',
   moireFreq: 1.2,
   moirePhase: 3,
+  maskShape: 'none',
+  maskX: 0.5,
+  maskY: 0.5,
+  maskSize: 0.6,
+  maskFeather: 0.35,
+  maskInvert: false,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

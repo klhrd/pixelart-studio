@@ -7,6 +7,7 @@ import type {
   SourceImage,
 } from '../../types';
 import { renderResult } from '../../renderers';
+import { applyMask, sourceToCanvas } from '../../renderers/mask';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import type { GestureChoice, GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
@@ -20,6 +21,20 @@ const GENERAL_GESTURE_ITEMS: GestureItem[] = [
   { key: 'brightness', label: 'Brightness', min: -100, max: 100, step: 1, group: 'general' },
   { key: 'contrast', label: 'Contrast', min: -100, max: 100, step: 1, group: 'general' },
   { key: 'saturation', label: 'Saturation', min: -100, max: 100, step: 1, group: 'general' },
+  {
+    key: 'maskShape', label: 'Mask', min: 0, max: 1, step: 1, group: 'general',
+    choices: [
+      { value: 'none', label: 'None' },
+      { value: 'ellipse', label: 'Ellipse' },
+      { value: 'rect', label: 'Rect' },
+      { value: 'linear', label: 'Linear' },
+    ],
+  },
+  { key: 'maskX', label: 'Mask X', min: 0, max: 1, step: 0.02, group: 'general' },
+  { key: 'maskY', label: 'Mask Y', min: 0, max: 1, step: 0.02, group: 'general' },
+  { key: 'maskSize', label: 'Mask Size', min: 0.05, max: 1, step: 0.02, group: 'general' },
+  { key: 'maskFeather', label: 'Mask Feather', min: 0, max: 1, step: 0.02, group: 'general' },
+  { key: 'maskInvert', label: 'Mask Invert', min: 0, max: 1, step: 1, group: 'general', toggle: true },
 ];
 
 const GLYPH_SHAPE_CHOICES: GestureChoice[] = [
@@ -192,6 +207,10 @@ export function PreviewCanvas({
   const { t } = useI18n();
 
   const gestureItems = useMemo(() => getGestureItems(engine), [engine]);
+  const sourceCanvas = useMemo(
+    () => sourceToCanvas(source.bytes, source.width, source.height),
+    [source],
+  );
 
   const displayValue = (item: GestureItem, value: number): string => {
     if (item.choices && item.choices.length) {
@@ -285,7 +304,8 @@ export function PreviewCanvas({
       source.width,
       source.height,
     );
-  }, [resultEngine, result, palette, source, compare]);
+    applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settingsRef.current);
+  }, [resultEngine, result, palette, source, compare, sourceCanvas]);
 
   useEffect(() => {
     drawCanvas();
