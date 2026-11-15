@@ -198,7 +198,7 @@ interface PreviewCanvasProps {
   settings: Settings;
   palette: string[];
   compare: boolean;
-  secondary: { engine: EngineId; result: EngineResult } | null;
+  layers: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
 export function PreviewCanvas({
@@ -210,7 +210,7 @@ export function PreviewCanvas({
   settings,
   palette,
   compare,
-  secondary,
+  layers,
 }: PreviewCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -349,9 +349,9 @@ export function PreviewCanvas({
       palette,
       source.width,
       source.height,
-      secondary,
+      layers,
     );
-  }, [resultEngine, result, palette, source, compare, sourceCanvas, secondary]);
+  }, [resultEngine, result, palette, source, compare, sourceCanvas, layers]);
 
   drawCanvasRef.current = drawCanvas;
 

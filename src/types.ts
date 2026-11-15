@@ -21,6 +21,12 @@ export type EngineId =
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
+export interface EffectLayer {
+  engine: EngineId | 'none';
+  blend: string;
+  opacity: number;
+}
+
 export interface Settings {
   cellSize: number;
   contrast: number;
@@ -77,9 +83,7 @@ export interface Settings {
   maskErase: boolean;
   blendMode: string;
   blendOpacity: number;
-  layer2Engine: EngineId | 'none';
-  layer2Blend: string;
-  layer2Opacity: number;
+  layers: EffectLayer[];
 }
 
 export interface SourceImage {

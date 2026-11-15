@@ -171,59 +171,104 @@ export function GeneralPanel() {
       </PanelSection>
 
       <PanelSection title="Layers">
-        <label className="block text-xs text-zinc-400">
-          <span className="mb-1.5 block">{t('Second layer')}</span>
-          <select
-            value={settings.layer2Engine}
-            onChange={(e) =>
-              update({ layer2Engine: e.target.value as EngineId | 'none' })
-            }
-            className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
-          >
-            <option value="none">{t('None')}</option>
-            {ENGINES.map((e) => (
-              <option key={e.id} value={e.id}>
-                {t(engineMeta(e.id).name)}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        {settings.layer2Engine !== 'none' && (
-          <>
-            <span className="mb-1.5 block text-xs text-zinc-400">
-              {t('Blend Mode')}
-            </span>
-            <div className="grid grid-cols-4 gap-1.5">
-              {BLEND_MODES.map((m) => (
-                <button
-                  key={m.value}
-                  type="button"
-                  onClick={() => update({ layer2Blend: m.value })}
-                  className={`rounded-lg border py-1.5 font-mono text-[10px] transition ${
-                    settings.layer2Blend === m.value
-                      ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
-                      : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
-                  }`}
+        {settings.layers.length > 0 && (
+          <div className="space-y-3">
+            {settings.layers.map((layer, i) => (
+              <div
+                key={i}
+                className="space-y-2 rounded-lg border border-zinc-800 bg-zinc-950/50 p-2"
+              >
+                <div className="flex items-center gap-2">
+                  <select
+                    value={layer.engine}
+                    aria-label={t('Engine')}
+                    onChange={(e) =>
+                      update({
+                        layers: settings.layers.map((l, idx) =>
+                          idx === i
+                            ? { ...l, engine: e.target.value as EngineId | 'none' }
+                            : l,
+                        ),
+                      })
+                    }
+                    className="min-w-0 flex-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+                  >
+                    <option value="none">{t('None')}</option>
+                    {ENGINES.map((e) => (
+                      <option key={e.id} value={e.id}>
+                        {t(engineMeta(e.id).name)}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    aria-label={t('Remove layer')}
+                    onClick={() =>
+                      update({
+                        layers: settings.layers.filter((_, idx) => idx !== i),
+                      })
+                    }
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-red-300"
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <select
+                  value={layer.blend}
+                  aria-label={t('Blend Mode')}
+                  onChange={(e) =>
+                    update({
+                      layers: settings.layers.map((l, idx) =>
+                        idx === i ? { ...l, blend: e.target.value } : l,
+                      ),
+                    })
+                  }
+                  className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
                 >
-                  {t(m.label)}
-                </button>
-              ))}
-            </div>
-            <Slider
-              label="Blend Opacity"
-              min={0}
-              max={1}
-              step={0.05}
-              value={settings.layer2Opacity}
-              onChange={(v) => update({ layer2Opacity: v })}
-              display={`${Math.round(settings.layer2Opacity * 100)}%`}
-            />
-          </>
+                  {BLEND_MODES.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {t(m.label)}
+                    </option>
+                  ))}
+                </select>
+                <Slider
+                  label="Blend Opacity"
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  value={layer.opacity}
+                  onChange={(v) =>
+                    update({
+                      layers: settings.layers.map((l, idx) =>
+                        idx === i ? { ...l, opacity: v } : l,
+                      ),
+                    })
+                  }
+                  display={`${Math.round(layer.opacity * 100)}%`}
+                />
+              </div>
+            ))}
+          </div>
         )}
 
+        <button
+          type="button"
+          className="btn w-full justify-center"
+          disabled={settings.layers.length >= 2}
+          onClick={() =>
+            update({
+              layers: [
+                ...settings.layers,
+                { engine: 'none', blend: 'source-over', opacity: 1 },
+              ],
+            })
+          }
+        >
+          {t('Add layer')}
+        </button>
+
         <p className="text-[11px] leading-relaxed text-zinc-500">
-          {t('Stacks a second engine result over the first.')}
+          {t('Each extra layer stacks another engine result with its own blend mode and opacity.')}
         </p>
       </PanelSection>
 

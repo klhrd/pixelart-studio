@@ -11,7 +11,7 @@ interface BatchPanelProps {
   quality: number;
   transparent: boolean;
   filenameBase: string;
-  secondary: { engine: EngineId; result: EngineResult } | null;
+  layers: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
 export function BatchPanel({
@@ -20,7 +20,7 @@ export function BatchPanel({
   quality,
   transparent,
   filenameBase,
-  secondary,
+  layers,
 }: BatchPanelProps) {
   const { engine, settings, palette } = useSettings();
   const { t } = useI18n();
@@ -40,7 +40,7 @@ export function BatchPanel({
       engine,
       settings,
       palette,
-      { scale, format, quality, transparent, filenameBase, secondary },
+      { scale, format, quality, transparent, filenameBase, layers },
       (done, total) => setProgress({ done, total }),
     );
     setProgress(null);

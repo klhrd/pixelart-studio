@@ -32,7 +32,7 @@ interface ExportSheetProps {
   disabled: boolean;
   outputWidth: number;
   outputHeight: number;
-  secondary: { engine: EngineId; result: EngineResult } | null;
+  layers: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
 const SCALES = [1, 2, 3, 4, 6, 8];
@@ -61,7 +61,7 @@ export function ExportSheet({
   disabled,
   outputWidth,
   outputHeight,
-  secondary,
+  layers,
 }: ExportSheetProps) {
   const { engine, settings, customPalettes } = useSettings();
   const { t } = useI18n();
@@ -397,7 +397,7 @@ export function ExportSheet({
           quality={quality}
           transparent={transparent}
           filenameBase={filename}
-          secondary={secondary}
+          layers={layers}
         />
       </Sheet>
     </div>

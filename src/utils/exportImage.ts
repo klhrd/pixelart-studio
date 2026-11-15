@@ -28,7 +28,7 @@ export interface RasterExportOptions {
   format: ExportFormat;
   quality: number;
   transparent: boolean;
-  secondary?: { engine: EngineId; result: EngineResult } | null;
+  layers?: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
 function renderToCanvas(
@@ -39,7 +39,7 @@ function renderToCanvas(
   palette: string[],
   scale: number,
   transparent: boolean,
-  secondary: { engine: EngineId; result: EngineResult } | null,
+  layers: ({ engine: EngineId; result: EngineResult } | null)[],
 ): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = source.width * scale;
@@ -58,7 +58,7 @@ function renderToCanvas(
     palette,
     source.width,
     source.height,
-    secondary,
+    layers,
   );
   if (transparent) chromaKeyBackground(canvas, palette[0]);
   return canvas;
@@ -116,7 +116,7 @@ export interface RasterBlobOptions {
   format: ExportFormat;
   quality: number;
   transparent: boolean;
-  secondary?: { engine: EngineId; result: EngineResult } | null;
+  layers?: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
 export async function renderResultBlob(
@@ -136,7 +136,7 @@ export async function renderResultBlob(
     palette,
     opts.scale,
     transparent,
-    opts.secondary ?? null,
+    opts.layers ?? [],
   );
   const quality =
     opts.format === 'png' ? undefined : Math.min(1, Math.max(0.1, opts.quality));
@@ -193,7 +193,7 @@ function renderAnimationFrame(
   palette: string[],
   scale: number,
   animOffset: number,
-  secondary: { engine: EngineId; result: EngineResult } | null,
+  layers: ({ engine: EngineId; result: EngineResult } | null)[],
 ): void {
   const frameSettings: Settings = { ...settings, animOffset, animate: false };
   renderComposite(
@@ -208,7 +208,7 @@ function renderAnimationFrame(
     palette,
     source.width,
     source.height,
-    secondary,
+    layers,
   );
 }
 
@@ -273,7 +273,7 @@ export async function exportAnimationWebM(
       palette,
       opts.scale,
       i / frames,
-      null,
+      [],
     );
     await new Promise((r) => setTimeout(r, frameDelay));
   }
@@ -326,7 +326,7 @@ export async function exportAnimationGif(
       palette,
       scale,
       i / frames,
-      null,
+      [],
     );
     const { data } = ctx.getImageData(0, 0, width, height);
     if (!pal) pal = quantize(data, 256, { format: 'rgb565' });
@@ -347,7 +347,7 @@ export async function copyImageToClipboard(
   palette: string[],
   scale: number,
   transparent: boolean,
-  secondary: { engine: EngineId; result: EngineResult } | null,
+  layers: ({ engine: EngineId; result: EngineResult } | null)[],
 ): Promise<void> {
   const canvas = renderToCanvas(
     source,
@@ -357,7 +357,7 @@ export async function copyImageToClipboard(
     palette,
     scale,
     transparent,
-    secondary,
+    layers,
   );
   const blob = await canvasToBlob(canvas, 'image/png');
   const ClipboardItemCtor = (

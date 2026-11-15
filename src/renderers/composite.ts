@@ -52,7 +52,7 @@ export function renderComposite(
   palette: string[],
   logicalW: number,
   logicalH: number,
-  secondary: { engine: EngineId; result: EngineResult } | null,
+  layers: ({ engine: EngineId; result: EngineResult } | null)[],
 ): void {
   const styled = styledCanvas(width, height);
   const sctx = styled.getContext('2d');
@@ -63,29 +63,6 @@ export function renderComposite(
   sctx.clearRect(0, 0, width, height);
   sctx.scale(scale, scale);
   renderResult(engine, sctx, result, settings, palette, logicalW, logicalH);
-
-  let styled2: HTMLCanvasElement | null = null;
-  if (secondary) {
-    const canvas2 = styledCanvas2(width, height);
-    const sctx2 = canvas2.getContext('2d');
-    if (sctx2) {
-      sctx2.setTransform(1, 0, 0, 1, 0, 0);
-      sctx2.globalCompositeOperation = 'source-over';
-      sctx2.globalAlpha = 1;
-      sctx2.clearRect(0, 0, width, height);
-      sctx2.scale(scale, scale);
-      renderResult(
-        secondary.engine,
-        sctx2,
-        secondary.result,
-        settings,
-        palette,
-        logicalW,
-        logicalH,
-      );
-      styled2 = canvas2;
-    }
-  }
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
@@ -98,10 +75,29 @@ export function renderComposite(
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
 
-  if (styled2) {
-    ctx.globalCompositeOperation = blendOp(settings.layer2Blend);
-    ctx.globalAlpha = Math.max(0, Math.min(1, settings.layer2Opacity));
-    ctx.drawImage(styled2, 0, 0);
+  for (let i = 0; i < settings.layers.length; i++) {
+    const entry = layers[i];
+    if (!entry) continue;
+    const canvas2 = styledCanvas2(width, height);
+    const sctx2 = canvas2.getContext('2d');
+    if (!sctx2) continue;
+    sctx2.setTransform(1, 0, 0, 1, 0, 0);
+    sctx2.globalCompositeOperation = 'source-over';
+    sctx2.globalAlpha = 1;
+    sctx2.clearRect(0, 0, width, height);
+    sctx2.scale(scale, scale);
+    renderResult(
+      entry.engine,
+      sctx2,
+      entry.result,
+      settings,
+      palette,
+      logicalW,
+      logicalH,
+    );
+    ctx.globalCompositeOperation = blendOp(settings.layers[i].blend);
+    ctx.globalAlpha = Math.max(0, Math.min(1, settings.layers[i].opacity));
+    ctx.drawImage(canvas2, 0, 0);
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
   }
