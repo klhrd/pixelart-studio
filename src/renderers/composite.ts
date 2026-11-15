@@ -26,6 +26,14 @@ function styledCanvas(width: number, height: number): HTMLCanvasElement {
   return temp;
 }
 
+let temp2: HTMLCanvasElement | null = null;
+function styledCanvas2(width: number, height: number): HTMLCanvasElement {
+  if (!temp2) temp2 = document.createElement('canvas');
+  if (temp2.width !== width) temp2.width = width;
+  if (temp2.height !== height) temp2.height = height;
+  return temp2;
+}
+
 /**
  * Renders the styled result onto an offscreen layer, then composites it over the
  * original image on `ctx` using the chosen blend mode + opacity, and finally
@@ -44,6 +52,7 @@ export function renderComposite(
   palette: string[],
   logicalW: number,
   logicalH: number,
+  secondary: { engine: EngineId; result: EngineResult } | null,
 ): void {
   const styled = styledCanvas(width, height);
   const sctx = styled.getContext('2d');
@@ -55,6 +64,29 @@ export function renderComposite(
   sctx.scale(scale, scale);
   renderResult(engine, sctx, result, settings, palette, logicalW, logicalH);
 
+  let styled2: HTMLCanvasElement | null = null;
+  if (secondary) {
+    const canvas2 = styledCanvas2(width, height);
+    const sctx2 = canvas2.getContext('2d');
+    if (sctx2) {
+      sctx2.setTransform(1, 0, 0, 1, 0, 0);
+      sctx2.globalCompositeOperation = 'source-over';
+      sctx2.globalAlpha = 1;
+      sctx2.clearRect(0, 0, width, height);
+      sctx2.scale(scale, scale);
+      renderResult(
+        secondary.engine,
+        sctx2,
+        secondary.result,
+        settings,
+        palette,
+        logicalW,
+        logicalH,
+      );
+      styled2 = canvas2;
+    }
+  }
+
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
@@ -65,6 +97,14 @@ export function renderComposite(
   ctx.drawImage(styled, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
   ctx.globalAlpha = 1;
+
+  if (styled2) {
+    ctx.globalCompositeOperation = blendOp(settings.layer2Blend);
+    ctx.globalAlpha = Math.max(0, Math.min(1, settings.layer2Opacity));
+    ctx.drawImage(styled2, 0, 0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+  }
 
   if (settings.maskShape !== 'none') {
     applyMask(ctx, width, height, sourceCanvas, settings);

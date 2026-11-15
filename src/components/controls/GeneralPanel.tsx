@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
-import { engineMeta } from '../../engines';
+import { ENGINES, engineMeta } from '../../engines';
+import type { EngineId } from '../../types';
 import { clearBrushMask } from '../../renderers/brushMask';
 import { BLEND_MODES } from '../../renderers/composite';
 import { PanelSection } from './PanelSection';
@@ -157,6 +158,63 @@ export function GeneralPanel() {
         />
         <p className="text-[11px] leading-relaxed text-zinc-500">
           {t('Blends the styled layer over the original image.')}
+        </p>
+      </PanelSection>
+
+      <PanelSection title="Layers">
+        <label className="block text-xs text-zinc-400">
+          <span className="mb-1.5 block">{t('Second layer')}</span>
+          <select
+            value={settings.layer2Engine}
+            onChange={(e) =>
+              update({ layer2Engine: e.target.value as EngineId | 'none' })
+            }
+            className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+          >
+            <option value="none">{t('None')}</option>
+            {ENGINES.map((e) => (
+              <option key={e.id} value={e.id}>
+                {t(engineMeta(e.id).name)}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        {settings.layer2Engine !== 'none' && (
+          <>
+            <span className="mb-1.5 block text-xs text-zinc-400">
+              {t('Blend Mode')}
+            </span>
+            <div className="grid grid-cols-4 gap-1.5">
+              {BLEND_MODES.map((m) => (
+                <button
+                  key={m.value}
+                  type="button"
+                  onClick={() => update({ layer2Blend: m.value })}
+                  className={`rounded-lg border py-1.5 font-mono text-[10px] transition ${
+                    settings.layer2Blend === m.value
+                      ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
+                      : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
+                  }`}
+                >
+                  {t(m.label)}
+                </button>
+              ))}
+            </div>
+            <Slider
+              label="Blend Opacity"
+              min={0}
+              max={1}
+              step={0.05}
+              value={settings.layer2Opacity}
+              onChange={(v) => update({ layer2Opacity: v })}
+              display={`${Math.round(settings.layer2Opacity * 100)}%`}
+            />
+          </>
+        )}
+
+        <p className="text-[11px] leading-relaxed text-zinc-500">
+          {t('Stacks a second engine result over the first.')}
         </p>
       </PanelSection>
 

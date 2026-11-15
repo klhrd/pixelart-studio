@@ -58,6 +58,9 @@ export const DEFAULT_SETTINGS: Settings = {
   maskErase: false,
   blendMode: 'source-over',
   blendOpacity: 1,
+  layer2Engine: 'none',
+  layer2Blend: 'source-over',
+  layer2Opacity: 1,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

@@ -3,6 +3,7 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { processBatch } from '../../utils/batch';
 import type { ExportFormat } from '../../utils/exportImage';
+import type { EngineId, EngineResult } from '../../types';
 
 interface BatchPanelProps {
   scale: number;
@@ -10,6 +11,7 @@ interface BatchPanelProps {
   quality: number;
   transparent: boolean;
   filenameBase: string;
+  secondary: { engine: EngineId; result: EngineResult } | null;
 }
 
 export function BatchPanel({
@@ -18,6 +20,7 @@ export function BatchPanel({
   quality,
   transparent,
   filenameBase,
+  secondary,
 }: BatchPanelProps) {
   const { engine, settings, palette } = useSettings();
   const { t } = useI18n();
@@ -37,7 +40,7 @@ export function BatchPanel({
       engine,
       settings,
       palette,
-      { scale, format, quality, transparent, filenameBase },
+      { scale, format, quality, transparent, filenameBase, secondary },
       (done, total) => setProgress({ done, total }),
     );
     setProgress(null);

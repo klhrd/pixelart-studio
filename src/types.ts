@@ -77,6 +77,9 @@ export interface Settings {
   maskErase: boolean;
   blendMode: string;
   blendOpacity: number;
+  layer2Engine: EngineId | 'none';
+  layer2Blend: string;
+  layer2Opacity: number;
 }
 
 export interface SourceImage {

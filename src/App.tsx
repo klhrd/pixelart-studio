@@ -1,4 +1,4 @@
-import { Component, useCallback, useEffect, useRef, useState } from 'react';
+import { Component, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
 import { DropZone } from './components/canvas/DropZone';
@@ -10,6 +10,7 @@ import { BottomBar } from './components/layout/BottomBar';
 import { Sheet } from './components/layout/Sheet';
 import { TopBar } from './components/layout/TopBar';
 import { useImageProcessor } from './hooks/useImageProcessor';
+import { useSecondaryResult } from './hooks/useSecondaryResult';
 import { useSourceImage } from './hooks/useSourceImage';
 import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
@@ -94,6 +95,19 @@ function Studio() {
     settings,
     palette,
   );
+  const secondaryData = useSecondaryResult(
+    source,
+    settings.layer2Engine,
+    settings,
+    palette,
+  );
+  const secondary = useMemo(
+    () =>
+      secondaryData
+        ? { engine: secondaryData.engine, result: secondaryData.data }
+        : null,
+    [secondaryData],
+  );
   const [exportScale, setExportScale] = useState(2);
   const [exportName, setExportName] = useState('pixelcraft');
   const [exportFormat, setExportFormat] = useState<ExportFormat>('png');
@@ -140,6 +154,7 @@ function Studio() {
         format: exportFormat,
         quality: exportQuality,
         transparent: exportTransparent,
+        secondary,
       });
     }
   }, [
@@ -154,6 +169,7 @@ function Studio() {
     exportFormat,
     exportQuality,
     exportTransparent,
+    secondary,
   ]);
 
   const handleCopy = useCallback(() => {
@@ -166,11 +182,12 @@ function Studio() {
         palette,
         exportScale,
         exportTransparent,
+        secondary,
       ).catch((err: unknown) => {
         console.warn('Copy to clipboard failed:', err);
       });
     }
-  }, [source, engine, result, status, settings, palette, exportScale, exportTransparent]);
+  }, [source, engine, result, status, settings, palette, exportScale, exportTransparent, secondary]);
 
   const handleExportAnimation = useCallback(() => {
     if (source && result && status === 'ready') {
@@ -306,6 +323,7 @@ function Studio() {
             settings={settings}
             palette={palette}
             compare={compare}
+            secondary={secondary}
           />
         ) : (
           <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
@@ -341,6 +359,7 @@ function Studio() {
           disabled={!source || !result || status !== 'ready'}
           outputWidth={(source?.width ?? 0) * exportScale}
           outputHeight={(source?.height ?? 0) * exportScale}
+          secondary={secondary}
         />
       </Sheet>
       <CustomPaletteSheetMount source={source} />

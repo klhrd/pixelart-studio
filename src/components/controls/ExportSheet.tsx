@@ -3,6 +3,7 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { buildShareHash } from '../../utils/shareLink';
 import type { ExportFormat } from '../../utils/exportImage';
+import type { EngineId, EngineResult } from '../../types';
 import { Sheet } from '../layout/Sheet';
 import { BatchPanel } from './BatchPanel';
 import { Segmented } from './Segmented';
@@ -31,6 +32,7 @@ interface ExportSheetProps {
   disabled: boolean;
   outputWidth: number;
   outputHeight: number;
+  secondary: { engine: EngineId; result: EngineResult } | null;
 }
 
 const SCALES = [1, 2, 3, 4, 6, 8];
@@ -59,6 +61,7 @@ export function ExportSheet({
   disabled,
   outputWidth,
   outputHeight,
+  secondary,
 }: ExportSheetProps) {
   const { engine, settings, customPalettes } = useSettings();
   const { t } = useI18n();
@@ -394,6 +397,7 @@ export function ExportSheet({
           quality={quality}
           transparent={transparent}
           filenameBase={filename}
+          secondary={secondary}
         />
       </Sheet>
     </div>

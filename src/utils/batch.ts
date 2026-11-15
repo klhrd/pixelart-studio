@@ -1,5 +1,5 @@
 import { zipSync } from 'fflate';
-import type { EngineId, Settings } from '../types';
+import type { EngineId, EngineResult, Settings } from '../types';
 import { getClient } from '../workers/engineClient';
 import { bitmapToSource } from './image';
 import { downloadBlob, exportFileName, renderResultBlob } from './exportImage';
@@ -11,6 +11,7 @@ export interface BatchOptions {
   quality: number;
   transparent: boolean;
   filenameBase: string;
+  secondary?: { engine: EngineId; result: EngineResult } | null;
 }
 
 function safe(s: string, max: number): string {
@@ -53,6 +54,7 @@ export async function processBatch(
         format: opts.format,
         quality: opts.quality,
         transparent: opts.transparent,
+        secondary: opts.secondary ?? null,
       });
       const src = safe(file.name.replace(/\.[^.]+$/, ''), 30);
       let name = exportFileName(
