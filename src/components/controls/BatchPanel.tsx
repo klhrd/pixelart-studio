@@ -98,7 +98,7 @@ export function BatchPanel({
       </button>
 
       <p className="text-[11px] leading-relaxed text-zinc-500">
-        {t('Applies the current engine, settings and palette to every image, then downloads each result.')}
+        {t('Applies the current engine, settings and palette to every image, then packages all results into a single ZIP file.')}
       </p>
     </div>
   );
