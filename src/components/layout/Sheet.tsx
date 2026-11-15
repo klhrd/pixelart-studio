@@ -9,12 +9,59 @@ interface SheetProps {
   children: ReactNode;
 }
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Sheet({ open, title, onClose, children }: SheetProps) {
   const { t } = useI18n();
+  const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const prevFocus = useRef<HTMLElement | null>(null);
+
+  // Move focus into the sheet on open and restore it on close.
   useEffect(() => {
-    if (open) closeRef.current?.focus();
+    if (!open) return;
+    prevFocus.current = document.activeElement as HTMLElement | null;
+    closeRef.current?.focus();
+    return () => {
+      prevFocus.current?.focus?.();
+    };
   }, [open]);
+
+  // Trap Tab within the topmost dialog.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      const panel = panelRef.current;
+      if (!panel) return;
+      const dialogs = document.querySelectorAll('[role="dialog"]');
+      if (dialogs.length > 0 && dialogs[dialogs.length - 1] !== panel) return;
+      const items = Array.from(
+        panel.querySelectorAll<HTMLElement>(FOCUSABLE),
+      ).filter((el) => el.offsetParent !== null || el === document.activeElement);
+      if (items.length === 0) {
+        e.preventDefault();
+        return;
+      }
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement as HTMLElement | null;
+      const inside = active ? panel.contains(active) : false;
+      if (e.shiftKey) {
+        if (!inside || active === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else if (!inside || active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [open]);
+
   if (!open) return null;
   return (
     <>
@@ -25,6 +72,7 @@ export function Sheet({ open, title, onClose, children }: SheetProps) {
       />
       <div className="animate-sheet fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-lg">
         <div
+          ref={panelRef}
           className="rounded-t-2xl border-x border-t border-zinc-700/80 bg-zinc-900 shadow-2xl shadow-black/60"
           style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 1.5rem)' }}
           role="dialog"
