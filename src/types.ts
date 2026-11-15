@@ -21,10 +21,20 @@ export type EngineId =
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
+export interface EffectLayerParams {
+  paletteId?: string;
+  cellSize?: number;
+  brightness?: number;
+  contrast?: number;
+  saturation?: number;
+}
+
 export interface EffectLayer {
   engine: EngineId | 'none';
   blend: string;
   opacity: number;
+  visible: boolean;
+  params?: EffectLayerParams;
 }
 
 export interface Settings {

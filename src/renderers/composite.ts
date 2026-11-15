@@ -76,6 +76,7 @@ export function renderComposite(
   ctx.globalAlpha = 1;
 
   for (let i = 0; i < settings.layers.length; i++) {
+    if (settings.layers[i].visible === false) continue;
     const entry = layers[i];
     if (!entry) continue;
     const canvas2 = styledCanvas2(width, height);

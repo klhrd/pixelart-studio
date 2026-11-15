@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { ENGINES, engineMeta } from '../../engines';
-import type { EngineId } from '../../types';
+import type { EffectLayer, EffectLayerParams, EngineId } from '../../types';
 import { clearBrushMask } from '../../renderers/brushMask';
 import { BLEND_MODES } from '../../renderers/composite';
 import { PanelSection } from './PanelSection';
@@ -21,9 +21,42 @@ export function GeneralPanel() {
     snapshots,
     applySnapshot,
     clearSnapshots,
+    allPalettes,
   } = useSettings();
   const { t } = useI18n();
   const [presetName, setPresetName] = useState('');
+
+  const updateLayer = (index: number, patch: Partial<EffectLayer>) => {
+    update({
+      layers: settings.layers.map((l, idx) =>
+        idx === index ? { ...l, ...patch } : l,
+      ),
+    });
+  };
+
+  const setLayerParam = (
+    index: number,
+    field: keyof EffectLayerParams,
+    value: string | number | undefined,
+  ) => {
+    update({
+      layers: settings.layers.map((l, idx) => {
+        if (idx !== index) return l;
+        const params: Record<string, unknown> = { ...(l.params ?? {}) };
+        if (value === undefined) delete params[field];
+        else params[field] = value;
+        return { ...l, params: params as EffectLayerParams };
+      }),
+    });
+  };
+
+  const moveLayer = (index: number, dir: -1 | 1) => {
+    const target = index + dir;
+    if (target < 0 || target >= settings.layers.length) return;
+    const next = [...settings.layers];
+    [next[index], next[target]] = [next[target], next[index]];
+    update({ layers: next });
+  };
 
   return (
     <>
@@ -183,12 +216,8 @@ export function GeneralPanel() {
                     value={layer.engine}
                     aria-label={t('Engine')}
                     onChange={(e) =>
-                      update({
-                        layers: settings.layers.map((l, idx) =>
-                          idx === i
-                            ? { ...l, engine: e.target.value as EngineId | 'none' }
-                            : l,
-                        ),
+                      updateLayer(i, {
+                        engine: e.target.value as EngineId | 'none',
                       })
                     }
                     className="min-w-0 flex-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
@@ -216,13 +245,7 @@ export function GeneralPanel() {
                 <select
                   value={layer.blend}
                   aria-label={t('Blend Mode')}
-                  onChange={(e) =>
-                    update({
-                      layers: settings.layers.map((l, idx) =>
-                        idx === i ? { ...l, blend: e.target.value } : l,
-                      ),
-                    })
-                  }
+                  onChange={(e) => updateLayer(i, { blend: e.target.value })}
                   className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
                 >
                   {BLEND_MODES.map((m) => (
@@ -237,15 +260,96 @@ export function GeneralPanel() {
                   max={1}
                   step={0.05}
                   value={layer.opacity}
-                  onChange={(v) =>
-                    update({
-                      layers: settings.layers.map((l, idx) =>
-                        idx === i ? { ...l, opacity: v } : l,
-                      ),
-                    })
-                  }
+                  onChange={(v) => updateLayer(i, { opacity: v })}
                   display={`${Math.round(layer.opacity * 100)}%`}
                 />
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    aria-label={t('Move up')}
+                    disabled={i === 0}
+                    onClick={() => moveLayer(i, -1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-800 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <span aria-hidden="true">▲</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t('Move down')}
+                    disabled={i === settings.layers.length - 1}
+                    onClick={() => moveLayer(i, 1)}
+                    className="flex h-7 w-7 items-center justify-center rounded-md border border-zinc-800 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-100 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <span aria-hidden="true">▼</span>
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={t(layer.visible === false ? 'Show layer' : 'Hide layer')}
+                    aria-pressed={layer.visible !== false}
+                    onClick={() => updateLayer(i, { visible: layer.visible === false })}
+                    className={`flex h-7 w-7 items-center justify-center rounded-md border transition ${
+                      layer.visible !== false
+                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
+                        : 'border-zinc-800 text-zinc-500 hover:border-zinc-600'
+                    }`}
+                  >
+                    <span aria-hidden="true">{layer.visible === false ? '○' : '◉'}</span>
+                  </button>
+                </div>
+                <div className="space-y-2 border-t border-zinc-800/70 pt-2">
+                  <span className="block text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                    {t('Parameters')}
+                  </span>
+                  <label className="block">
+                    <span className="mb-1.5 block text-xs text-zinc-400">
+                      {t('Palette')}
+                    </span>
+                    <select
+                      value={layer.params?.paletteId ?? ''}
+                      aria-label={t('Palette')}
+                      onChange={(e) =>
+                        setLayerParam(i, 'paletteId', e.target.value || undefined)
+                      }
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+                    >
+                      <option value="">{t('Global')}</option>
+                      {allPalettes.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <Slider
+                    label="Cell Size"
+                    min={3}
+                    max={48}
+                    step={1}
+                    value={layer.params?.cellSize ?? settings.cellSize}
+                    onChange={(v) => setLayerParam(i, 'cellSize', v)}
+                  />
+                  <Slider
+                    label="Brightness"
+                    min={-100}
+                    max={100}
+                    value={layer.params?.brightness ?? settings.brightness}
+                    onChange={(v) => setLayerParam(i, 'brightness', v)}
+                  />
+                  <Slider
+                    label="Contrast"
+                    min={-100}
+                    max={100}
+                    value={layer.params?.contrast ?? settings.contrast}
+                    onChange={(v) => setLayerParam(i, 'contrast', v)}
+                  />
+                  <Slider
+                    label="Saturation"
+                    min={-100}
+                    max={100}
+                    value={layer.params?.saturation ?? settings.saturation}
+                    onChange={(v) => setLayerParam(i, 'saturation', v)}
+                  />
+                </div>
               </div>
             ))}
           </div>
@@ -259,7 +363,12 @@ export function GeneralPanel() {
             update({
               layers: [
                 ...settings.layers,
-                { engine: 'none', blend: 'source-over', opacity: 1 },
+                {
+                  engine: 'none',
+                  blend: 'source-over',
+                  opacity: 1,
+                  visible: true,
+                },
               ],
             })
           }

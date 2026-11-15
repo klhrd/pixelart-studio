@@ -28,6 +28,7 @@ import type { ExportFormat } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
 import { parseShareHash } from './utils/shareLink';
+import { paletteById } from './algorithms/palettes';
 import type { EngineId, SheetId, SourceImage } from './types';
 
 class ErrorBoundary extends Component<
@@ -89,7 +90,13 @@ function Studio() {
     reset,
     setCustomSheetOpen,
     addSnapshot,
+    allPalettes,
   } = useSettings();
+  const resolvePalette = useCallback(
+    (paletteId: string | undefined) =>
+      paletteById(paletteId ?? settings.paletteId, allPalettes).colors,
+    [allPalettes, settings.paletteId],
+  );
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
     source,
@@ -97,7 +104,7 @@ function Studio() {
     settings,
     palette,
   );
-  const layers = useLayerResults(source, settings.layers, settings, palette);
+  const layers = useLayerResults(source, settings.layers, settings, resolvePalette);
   useEffect(() => {
     if (!source || !result || status !== 'ready') return;
     const key = JSON.stringify({ engine, settings });

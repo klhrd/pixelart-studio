@@ -188,6 +188,10 @@ export const zhTW: Record<string, string> = {
   'Stacks a second engine result over the first.': '在第一層效果之上再疊一個引擎結果。',
   'Add layer': '新增圖層',
   'Remove layer': '移除圖層',
+  'Hide layer': '隱藏圖層',
+  'Show layer': '顯示圖層',
+  'Global': '全域',
+  'Parameters': '參數',
   'Each extra layer stacks another engine result with its own blend mode and opacity.':
     '每個額外圖層會再疊一個引擎結果，各自有混色模式與不透明度。',
   'Presets': '預設組合',

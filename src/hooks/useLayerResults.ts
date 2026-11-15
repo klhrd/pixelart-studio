@@ -14,7 +14,7 @@ export function useLayerResults(
   source: SourceImage | null,
   layers: EffectLayer[],
   settings: Settings,
-  palette: string[],
+  resolvePalette: (paletteId: string | undefined) => string[],
 ): ResolvedLayer[] {
   const [results, setResults] = useState<ResolvedLayer[]>([]);
 
@@ -39,7 +39,9 @@ export function useLayerResults(
       setResults(layers.map(() => null));
       return;
     }
-    const active = layers.some((layer) => layer.engine !== 'none');
+    const active = layers.some(
+      (layer) => layer.visible !== false && layer.engine !== 'none',
+    );
     if (!active) {
       setResults(layers.map(() => null));
       return;
@@ -48,23 +50,27 @@ export function useLayerResults(
     Promise.all(
       layers.map((layer) => {
         const engine = layer.engine;
-        return engine === 'none'
-          ? Promise.resolve<ResolvedLayer>(null)
-          : getClient(engine)
-              .run({
-                width: source.width,
-                height: source.height,
-                bytes: source.bytes,
-                settings: stable,
-                palette,
-              })
-              .then((result): ResolvedLayer => ({ engine, result }))
-              .catch((): ResolvedLayer => null);
+        if (layer.visible === false || engine === 'none') {
+          return Promise.resolve<ResolvedLayer>(null);
+        }
+        const { paletteId, ...overrides } = layer.params ?? {};
+        const effectiveSettings: Settings = { ...stable, ...overrides };
+        const effectivePalette = resolvePalette(paletteId);
+        return getClient(engine)
+          .run({
+            width: source.width,
+            height: source.height,
+            bytes: source.bytes,
+            settings: effectiveSettings,
+            palette: effectivePalette,
+          })
+          .then((result): ResolvedLayer => ({ engine, result }))
+          .catch((): ResolvedLayer => null);
       }),
     ).then((resolved) => {
       if (jobRef.current === jobId) setResults(resolved);
     });
-  }, [source, layers, stable, palette]);
+  }, [source, layers, stable, resolvePalette]);
 
   return results.length === layers.length ? results : layers.map(() => null);
 }
