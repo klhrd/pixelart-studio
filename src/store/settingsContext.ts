@@ -56,6 +56,8 @@ export const DEFAULT_SETTINGS: Settings = {
   maskInvert: false,
   maskBrushSize: 0.08,
   maskErase: false,
+  blendMode: 'source-over',
+  blendOpacity: 1,
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

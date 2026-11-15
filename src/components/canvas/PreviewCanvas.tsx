@@ -6,8 +6,8 @@ import type {
   Settings,
   SourceImage,
 } from '../../types';
-import { renderResult } from '../../renderers';
-import { applyMask, sourceToCanvas } from '../../renderers/mask';
+import { sourceToCanvas } from '../../renderers/mask';
+import { renderComposite, BLEND_MODES } from '../../renderers/composite';
 import {
   loadBrushMaskDataUrl,
   onBrushMaskChange,
@@ -44,6 +44,11 @@ const GENERAL_GESTURE_ITEMS: GestureItem[] = [
   { key: 'maskInvert', label: 'Mask Invert', min: 0, max: 1, step: 1, group: 'general', toggle: true },
   { key: 'maskBrushSize', label: 'Brush size', min: 0.02, max: 0.3, step: 0.01, group: 'general' },
   { key: 'maskErase', label: 'Erase', min: 0, max: 1, step: 1, group: 'general', toggle: true },
+  {
+    key: 'blendMode', label: 'Blend Mode', min: 0, max: 1, step: 1, group: 'general',
+    choices: BLEND_MODES.map((m) => ({ value: m.value, label: m.label })),
+  },
+  { key: 'blendOpacity', label: 'Blend Opacity', min: 0, max: 1, step: 0.05, group: 'general' },
 ];
 
 const GLYPH_SHAPE_CHOICES: GestureChoice[] = [
@@ -330,16 +335,19 @@ export function PreviewCanvas({
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       return;
     }
-    renderResult(
-      resultEngine,
+    renderComposite(
       ctx,
+      canvas.width,
+      canvas.height,
+      1,
+      sourceCanvas,
+      resultEngine,
       result,
       settingsRef.current,
       palette,
       source.width,
       source.height,
     );
-    applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settingsRef.current);
   }, [resultEngine, result, palette, source, compare, sourceCanvas]);
 
   drawCanvasRef.current = drawCanvas;

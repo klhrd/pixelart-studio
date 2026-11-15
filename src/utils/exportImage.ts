@@ -4,8 +4,8 @@ import type {
   Settings,
   SourceImage,
 } from '../types';
-import { renderResult } from '../renderers';
-import { applyMask, sourceToCanvas } from '../renderers/mask';
+import { sourceToCanvas } from '../renderers/mask';
+import { renderComposite } from '../renderers/composite';
 import { GIFEncoder, applyPalette, quantize } from 'gifenc';
 
 export type ExportFormat = 'png' | 'jpeg' | 'webp';
@@ -44,18 +44,19 @@ function renderToCanvas(
   canvas.height = source.height * scale;
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('Canvas 2D context unavailable');
-  ctx.scale(scale, scale);
-  renderResult(engine, ctx, result, settings, palette, source.width, source.height);
-  if (settings.maskShape !== 'none') {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    applyMask(
-      ctx,
-      canvas.width,
-      canvas.height,
-      sourceToCanvas(source.bytes, source.width, source.height),
-      settings,
-    );
-  }
+  renderComposite(
+    ctx,
+    canvas.width,
+    canvas.height,
+    scale,
+    sourceToCanvas(source.bytes, source.width, source.height),
+    engine,
+    result,
+    settings,
+    palette,
+    source.width,
+    source.height,
+  );
   if (transparent) chromaKeyBackground(canvas, palette[0]);
   return canvas;
 }
@@ -188,15 +189,20 @@ function renderAnimationFrame(
   scale: number,
   animOffset: number,
 ): void {
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.scale(scale, scale);
   const frameSettings: Settings = { ...settings, animOffset, animate: false };
-  renderResult(engine, ctx, result, frameSettings, palette, source.width, source.height);
-  if (settings.maskShape !== 'none') {
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settings);
-  }
+  renderComposite(
+    ctx,
+    canvas.width,
+    canvas.height,
+    scale,
+    sourceCanvas,
+    engine,
+    result,
+    frameSettings,
+    palette,
+    source.width,
+    source.height,
+  );
 }
 
 export function isAnimationExportSupported(): boolean {
@@ -249,16 +255,18 @@ export async function exportAnimationWebM(
   const frameDelay = 1000 / opts.fps;
   const frames = Math.max(2, opts.frames);
   for (let i = 0; i < frames; i++) {
-    const animOffset = i / frames;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.scale(opts.scale, opts.scale);
-    const frameSettings: Settings = { ...settings, animOffset, animate: false };
-    renderResult(engine, ctx, result, frameSettings, palette, source.width, source.height);
-    if (settings.maskShape !== 'none') {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settings);
-    }
+    renderAnimationFrame(
+      ctx,
+      canvas,
+      sourceCanvas,
+      source,
+      engine,
+      result,
+      settings,
+      palette,
+      opts.scale,
+      i / frames,
+    );
     await new Promise((r) => setTimeout(r, frameDelay));
   }
 

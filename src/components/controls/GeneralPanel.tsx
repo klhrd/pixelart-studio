@@ -3,6 +3,7 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { engineMeta } from '../../engines';
 import { clearBrushMask } from '../../renderers/brushMask';
+import { BLEND_MODES } from '../../renderers/composite';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
@@ -125,6 +126,38 @@ export function GeneralPanel() {
             />
           </>
         )}
+      </PanelSection>
+
+      <PanelSection title="Blend">
+        <span className="mb-1.5 block text-xs text-zinc-400">{t('Blend Mode')}</span>
+        <div className="grid grid-cols-4 gap-1.5">
+          {BLEND_MODES.map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              onClick={() => update({ blendMode: m.value })}
+              className={`rounded-lg border py-1.5 font-mono text-[10px] transition ${
+                settings.blendMode === m.value
+                  ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
+                  : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
+              }`}
+            >
+              {t(m.label)}
+            </button>
+          ))}
+        </div>
+        <Slider
+          label="Blend Opacity"
+          min={0}
+          max={1}
+          step={0.05}
+          value={settings.blendOpacity}
+          onChange={(v) => update({ blendOpacity: v })}
+          display={`${Math.round(settings.blendOpacity * 100)}%`}
+        />
+        <p className="text-[11px] leading-relaxed text-zinc-500">
+          {t('Blends the styled layer over the original image.')}
+        </p>
       </PanelSection>
 
       <PanelSection title="Presets">

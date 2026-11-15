@@ -75,6 +75,8 @@ export interface Settings {
   maskInvert: boolean;
   maskBrushSize: number;
   maskErase: boolean;
+  blendMode: string;
+  blendOpacity: number;
 }
 
 export interface SourceImage {
