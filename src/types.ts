@@ -94,6 +94,15 @@ export interface Settings {
   blendMode: string;
   blendOpacity: number;
   layers: EffectLayer[];
+  overlayType: 'none' | 'text' | 'sticker';
+  overlayText: string;
+  overlayX: number;
+  overlayY: number;
+  overlaySize: number;
+  overlayRotation: number;
+  overlayColor: string;
+  overlayOpacity: number;
+  overlayBlend: string;
 }
 
 export interface SourceImage {

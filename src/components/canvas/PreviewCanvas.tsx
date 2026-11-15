@@ -14,6 +14,11 @@ import {
   saveBrushMaskDataUrl,
   setBrushMask,
 } from '../../renderers/brushMask';
+import {
+  loadOverlayImageDataUrl,
+  loadOverlayImageFromDataUrl,
+  onOverlayImageChange,
+} from '../../renderers/overlayImage';
 import { useGestureControls } from '../../hooks/useGestureControls';
 import type { GestureChoice, GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
@@ -380,6 +385,14 @@ export function PreviewCanvas({
     () => onBrushMaskChange(() => drawCanvasRef.current()),
     [],
   );
+
+  // Overlay sticker: a single persisted image drawn on top of the composite.
+  useEffect(() => {
+    const saved = loadOverlayImageDataUrl();
+    if (saved) void loadOverlayImageFromDataUrl(saved);
+  }, []);
+
+  useEffect(() => onOverlayImageChange(() => drawCanvasRef.current()), []);
 
   const paintAt = (clientX: number, clientY: number) => {
     const canvas = brushCanvasRef.current;

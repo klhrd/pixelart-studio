@@ -1,6 +1,7 @@
 import type { EngineId, EngineResult, Settings } from '../types';
 import { renderResult } from './index';
 import { applyMask } from './mask';
+import { getOverlayImage } from './overlayImage';
 
 /** Canvas blend modes offered as the "layer blend mode". */
 export const BLEND_MODES: { value: string; label: string }[] = [
@@ -105,5 +106,33 @@ export function renderComposite(
 
   if (settings.maskShape !== 'none') {
     applyMask(ctx, width, height, sourceCanvas, settings);
+  }
+
+  if (settings.overlayType !== 'none') {
+    const cx = settings.overlayX * width;
+    const cy = settings.overlayY * height;
+    const minDim = Math.min(width, height);
+    const rot = (settings.overlayRotation * Math.PI) / 180;
+    ctx.save();
+    ctx.globalCompositeOperation = blendOp(settings.overlayBlend);
+    ctx.globalAlpha = Math.max(0, Math.min(1, settings.overlayOpacity));
+    ctx.translate(cx, cy);
+    ctx.rotate(rot);
+    if (settings.overlayType === 'text' && settings.overlayText.trim() !== '') {
+      const fontPx = Math.max(1, settings.overlaySize * minDim);
+      ctx.font = `700 ${fontPx}px "Noto Sans TC", system-ui, sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = settings.overlayColor;
+      ctx.fillText(settings.overlayText, 0, 0);
+    } else if (settings.overlayType === 'sticker') {
+      const image = getOverlayImage();
+      if (image && image.width > 0) {
+        const w = Math.max(1, settings.overlaySize * minDim);
+        const h = w * (image.height / image.width);
+        ctx.drawImage(image, -w / 2, -h / 2, w, h);
+      }
+    }
+    ctx.restore();
   }
 }

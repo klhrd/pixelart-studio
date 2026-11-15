@@ -59,6 +59,15 @@ export const DEFAULT_SETTINGS: Settings = {
   blendMode: 'source-over',
   blendOpacity: 1,
   layers: [],
+  overlayType: 'none',
+  overlayText: 'PIXELCRAFT',
+  overlayX: 0.5,
+  overlayY: 0.5,
+  overlaySize: 0.2,
+  overlayRotation: 0,
+  overlayColor: '#ffffff',
+  overlayOpacity: 1,
+  overlayBlend: 'source-over',
 };
 
 export const DEFAULT_PALETTE_ORDER: string[] = [

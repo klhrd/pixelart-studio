@@ -1,9 +1,14 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { ENGINES, engineMeta } from '../../engines';
 import type { EffectLayer, EffectLayerParams, EngineId } from '../../types';
 import { clearBrushMask } from '../../renderers/brushMask';
+import {
+  clearOverlayImage,
+  loadOverlayImageFromDataUrl,
+  saveOverlayImageDataUrl,
+} from '../../renderers/overlayImage';
 import { BLEND_MODES } from '../../renderers/composite';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
@@ -25,6 +30,7 @@ export function GeneralPanel() {
   } = useSettings();
   const { t } = useI18n();
   const [presetName, setPresetName] = useState('');
+  const stickerInputRef = useRef<HTMLInputElement>(null);
 
   const updateLayer = (index: number, patch: Partial<EffectLayer>) => {
     update({
@@ -201,6 +207,147 @@ export function GeneralPanel() {
         <p className="text-[11px] leading-relaxed text-zinc-500">
           {t('Blends the styled layer over the original image.')}
         </p>
+      </PanelSection>
+
+      <PanelSection title="Overlay layer">
+        <Segmented
+          value={settings.overlayType}
+          onChange={(v) => update({ overlayType: v })}
+          options={[
+            { value: 'none', label: 'None' },
+            { value: 'text', label: 'Text' },
+            { value: 'sticker', label: 'Sticker' },
+          ]}
+        />
+        {settings.overlayType === 'text' && (
+          <>
+            <label className="block">
+              <span className="mb-1.5 block text-xs text-zinc-400">
+                {t('Text')}
+              </span>
+              <input
+                type="text"
+                value={settings.overlayText}
+                placeholder={t('Text')}
+                onChange={(e) => update({ overlayText: e.target.value })}
+                className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+              />
+            </label>
+            <label className="flex items-center justify-between text-xs text-zinc-400">
+              <span>{t('Color')}</span>
+              <input
+                type="color"
+                value={settings.overlayColor}
+                aria-label={t('Color')}
+                onChange={(e) => update({ overlayColor: e.target.value })}
+                className="h-8 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900"
+              />
+            </label>
+          </>
+        )}
+        {settings.overlayType === 'sticker' && (
+          <>
+            <input
+              ref={stickerInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = '';
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  const dataUrl = reader.result;
+                  if (typeof dataUrl !== 'string') return;
+                  saveOverlayImageDataUrl(dataUrl);
+                  void loadOverlayImageFromDataUrl(dataUrl);
+                };
+                reader.readAsDataURL(file);
+              }}
+            />
+            <button
+              type="button"
+              className="btn w-full justify-center"
+              onClick={() => stickerInputRef.current?.click()}
+            >
+              {t('Upload sticker')}
+            </button>
+            <button
+              type="button"
+              className="btn w-full justify-center"
+              onClick={() => clearOverlayImage()}
+            >
+              {t('Remove sticker')}
+            </button>
+          </>
+        )}
+        {settings.overlayType !== 'none' && (
+          <>
+            <Slider
+              label="Size"
+              min={0.02}
+              max={1}
+              step={0.01}
+              value={settings.overlaySize}
+              onChange={(v) => update({ overlaySize: v })}
+              display={`${Math.round(settings.overlaySize * 100)}%`}
+            />
+            <Slider
+              label="Position X"
+              min={0}
+              max={1}
+              step={0.02}
+              value={settings.overlayX}
+              onChange={(v) => update({ overlayX: v })}
+              display={`${Math.round(settings.overlayX * 100)}%`}
+            />
+            <Slider
+              label="Position Y"
+              min={0}
+              max={1}
+              step={0.02}
+              value={settings.overlayY}
+              onChange={(v) => update({ overlayY: v })}
+              display={`${Math.round(settings.overlayY * 100)}%`}
+            />
+            <Slider
+              label="Rotation"
+              min={-180}
+              max={180}
+              step={1}
+              value={settings.overlayRotation}
+              onChange={(v) => update({ overlayRotation: v })}
+              display={`${settings.overlayRotation}deg`}
+            />
+            <Slider
+              label="Opacity"
+              min={0}
+              max={1}
+              step={0.05}
+              value={settings.overlayOpacity}
+              onChange={(v) => update({ overlayOpacity: v })}
+              display={`${Math.round(settings.overlayOpacity * 100)}%`}
+            />
+            <label className="block">
+              <span className="mb-1.5 block text-xs text-zinc-400">
+                {t('Blend Mode')}
+              </span>
+              <select
+                value={settings.overlayBlend}
+                aria-label={t('Blend Mode')}
+                onChange={(e) => update({ overlayBlend: e.target.value })}
+                className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+              >
+                {BLEND_MODES.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {t(m.label)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
+        )}
       </PanelSection>
 
       <PanelSection title="Layers">
