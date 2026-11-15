@@ -8,6 +8,7 @@ import type {
   FlowResult,
   HanziResult,
   HexDumpResult,
+  MoireResult,
   MoonResult,
   Settings,
   StippleResult,
@@ -30,6 +31,7 @@ import { renderBraille } from './brailleRenderer';
 import { renderBrailleSVG } from './brailleRenderer';
 import { renderPixels } from './pixelRenderer';
 import { renderImageSVG } from './pixelRenderer';
+import { renderMoire } from './moireRenderer';
 import { renderStipple } from './stippleRenderer';
 import { renderStippleSVG } from './stippleRenderer';
 import { renderFlow } from './flowRenderer';
@@ -216,9 +218,9 @@ export function renderResult(
       );
       break;
     case 'moire':
-      renderPixels(
+      renderMoire(
         ctx,
-        result as DitherResult,
+        result as MoireResult,
         settings,
         palette,
         width,
@@ -391,6 +393,7 @@ export {
   renderVoronoi,
   renderBraille,
   renderPixels,
+  renderMoire,
   renderStipple,
   renderFlow,
   renderHanzi,

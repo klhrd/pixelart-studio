@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { buildShareHash } from '../../utils/shareLink';
+import { ANIMATABLE_ENGINES } from '../../engines';
 import type { ExportFormat } from '../../utils/exportImage';
 import type { EngineId, EngineResult } from '../../types';
 import { Sheet } from '../layout/Sheet';
@@ -302,7 +303,7 @@ export function ExportSheet({
         </button>
       </div>
 
-      {engine === 'moon' && (
+      {ANIMATABLE_ENGINES.includes(engine) && (
         <div className="flex gap-1.5">
           {animationSupported && (
             <button

@@ -86,22 +86,6 @@ export function EnginePanel() {
             checked={settings.staggered}
             onChange={(v) => update({ staggered: v })}
           />
-          <Switch
-            label="Animate Phase"
-            checked={settings.animate}
-            onChange={(v) => update({ animate: v })}
-          />
-          {settings.animate && (
-            <Slider
-              label="Animation Speed"
-              min={0.05}
-              max={1}
-              step={0.05}
-              value={settings.animSpeed}
-              onChange={(v) => update({ animSpeed: v })}
-              display={`${settings.animSpeed.toFixed(2)}x`}
-            />
-          )}
           <Slider
             label="Phase Offset"
             min={0}

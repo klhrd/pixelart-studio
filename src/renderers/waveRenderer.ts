@@ -26,7 +26,11 @@ export function renderWave(
       const lum = colLum[xi] / 255;
       const y =
         y0 +
-        Math.sin((x / wavelength) * Math.PI * 2 + lum * Math.PI * 0.5) *
+        Math.sin(
+          (x / wavelength) * Math.PI * 2 +
+            lum * Math.PI * 0.5 +
+            settings.animOffset * Math.PI * 2,
+        ) *
           amp *
           lum;
       if (x === 0) ctx.moveTo(x, y);

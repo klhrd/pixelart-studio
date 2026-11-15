@@ -77,6 +77,9 @@ export const zhTW: Record<string, string> = {
   'Brightness · Contrast · Saturation · Palette': '亮度 · 對比 · 飽和度 · 調色盤',
   'Engine Settings': '引擎設定',
   'Image Adjustments': '影像調整',
+  'Animation': '動畫',
+  'Animates the current engine when it supports motion (Moon Phase, Wave, Moiré, Truchet).':
+    '當目前引擎支援動態時播放動畫（月相、波干涉、摩爾紋、Truchet）。',
 
   // General labels
   'Brightness': '亮度',

@@ -1,16 +1,19 @@
 import { applyTone, grayscale } from './luminance';
 import { hexToRgb } from './palettes';
-import type { DitherResult, Settings } from '../types';
+import type { MoireResult, Settings } from '../types';
 
-export function computeMoire(
-  bytes: Uint8ClampedArray,
+/**
+ * Computes the moiré grating pixels for a luminance field. `animOffset` shifts
+ * the grating phase at render time (0 keeps the static appearance).
+ */
+export function moirePixels(
+  lum: Float32Array,
   w: number,
   h: number,
   s: Settings,
   paletteHex: string[],
-): DitherResult {
-  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
-  const lum = grayscale(tone);
+  animOffset: number,
+): Uint8ClampedArray {
   const pal = paletteHex.map(hexToRgb);
   if (pal.length === 0) pal.push([0, 0, 0]);
   const ink = pal[0];
@@ -21,6 +24,7 @@ export function computeMoire(
   const phase = s.moirePhase * Math.PI;
   const cx = w / 2;
   const cy = h / 2;
+  const anim = animOffset * Math.PI * 4;
 
   const out = new Uint8ClampedArray(w * h * 4);
   for (let y = 0; y < h; y++) {
@@ -36,6 +40,7 @@ export function computeMoire(
         const dy = y - cy;
         arg = Math.hypot(dx, dy) * freq + Math.atan2(dy, dx) * 6 + phase * l;
       }
+      arg += anim;
       const c = Math.sin(arg) > 0 ? ink : paper;
       const o = (y * w + x) * 4;
       out[o] = c[0];
@@ -44,5 +49,18 @@ export function computeMoire(
       out[o + 3] = 255;
     }
   }
-  return { width: w, height: h, bytes: out };
+  return out;
+}
+
+export function computeMoire(
+  bytes: Uint8ClampedArray,
+  w: number,
+  h: number,
+  s: Settings,
+  paletteHex: string[],
+): MoireResult {
+  const tone = applyTone(bytes, s.brightness, s.contrast, s.saturation);
+  const lum = grayscale(tone);
+  const out = moirePixels(lum, w, h, s, paletteHex, 0);
+  return { width: w, height: h, bytes: out, lum };
 }

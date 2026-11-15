@@ -1,10 +1,10 @@
 import { handle } from './kit';
 import { computeMoire } from '../algorithms/moire';
-import type { DitherResult, WorkerRequest } from '../types';
+import type { MoireResult, WorkerRequest } from '../types';
 
-handle<WorkerRequest, DitherResult>(
+handle<WorkerRequest, MoireResult>(
   ({ width, height, bytes, settings, palette }) => {
     const r = computeMoire(bytes, width, height, settings, palette);
-    return { result: r, transfer: [r.bytes.buffer] };
+    return { result: r, transfer: [r.bytes.buffer, r.lum.buffer] };
   },
 );

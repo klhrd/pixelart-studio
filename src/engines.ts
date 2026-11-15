@@ -127,3 +127,5 @@ export const ENGINES: EngineMeta[] = [
 export function engineMeta(id: EngineId): EngineMeta {
   return ENGINES.find((e) => e.id === id) ?? ENGINES[0];
 }
+
+export const ANIMATABLE_ENGINES: EngineId[] = ['moon', 'wave', 'moire', 'truchet'];

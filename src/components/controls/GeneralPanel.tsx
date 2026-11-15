@@ -90,6 +90,28 @@ export function GeneralPanel() {
         />
       </PanelSection>
 
+      <PanelSection title="Animation">
+        <Switch
+          label="Animate Phase"
+          checked={settings.animate}
+          onChange={(v) => update({ animate: v })}
+        />
+        {settings.animate && (
+          <Slider
+            label="Animation Speed"
+            min={0.05}
+            max={1}
+            step={0.05}
+            value={settings.animSpeed}
+            onChange={(v) => update({ animSpeed: v })}
+            display={`${settings.animSpeed.toFixed(2)}x`}
+          />
+        )}
+        <p className="text-[11px] leading-relaxed text-zinc-500">
+          {t('Animates the current engine when it supports motion (Moon Phase, Wave, Moiré, Truchet).')}
+        </p>
+      </PanelSection>
+
       <PanelSection title="Mask">
         <Segmented
           value={settings.maskShape}

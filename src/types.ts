@@ -167,6 +167,13 @@ export interface DitherResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface MoireResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+  lum: Float32Array;
+}
+
 export interface StippleResult {
   points: Float32Array;
   radii: Float32Array;
@@ -250,6 +257,7 @@ export type EngineResult =
   | VoronoiResult
   | BrailleResult
   | DitherResult
+  | MoireResult
   | StippleResult
   | FlowResult
   | HanziResult

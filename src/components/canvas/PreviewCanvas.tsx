@@ -23,6 +23,7 @@ import { useGestureControls } from '../../hooks/useGestureControls';
 import type { GestureChoice, GestureItem } from '../../hooks/useGestureControls';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
+import { ANIMATABLE_ENGINES } from '../../engines';
 import { GestureList } from './GestureList';
 
 const MIN_SCALE = 1;
@@ -434,7 +435,11 @@ export function PreviewCanvas({
   }, [drawCanvas]);
 
   useEffect(() => {
-    if (engine !== 'moon' || resultEngine !== 'moon' || !settings.animate)
+    if (
+      !ANIMATABLE_ENGINES.includes(engine) ||
+      resultEngine !== engine ||
+      !settings.animate
+    )
       return;
     if (
       typeof window !== 'undefined' &&

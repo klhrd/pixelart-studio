@@ -11,6 +11,7 @@ export function renderTruchet(
   const { cols, rows, rotation, luminance } = res;
   const cw = width / cols;
   const ch = height / rows;
+  const rotOffset = Math.round(settings.animOffset * 4) % 4;
 
   ctx.fillStyle = palette[0];
   ctx.fillRect(0, 0, width, height);
@@ -37,7 +38,7 @@ export function renderTruchet(
 
       ctx.save();
       ctx.translate(cx, cy);
-      ctx.rotate((rotation[i] * Math.PI) / 2);
+      ctx.rotate((((rotation[i] + rotOffset) % 4) * Math.PI) / 2);
       ctx.beginPath();
       ctx.arc(-s / 2, -s / 2, s / 2, 0, Math.PI / 2, false);
       ctx.arc(s / 2, s / 2, s / 2, Math.PI, (Math.PI * 3) / 2, false);
