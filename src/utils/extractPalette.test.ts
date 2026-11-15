@@ -38,6 +38,29 @@ describe('extractPalette', () => {
     expect(out).toEqual(['#000000', '#555555', '#aaaaaa', '#ffffff']);
   });
 
+  it('honours the requested count for a two-colour image', () => {
+    const w = 20;
+    const h = 10;
+    const px = new Uint8ClampedArray(w * h * 4);
+    for (let y = 0; y < h; y++) {
+      for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const v = x < 10 ? 0 : 255;
+        px[i] = v;
+        px[i + 1] = v;
+        px[i + 2] = v;
+        px[i + 3] = 255;
+      }
+    }
+    const out = extractPalette(px, w, h, 2);
+    expect(out).toEqual(['#000000', '#ffffff']);
+  });
+
+  it('returns a single colour for a solid image even when count is 8', () => {
+    const out = extractPalette(solid(16, 16, 40, 200, 120), 16, 16, 8);
+    expect(out).toEqual(['#28c878']);
+  });
+
   it('ignores fully transparent pixels', () => {
     const px = new Uint8ClampedArray(4 * 4 * 4);
     // all transparent

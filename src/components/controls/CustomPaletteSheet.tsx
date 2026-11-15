@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { extractPalette } from '../../utils/extractPalette';
+import { Slider } from './Slider';
 import type { Palette } from '../../algorithms/palettes';
 import type { SourceImage } from '../../types';
 
@@ -33,6 +34,7 @@ export function CustomPaletteSheet({ source }: CustomPaletteSheetProps) {
   const [editingId, setEditingId] = useState<string | null>(
     () => editTarget?.id ?? null,
   );
+  const [extractCount, setExtractCount] = useState(6);
 
   const setColor = (index: number, value: string) => {
     setColors((prev) => prev.map((c, i) => (i === index ? value : c)));
@@ -63,6 +65,16 @@ export function CustomPaletteSheet({ source }: CustomPaletteSheetProps) {
         ))}
       </div>
 
+      <Slider
+        label="Colors"
+        value={extractCount}
+        min={2}
+        max={8}
+        step={1}
+        onChange={setExtractCount}
+        display={`${extractCount}`}
+      />
+
       <button
         type="button"
         className="btn w-full justify-center"
@@ -73,7 +85,7 @@ export function CustomPaletteSheet({ source }: CustomPaletteSheetProps) {
             source.bytes,
             source.width,
             source.height,
-            6,
+            extractCount,
           );
           if (extracted.length > 0) setColors(extracted);
         }}

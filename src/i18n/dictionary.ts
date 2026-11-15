@@ -267,6 +267,7 @@ export const zhTW: Record<string, string> = {
   'Name': '名稱',
   'Custom palette': '自訂調色盤',
   'Color Stops': '顏色停點',
+  'Colors': '色數',
   'Extract from image': '從圖片擷取',
   'Color {n}': '顏色 {n}',
   'Remove color': '移除顏色',
