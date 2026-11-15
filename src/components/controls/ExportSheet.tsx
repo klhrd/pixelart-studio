@@ -3,6 +3,8 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { buildShareHash } from '../../utils/shareLink';
 import type { ExportFormat } from '../../utils/exportImage';
+import { Sheet } from '../layout/Sheet';
+import { BatchPanel } from './BatchPanel';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
@@ -60,6 +62,7 @@ export function ExportSheet({
   const { t } = useI18n();
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [batchOpen, setBatchOpen] = useState(false);
   const [linkState, setLinkState] = useState<'idle' | 'copied' | 'shared'>(
     'idle',
   );
@@ -319,6 +322,14 @@ export function ExportSheet({
         </button>
       )}
 
+      <button
+        type="button"
+        className="btn w-full justify-center"
+        onClick={() => setBatchOpen(true)}
+      >
+        {t('Batch images')}
+      </button>
+
       <div className="flex gap-1.5 border-t border-zinc-800 pt-3">
         <button
           type="button"
@@ -375,6 +386,16 @@ export function ExportSheet({
           {t('Load an image and wait for processing to finish.')}
         </p>
       )}
+
+      <Sheet open={batchOpen} title={t('Batch')} onClose={() => setBatchOpen(false)}>
+        <BatchPanel
+          scale={scale}
+          format={format}
+          quality={quality}
+          transparent={transparent}
+          filenameBase={filename}
+        />
+      </Sheet>
     </div>
   );
 }

@@ -106,14 +106,21 @@ function safeBaseName(filename: string): string {
   );
 }
 
-export async function exportRaster(
+export interface RasterBlobOptions {
+  scale: number;
+  format: ExportFormat;
+  quality: number;
+  transparent: boolean;
+}
+
+export async function renderResultBlob(
   source: SourceImage,
   engine: EngineId,
   result: EngineResult,
   settings: Settings,
   palette: string[],
-  opts: RasterExportOptions,
-): Promise<void> {
+  opts: RasterBlobOptions,
+): Promise<Blob> {
   const transparent = opts.transparent && opts.format !== 'jpeg';
   const canvas = renderToCanvas(
     source,
@@ -126,13 +133,39 @@ export async function exportRaster(
   );
   const quality =
     opts.format === 'png' ? undefined : Math.min(1, Math.max(0.1, opts.quality));
-  const blob = await canvasToBlob(canvas, MIME[opts.format], quality);
+  return canvasToBlob(canvas, MIME[opts.format], quality);
+}
+
+export function downloadBlob(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `${safeBaseName(opts.filename)}.${EXT[opts.format]}`;
+  a.download = filename;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export function exportFileName(filename: string, format: ExportFormat): string {
+  return `${safeBaseName(filename)}.${EXT[format]}`;
+}
+
+export async function exportRaster(
+  source: SourceImage,
+  engine: EngineId,
+  result: EngineResult,
+  settings: Settings,
+  palette: string[],
+  opts: RasterExportOptions,
+): Promise<void> {
+  const blob = await renderResultBlob(
+    source,
+    engine,
+    result,
+    settings,
+    palette,
+    opts,
+  );
+  downloadBlob(blob, exportFileName(opts.filename, opts.format));
 }
 
 export interface AnimationExportOptions {
