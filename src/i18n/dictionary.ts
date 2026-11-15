@@ -53,6 +53,7 @@ export const zhTW: Record<string, string> = {
   'Export PNG': '匯出 PNG',
   'Export SVG': '匯出 SVG',
   'Export animation (WebM)': '匯出動畫 (WebM)',
+  'Export animation (GIF)': '匯出動畫 (GIF)',
   'Batch': '批次',
   'Batch images': '批次處理圖片',
   'Add images': '新增圖片',

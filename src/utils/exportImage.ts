@@ -6,6 +6,7 @@ import type {
 } from '../types';
 import { renderResult } from '../renderers';
 import { applyMask, sourceToCanvas } from '../renderers/mask';
+import { GIFEncoder, applyPalette, quantize } from 'gifenc';
 
 export type ExportFormat = 'png' | 'jpeg' | 'webp';
 
@@ -175,6 +176,29 @@ export interface AnimationExportOptions {
   fps: number;
 }
 
+function renderAnimationFrame(
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement,
+  sourceCanvas: HTMLCanvasElement,
+  source: SourceImage,
+  engine: EngineId,
+  result: EngineResult,
+  settings: Settings,
+  palette: string[],
+  scale: number,
+  animOffset: number,
+): void {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.scale(scale, scale);
+  const frameSettings: Settings = { ...settings, animOffset, animate: false };
+  renderResult(engine, ctx, result, frameSettings, palette, source.width, source.height);
+  if (settings.maskShape !== 'none') {
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settings);
+  }
+}
+
 export function isAnimationExportSupported(): boolean {
   return (
     typeof MediaRecorder !== 'undefined' &&
@@ -249,6 +273,53 @@ export async function exportAnimationWebM(
   a.download = `${safeBaseName(opts.filename)}.webm`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/** Renders one animation loop to an animated GIF (gifenc, no worker). */
+export async function exportAnimationGif(
+  source: SourceImage,
+  engine: EngineId,
+  result: EngineResult,
+  settings: Settings,
+  palette: string[],
+  opts: AnimationExportOptions,
+): Promise<void> {
+  const scale = opts.scale;
+  const width = source.width * scale;
+  const height = source.height * scale;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas 2D context unavailable');
+
+  const sourceCanvas = sourceToCanvas(source.bytes, source.width, source.height);
+  const frames = Math.max(2, opts.frames);
+  const delay = Math.max(20, Math.round(1000 / opts.fps));
+  const gif = GIFEncoder();
+  let pal: number[][] | null = null;
+  for (let i = 0; i < frames; i++) {
+    renderAnimationFrame(
+      ctx,
+      canvas,
+      sourceCanvas,
+      source,
+      engine,
+      result,
+      settings,
+      palette,
+      scale,
+      i / frames,
+    );
+    const { data } = ctx.getImageData(0, 0, width, height);
+    if (!pal) pal = quantize(data, 256, { format: 'rgb565' });
+    const index = applyPalette(data, pal, 'rgb565');
+    if (i === 0) gif.writeFrame(index, width, height, { palette: pal, delay });
+    else gif.writeFrame(index, width, height, { delay });
+  }
+  gif.finish();
+  const bytes = gif.bytes();
+  downloadBlob(new Blob([bytes], { type: 'image/gif' }), `${safeBaseName(opts.filename)}.gif`);
 }
 
 export async function copyImageToClipboard(

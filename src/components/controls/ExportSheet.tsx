@@ -25,6 +25,7 @@ interface ExportSheetProps {
   onExportSvg: () => void;
   onCopy: () => void;
   onExportAnimation: () => void;
+  onExportGif: () => void;
   animationSupported: boolean;
   onUpload: () => void;
   disabled: boolean;
@@ -52,6 +53,7 @@ export function ExportSheet({
   onExportSvg,
   onCopy,
   onExportAnimation,
+  onExportGif,
   animationSupported,
   onUpload,
   disabled,
@@ -297,29 +299,27 @@ export function ExportSheet({
         </button>
       </div>
 
-      {engine === 'moon' && animationSupported && (
-        <button
-          type="button"
-          className="btn w-full justify-center py-3"
-          disabled={disabled}
-          onClick={onExportAnimation}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            className="h-4 w-4"
-            aria-hidden="true"
+      {engine === 'moon' && (
+        <div className="flex gap-1.5">
+          {animationSupported && (
+            <button
+              type="button"
+              className="btn flex-1 justify-center py-3"
+              disabled={disabled}
+              onClick={onExportAnimation}
+            >
+              {t('Export animation (WebM)')}
+            </button>
+          )}
+          <button
+            type="button"
+            className="btn flex-1 justify-center py-3"
+            disabled={disabled}
+            onClick={onExportGif}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z"
-            />
-          </svg>
-          {t('Export animation (WebM)')}
-        </button>
+            {t('Export animation (GIF)')}
+          </button>
+        </div>
       )}
 
       <button

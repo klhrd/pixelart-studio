@@ -17,6 +17,7 @@ import { I18nProvider } from './i18n';
 import { useI18n } from './i18n/core';
 import {
   copyImageToClipboard,
+  exportAnimationGif,
   exportAnimationWebM,
   exportRaster,
   isAnimationExportSupported,
@@ -184,6 +185,19 @@ function Studio() {
     }
   }, [source, engine, result, status, settings, palette, exportScale, exportName]);
 
+  const handleExportGif = useCallback(() => {
+    if (source && result && status === 'ready') {
+      void exportAnimationGif(source, engine, result, settings, palette, {
+        scale: Math.min(exportScale, 4),
+        filename: exportName,
+        frames: 40,
+        fps: 20,
+      }).catch((err: unknown) => {
+        console.warn('GIF export failed:', err);
+      });
+    }
+  }, [source, engine, result, status, settings, palette, exportScale, exportName]);
+
   const handleExportSvg = () => {
     if (!source || !result || status !== 'ready') return;
     try {
@@ -321,6 +335,7 @@ function Studio() {
           onExportSvg={handleExportSvg}
           onCopy={handleCopy}
           onExportAnimation={handleExportAnimation}
+          onExportGif={handleExportGif}
           animationSupported={isAnimationExportSupported()}
           onUpload={() => fileInputRef.current?.click()}
           disabled={!source || !result || status !== 'ready'}
