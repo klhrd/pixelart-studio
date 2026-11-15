@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { EngineId, Preset, Settings } from '../types';
+import type { EngineId, Preset, Settings, Snapshot } from '../types';
 import {
   MAX_CUSTOM_PALETTES,
   PALETTES,
@@ -17,8 +17,10 @@ const FEATURED_KEY = 'pixelcraft-palette-featured';
 const SETTINGS_KEY = 'pixelcraft-settings';
 const ENGINE_KEY = 'pixelcraft-engine';
 const PRESETS_KEY = 'pixelcraft-presets';
+const HISTORY_KEY = 'pixelcraft-history';
 const HISTORY_MAX = 50;
 const PRESETS_MAX = 50;
+const SNAPSHOTS_MAX = 24;
 
 function loadPresets(): Preset[] {
   try {
@@ -43,6 +45,34 @@ function loadPresets(): Preset[] {
 function persistPresets(list: Preset[]): void {
   try {
     localStorage.setItem(PRESETS_KEY, JSON.stringify(list));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+function loadSnapshots(): Snapshot[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) return [];
+    return list.filter(
+      (s): s is Snapshot =>
+        !!s &&
+        typeof s.id === 'string' &&
+        typeof s.engine === 'string' &&
+        !!s.settings &&
+        typeof s.settings === 'object' &&
+        typeof s.thumb === 'string',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistSnapshots(list: Snapshot[]): void {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
   } catch {
     /* storage unavailable */
   }
@@ -119,6 +149,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<Settings[]>([]);
   const [future, setFuture] = useState<Settings[]>([]);
   const [presets, setPresets] = useState<Preset[]>(loadPresets);
+  const [snapshots, setSnapshots] = useState<Snapshot[]>(loadSnapshots);
 
   // Persist tuning + selected engine so a reload resumes exactly where you left off.
   useEffect(() => {
@@ -332,6 +363,46 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const addSnapshot = useCallback(
+    (engineId: EngineId, nextSettings: Settings, thumb: string) => {
+      setSnapshots((prev) => {
+        const last = prev[0];
+        if (
+          last &&
+          last.engine === engineId &&
+          JSON.stringify(last.settings) === JSON.stringify(nextSettings)
+        ) {
+          return prev;
+        }
+        const entry: Snapshot = {
+          id: `snap-${Date.now()}`,
+          engine: engineId,
+          settings: { ...nextSettings },
+          thumb,
+        };
+        const next = [entry, ...prev].slice(0, SNAPSHOTS_MAX);
+        persistSnapshots(next);
+        return next;
+      });
+    },
+    [],
+  );
+
+  const applySnapshot = useCallback(
+    (id: string) => {
+      const snap = snapshots.find((s) => s.id === id);
+      if (!snap) return;
+      setEngine(snap.engine);
+      update(snap.settings);
+    },
+    [snapshots, update],
+  );
+
+  const clearSnapshots = useCallback(() => {
+    setSnapshots([]);
+    persistSnapshots([]);
+  }, []);
+
   const canUndo = history.length > 0;
   const canRedo = future.length > 0;
 
@@ -363,6 +434,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       savePreset,
       applyPreset,
       deletePreset,
+      snapshots,
+      addSnapshot,
+      applySnapshot,
+      clearSnapshots,
     }),
     [
       engine,
@@ -389,6 +464,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       savePreset,
       applyPreset,
       deletePreset,
+      snapshots,
+      addSnapshot,
+      applySnapshot,
+      clearSnapshots,
     ],
   );
 

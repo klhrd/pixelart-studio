@@ -278,6 +278,8 @@ export const zhTW: Record<string, string> = {
   'Update Palette': '更新調色盤',
   'Save to History': '儲存至歷史',
   'History': '歷史',
+  'No history yet': '尚無歷史紀錄',
+  'Clear': '清除',
 
   // Engine names (only those that differ from the section titles above)
   'Moon Phase Halftone': '月相半色調',

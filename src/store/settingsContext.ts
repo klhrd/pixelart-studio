@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import type { EngineId, Preset, Settings } from '../types';
+import type { EngineId, Preset, Settings, Snapshot } from '../types';
 import type { Palette } from '../algorithms/palettes';
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -111,6 +111,10 @@ export interface SettingsContextValue {
   savePreset: (name: string) => void;
   applyPreset: (id: string) => void;
   deletePreset: (id: string) => void;
+  snapshots: Snapshot[];
+  addSnapshot: (engine: EngineId, settings: Settings, thumb: string) => void;
+  applySnapshot: (id: string) => void;
+  clearSnapshots: () => void;
 }
 
 export const SettingsContext = createContext<SettingsContextValue | null>(null);

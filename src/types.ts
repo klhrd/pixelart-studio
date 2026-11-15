@@ -95,6 +95,13 @@ export interface Preset {
   settings: Settings;
 }
 
+export interface Snapshot {
+  id: string;
+  engine: EngineId;
+  settings: Settings;
+  thumb: string;
+}
+
 export interface WorkerRequest {
   width: number;
   height: number;

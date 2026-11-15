@@ -22,6 +22,7 @@ import {
   exportAnimationWebM,
   exportRaster,
   isAnimationExportSupported,
+  renderResultBlob,
 } from './utils/exportImage';
 import type { ExportFormat } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
@@ -87,6 +88,7 @@ function Studio() {
     redo,
     reset,
     setCustomSheetOpen,
+    addSnapshot,
   } = useSettings();
   const { source, error: loadError, loadFile, loadSample } = useSourceImage();
   const { result, resultEngine, status, error } = useImageProcessor(
@@ -108,6 +110,35 @@ function Studio() {
         : null,
     [secondaryData],
   );
+  useEffect(() => {
+    if (!source || !result || status !== 'ready') return;
+    const key = JSON.stringify({ engine, settings });
+    if (key === snapKey.current) return;
+    const timer = setTimeout(() => {
+      snapKey.current = key;
+      const maxSide = Math.max(source.width, source.height);
+      const scale = Math.min(1, 96 / maxSide);
+      renderResultBlob(source, engine, result, settings, palette, {
+        scale,
+        format: 'jpeg',
+        quality: 0.6,
+        transparent: false,
+        secondary,
+      })
+        .then(
+          (blob) =>
+            new Promise<string>((resolve) => {
+              const fr = new FileReader();
+              fr.onload = () => resolve(fr.result as string);
+              fr.readAsDataURL(blob);
+            }),
+        )
+        .then((dataUrl) => addSnapshot(engine, settings, dataUrl))
+        .catch(() => {});
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [source, result, status, engine, settings, palette, secondary, addSnapshot]);
+
   const [exportScale, setExportScale] = useState(2);
   const [exportName, setExportName] = useState('pixelcraft');
   const [exportFormat, setExportFormat] = useState<ExportFormat>('png');
@@ -117,6 +148,7 @@ function Studio() {
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const snapKey = useRef('');
 
   useEffect(() => {
     const shared = parseShareHash(location.hash);

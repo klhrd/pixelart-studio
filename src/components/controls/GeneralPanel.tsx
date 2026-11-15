@@ -11,8 +11,17 @@ import { Slider } from './Slider';
 import { Switch } from './Switch';
 
 export function GeneralPanel() {
-  const { settings, update, presets, savePreset, applyPreset, deletePreset } =
-    useSettings();
+  const {
+    settings,
+    update,
+    presets,
+    savePreset,
+    applyPreset,
+    deletePreset,
+    snapshots,
+    applySnapshot,
+    clearSnapshots,
+  } = useSettings();
   const { t } = useI18n();
   const [presetName, setPresetName] = useState('');
 
@@ -297,6 +306,43 @@ export function GeneralPanel() {
               </div>
             ))}
           </div>
+        )}
+      </PanelSection>
+
+      <PanelSection title="History">
+        {snapshots.length === 0 ? (
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('No history yet')}
+          </p>
+        ) : (
+          <>
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {snapshots.map((snap) => (
+                <button
+                  key={snap.id}
+                  type="button"
+                  onClick={() => applySnapshot(snap.id)}
+                  className="shrink-0 text-left"
+                >
+                  <img
+                    src={snap.thumb}
+                    alt={t(engineMeta(snap.engine).name)}
+                    className="h-16 w-16 rounded-md border border-zinc-800 object-cover"
+                  />
+                  <span className="mt-1 block w-16 truncate text-[11px] text-zinc-500">
+                    {t(engineMeta(snap.engine).name)}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="btn w-full justify-center"
+              onClick={clearSnapshots}
+            >
+              {t('Clear')}
+            </button>
+          </>
         )}
       </PanelSection>
     </>
