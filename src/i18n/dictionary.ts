@@ -52,6 +52,7 @@ export const zhTW: Record<string, string> = {
   'Saved': '已儲存',
   'Export PNG': '匯出 PNG',
   'Export SVG': '匯出 SVG',
+  'Export animation (WebM)': '匯出動畫 (WebM)',
   'Upload': '上傳',
   'Link Copied': '已複製連結',
   'Shared': '已分享',

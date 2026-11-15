@@ -22,6 +22,8 @@ interface ExportSheetProps {
   onExport: () => void;
   onExportSvg: () => void;
   onCopy: () => void;
+  onExportAnimation: () => void;
+  animationSupported: boolean;
   onUpload: () => void;
   disabled: boolean;
   outputWidth: number;
@@ -47,6 +49,8 @@ export function ExportSheet({
   onExport,
   onExportSvg,
   onCopy,
+  onExportAnimation,
+  animationSupported,
   onUpload,
   disabled,
   outputWidth,
@@ -289,6 +293,31 @@ export function ExportSheet({
           {t('Export SVG')}
         </button>
       </div>
+
+      {engine === 'moon' && animationSupported && (
+        <button
+          type="button"
+          className="btn w-full justify-center py-3"
+          disabled={disabled}
+          onClick={onExportAnimation}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z"
+            />
+          </svg>
+          {t('Export animation (WebM)')}
+        </button>
+      )}
 
       <div className="flex gap-1.5 border-t border-zinc-800 pt-3">
         <button

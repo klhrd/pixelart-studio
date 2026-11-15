@@ -15,7 +15,12 @@ import { SettingsProvider } from './store/settings';
 import { useSettings } from './store/settingsContext';
 import { I18nProvider } from './i18n';
 import { useI18n } from './i18n/core';
-import { copyImageToClipboard, exportRaster } from './utils/exportImage';
+import {
+  copyImageToClipboard,
+  exportAnimationWebM,
+  exportRaster,
+  isAnimationExportSupported,
+} from './utils/exportImage';
 import type { ExportFormat } from './utils/exportImage';
 import { exportSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
@@ -166,6 +171,19 @@ function Studio() {
     }
   }, [source, engine, result, status, settings, palette, exportScale, exportTransparent]);
 
+  const handleExportAnimation = useCallback(() => {
+    if (source && result && status === 'ready') {
+      void exportAnimationWebM(source, engine, result, settings, palette, {
+        scale: exportScale,
+        filename: exportName,
+        frames: 60,
+        fps: 30,
+      }).catch((err: unknown) => {
+        console.warn('Animation export failed:', err);
+      });
+    }
+  }, [source, engine, result, status, settings, palette, exportScale, exportName]);
+
   const handleExportSvg = () => {
     if (!source || !result || status !== 'ready') return;
     try {
@@ -302,6 +320,8 @@ function Studio() {
           onExport={handleExport}
           onExportSvg={handleExportSvg}
           onCopy={handleCopy}
+          onExportAnimation={handleExportAnimation}
+          animationSupported={isAnimationExportSupported()}
           onUpload={() => fileInputRef.current?.click()}
           disabled={!source || !result || status !== 'ready'}
           outputWidth={(source?.width ?? 0) * exportScale}

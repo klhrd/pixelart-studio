@@ -135,6 +135,89 @@ export async function exportRaster(
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+export interface AnimationExportOptions {
+  scale: number;
+  filename: string;
+  frames: number;
+  fps: number;
+}
+
+export function isAnimationExportSupported(): boolean {
+  return (
+    typeof MediaRecorder !== 'undefined' &&
+    typeof HTMLCanvasElement !== 'undefined' &&
+    typeof HTMLCanvasElement.prototype.captureStream === 'function'
+  );
+}
+
+/**
+ * Renders one full loop of the engine animation (animOffset 0 -> 1) into a
+ * WebM video using the browser's MediaRecorder + canvas.captureStream (no deps).
+ */
+export async function exportAnimationWebM(
+  source: SourceImage,
+  engine: EngineId,
+  result: EngineResult,
+  settings: Settings,
+  palette: string[],
+  opts: AnimationExportOptions,
+): Promise<void> {
+  if (!isAnimationExportSupported()) {
+    throw new Error('Animation export is not supported in this browser');
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = source.width * opts.scale;
+  canvas.height = source.height * opts.scale;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Canvas 2D context unavailable');
+
+  const stream = canvas.captureStream(opts.fps);
+  const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+    ? 'video/webm;codecs=vp9'
+    : 'video/webm';
+  const recorder = new MediaRecorder(stream, {
+    mimeType: mime,
+    videoBitsPerSecond: 12_000_000,
+  });
+  const chunks: BlobPart[] = [];
+  recorder.ondataavailable = (e) => {
+    if (e.data.size > 0) chunks.push(e.data);
+  };
+  const stopped = new Promise<void>((resolve) => {
+    recorder.onstop = () => resolve();
+  });
+  recorder.start();
+
+  const sourceCanvas = sourceToCanvas(source.bytes, source.width, source.height);
+  const frameDelay = 1000 / opts.fps;
+  const frames = Math.max(2, opts.frames);
+  for (let i = 0; i < frames; i++) {
+    const animOffset = i / frames;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.scale(opts.scale, opts.scale);
+    const frameSettings: Settings = { ...settings, animOffset, animate: false };
+    renderResult(engine, ctx, result, frameSettings, palette, source.width, source.height);
+    if (settings.maskShape !== 'none') {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      applyMask(ctx, canvas.width, canvas.height, sourceCanvas, settings);
+    }
+    await new Promise((r) => setTimeout(r, frameDelay));
+  }
+
+  recorder.stop();
+  await stopped;
+  stream.getTracks().forEach((t) => t.stop());
+
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${safeBaseName(opts.filename)}.webm`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export async function copyImageToClipboard(
   source: SourceImage,
   engine: EngineId,
