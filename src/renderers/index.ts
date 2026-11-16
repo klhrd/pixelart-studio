@@ -56,6 +56,8 @@ import { renderCrossHatch } from './crossHatchRenderer';
 import { renderCrossHatchSVG } from './crossHatchRenderer';
 import { renderGlyphs } from './glyphsRenderer';
 import { renderGlyphsSVG } from './glyphsRenderer';
+import { renderAscii } from './asciiRenderer';
+import { renderAsciiSVG } from './asciiRenderer';
 
 export function renderResult(
   engine: EngineId,
@@ -230,6 +232,16 @@ export function renderResult(
         height,
       );
       break;
+    case 'ascii':
+      renderAscii(
+        ctx,
+        result as HanziResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
+      break;
   }
 }
 
@@ -390,6 +402,14 @@ export function renderSVG(
         width,
         height,
       );
+    case 'ascii':
+      return renderAsciiSVG(
+        result as HanziResult,
+        settings,
+        palette,
+        width,
+        height,
+      );
   }
 }
 
@@ -429,4 +449,6 @@ export {
   renderCrossHatchSVG,
   renderGlyphs,
   renderGlyphsSVG,
+  renderAscii,
+  renderAsciiSVG,
 };

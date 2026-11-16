@@ -163,6 +163,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Resonant nodal-line figures',
     category: 'Geometry',
   },
+  {
+    id: 'ascii',
+    code: 'W',
+    name: 'ASCII Art',
+    tagline: 'Brightness-mapped character ramp',
+    category: 'Text',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

@@ -17,6 +17,7 @@ import PixelsortWorker from './pixelsort.worker?worker';
 import HatchWorker from './hatch.worker?worker';
 import GlyphsWorker from './glyphs.worker?worker';
 import MoireWorker from './moire.worker?worker';
+import AsciiWorker from './ascii.worker?worker';
 import KaleidoscopeWorker from './kaleidoscope.worker?worker';
 import QuadtreeWorker from './quadtree.worker?worker';
 import ChladniWorker from './chladni.worker?worker';
@@ -52,6 +53,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   kaleidoscope: KaleidoscopeWorker,
   quadtree: QuadtreeWorker,
   chladni: ChladniWorker,
+  ascii: AsciiWorker,
 };
 
 const CACHE_MAX = 8;

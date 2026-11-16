@@ -365,6 +365,10 @@ export const zhTW: Record<string, string> = {
   'Layered engraving linework': '分層版畫線條',
   'Custom shapes scaled by luminance': '依亮度縮放的自訂形狀',
   'Op-art optical phase patterns': '歐普藝術光學相位圖樣',
+  'ASCII Art': 'ASCII 文字畫',
+  'Brightness-mapped character ramp': '依亮度映射的字元階調',
+  'Maps each cell to an ASCII character by brightness — brighter cells use denser glyphs. Cell Size sets the character size.':
+    '依亮度把每個網格對應到一個 ASCII 字元；越亮用越密的字元。網格大小決定字元大小。',
 
   // Engine picker groups
   'Favorites': '收藏',

@@ -274,5 +274,21 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <circle cx="12" cy="12" r="1.4" fill="currentColor" />
         </svg>
       );
+    case 'ascii':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <text
+            x="12"
+            y="16.5"
+            textAnchor="middle"
+            fontSize="14"
+            fontFamily="ui-monospace, Menlo, Consolas, monospace"
+            fill="currentColor"
+          >
+            {'@'}
+          </text>
+          <path {...stroke} d="M5 20h3M10.5 20h3M16 20h3" strokeWidth="1.4" />
+        </svg>
+      );
   }
 }

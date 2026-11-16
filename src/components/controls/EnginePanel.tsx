@@ -586,6 +586,14 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'ascii' && (
+        <PanelSection title="ASCII Art">
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Maps each cell to an ASCII character by brightness — brighter cells use denser glyphs. Cell Size sets the character size.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

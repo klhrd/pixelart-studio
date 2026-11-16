@@ -198,6 +198,9 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'chladniM', label: 'Mode M', min: 1, max: 12, step: 1, group: 'engine' },
     { key: 'chladniN', label: 'Mode N', min: 1, max: 12, step: 1, group: 'engine' },
   ],
+  ascii: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

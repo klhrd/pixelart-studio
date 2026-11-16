@@ -20,7 +20,8 @@ export type EngineId =
   | 'moire'
   | 'kaleidoscope'
   | 'quadtree'
-  | 'chladni';
+  | 'chladni'
+  | 'ascii';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
