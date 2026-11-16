@@ -7,6 +7,8 @@ import type {
   SourceImage,
 } from '../types';
 import { disposeAllClients, getClient } from '../workers/engineClient';
+import { DEFAULT_SETTINGS } from '../store/settingsContext';
+import { stripRenderOnly } from '../renderers/renderKeys';
 
 export function useImageProcessor(
   source: SourceImage | null,
@@ -23,12 +25,15 @@ export function useImageProcessor(
 
   const jobRef = useRef(0);
   const strippedRef = useRef(settings);
-  strippedRef.current = {
-    ...settings,
-    animOffset: 0,
-    animSpeed: 0,
-    animate: false,
-  };
+  strippedRef.current = stripRenderOnly(
+    {
+      ...settings,
+      animOffset: 0,
+      animSpeed: 0,
+      animate: false,
+    },
+    DEFAULT_SETTINGS,
+  );
 
   const workerKey = JSON.stringify(strippedRef.current);
   const [stable, setStable] = useState(strippedRef.current);

@@ -7,6 +7,8 @@ import type {
   SourceImage,
 } from '../types';
 import { getClient } from '../workers/engineClient';
+import { DEFAULT_SETTINGS } from '../store/settingsContext';
+import { stripRenderOnly } from '../renderers/renderKeys';
 
 export type ResolvedLayer = { engine: EngineId; result: EngineResult } | null;
 
@@ -20,12 +22,15 @@ export function useLayerResults(
 
   const jobRef = useRef(0);
   const strippedRef = useRef(settings);
-  strippedRef.current = {
-    ...settings,
-    animOffset: 0,
-    animSpeed: 0,
-    animate: false,
-  };
+  strippedRef.current = stripRenderOnly(
+    {
+      ...settings,
+      animOffset: 0,
+      animSpeed: 0,
+      animate: false,
+    },
+    DEFAULT_SETTINGS,
+  );
 
   const workerKey = JSON.stringify(strippedRef.current);
   const [stable, setStable] = useState(strippedRef.current);

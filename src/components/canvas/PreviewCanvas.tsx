@@ -8,6 +8,7 @@ import type {
 } from '../../types';
 import { sourceToCanvas } from '../../renderers/mask';
 import { renderComposite, BLEND_MODES } from '../../renderers/composite';
+import { renderSignature } from '../../renderers/renderKeys';
 import {
   loadBrushMaskDataUrl,
   onBrushMaskChange,
@@ -360,6 +361,11 @@ export function PreviewCanvas({
   }, [resultEngine, result, palette, source, compare, sourceCanvas, layers]);
 
   drawCanvasRef.current = drawCanvas;
+
+  const renderSig = renderSignature(settings);
+  useEffect(() => {
+    drawCanvasRef.current();
+  }, [renderSig]);
 
   // Brush mask: one canvas at working resolution, persisted as a PNG data URL.
   useEffect(() => {

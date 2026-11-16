@@ -48,17 +48,47 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   moire: MoireWorker,
 };
 
+const CACHE_MAX = 8;
+
+/** Cheap content signature of the source pixels so the cache never collides
+ *  across different images (important for batch / loading a new image). */
+function sourceSignature(req: WorkerRequest): string {
+  const bytes = req.bytes;
+  const len = bytes.length;
+  let h = (len ^ 0x9e3779b9) >>> 0;
+  const step = Math.max(1, Math.floor(len / 512));
+  for (let i = 0; i < len; i += step) {
+    h = (Math.imul(h ^ bytes[i], 2654435761) >>> 0);
+  }
+  if (len > 0) h = (Math.imul(h ^ bytes[len - 1], 40503) >>> 0);
+  return `${req.width}x${req.height}:${len}:${h}`;
+}
+
 export class EngineClient {
   private engine: EngineId;
   private worker: Worker | null = null;
   private nextId = 0;
+  private cache = new Map<string, EngineResult>();
   private pending = new Map<
     number,
-    { resolve: (r: EngineResult) => void; reject: (e: Error) => void }
+    {
+      key: string;
+      resolve: (r: EngineResult) => void;
+      reject: (e: Error) => void;
+    }
   >();
 
   constructor(engine: EngineId) {
     this.engine = engine;
+  }
+
+  private remember(key: string, result: EngineResult): void {
+    this.cache.set(key, result);
+    while (this.cache.size > CACHE_MAX) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest === undefined) break;
+      this.cache.delete(oldest);
+    }
   }
 
   private ensure(): Worker {
@@ -69,8 +99,13 @@ export class EngineClient {
       const task = this.pending.get(msg.id);
       if (!task) return;
       this.pending.delete(msg.id);
-      if (msg.ok) task.resolve(msg.result as EngineResult);
-      else task.reject(new Error(msg.error));
+      if (msg.ok) {
+        const result = msg.result as EngineResult;
+        this.remember(task.key, result);
+        task.resolve(result);
+      } else {
+        task.reject(new Error(msg.error));
+      }
     };
     worker.onerror = (ev) => {
       const err = new Error(ev.message || 'Worker error');
@@ -82,11 +117,15 @@ export class EngineClient {
   }
 
   run(req: WorkerRequest): Promise<EngineResult> {
+    const key = `${sourceSignature(req)}|${JSON.stringify({ s: req.settings, p: req.palette })}`;
+    const cached = this.cache.get(key);
+    if (cached) return Promise.resolve(cached);
+
     const id = ++this.nextId;
     const bytes = new Uint8ClampedArray(req.bytes);
     const payload: WorkerRequest = { ...req, bytes };
     return new Promise<EngineResult>((resolve, reject) => {
-      this.pending.set(id, { resolve, reject });
+      this.pending.set(id, { key, resolve, reject });
       this.ensure().postMessage({ id, payload }, [bytes.buffer]);
     });
   }
@@ -94,6 +133,7 @@ export class EngineClient {
   dispose(): void {
     this.worker?.terminate();
     this.worker = null;
+    this.cache.clear();
     const err = new Error('Worker disposed');
     for (const task of this.pending.values()) task.reject(err);
     this.pending.clear();
