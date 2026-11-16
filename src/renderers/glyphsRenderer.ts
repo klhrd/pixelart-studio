@@ -62,6 +62,9 @@ export function renderGlyphs(
   ctx.fillRect(0, 0, width, height);
   ctx.fillStyle = palette[0];
 
+  const rot = settings.animOffset * Math.PI * 2;
+  const animate = rot !== 0;
+
   for (let r = 0; r < rows; r++) {
     for (let c = 0; c < cols; c++) {
       const L = luminance[r * cols + c];
@@ -70,9 +73,20 @@ export function renderGlyphs(
       // Oversized so the darkest areas fill their cells instead of staying
       // mostly paper (stars/triangles only cover part of a small radius).
       const rad = cell * 0.62 * (0.35 + 0.65 * scale);
-      const d = glyphPath(shape, c * cw + cw / 2, r * ch + ch / 2, rad);
+      const gx = c * cw + cw / 2;
+      const gy = r * ch + ch / 2;
+      const d = glyphPath(shape, gx, gy, rad);
       if (!d) continue;
-      ctx.fill(new Path2D(d), 'evenodd');
+      if (animate) {
+        ctx.save();
+        ctx.translate(gx, gy);
+        ctx.rotate(rot);
+        ctx.translate(-gx, -gy);
+        ctx.fill(new Path2D(d), 'evenodd');
+        ctx.restore();
+      } else {
+        ctx.fill(new Path2D(d), 'evenodd');
+      }
     }
   }
 }

@@ -108,7 +108,7 @@ export function GeneralPanel() {
           />
         )}
         <p className="text-[11px] leading-relaxed text-zinc-500">
-          {t('Animates the current engine when it supports motion (Moon Phase, Wave, Moiré, Truchet).')}
+          {t('Animates the current engine when it supports motion.')}
         </p>
       </PanelSection>
 

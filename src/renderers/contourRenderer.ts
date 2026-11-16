@@ -3,7 +3,7 @@ import type { ContourResult, Settings } from '../types';
 export function renderContour(
   ctx: CanvasRenderingContext2D,
   res: ContourResult,
-  _settings: Settings,
+  settings: Settings,
   palette: string[],
   width: number,
   height: number,
@@ -14,6 +14,7 @@ export function renderContour(
   ctx.lineJoin = 'round';
 
   const n = palette.length;
+  const levelShift = settings.animOffset * res.levels;
   const byLevel: number[][] = Array.from({ length: res.levels }, () => []);
   for (let i = 0; i < res.level.length; i++) {
     byLevel[res.level[i]].push(i * 4);
@@ -22,7 +23,9 @@ export function renderContour(
   for (let li = 0; li < res.levels; li++) {
     const segIdx = byLevel[li];
     if (segIdx.length === 0) continue;
-    const colorIdx = Math.min(n - 1, Math.round((li / (res.levels - 1)) * (n - 1)));
+    const shifted =
+      (((li + levelShift) % res.levels) + res.levels) % res.levels;
+    const colorIdx = Math.min(n - 1, Math.round((shifted / (res.levels - 1)) * (n - 1)));
     ctx.strokeStyle = palette[colorIdx];
     ctx.lineWidth = li % 5 === 4 ? 2.2 : 1.4;
     ctx.beginPath();

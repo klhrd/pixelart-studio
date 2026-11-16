@@ -85,8 +85,8 @@ export const zhTW: Record<string, string> = {
   'Engine Settings': '引擎設定',
   'Image Adjustments': '影像調整',
   'Animation': '動畫',
-  'Animates the current engine when it supports motion (Moon Phase, Wave, Moiré, Truchet).':
-    '當目前引擎支援動態時播放動畫（月相、波干涉、摩爾紋、Truchet）。',
+  'Animates the current engine when it supports motion.':
+    '當目前引擎支援動態時播放動畫。',
 
   // General labels
   'Brightness': '亮度',

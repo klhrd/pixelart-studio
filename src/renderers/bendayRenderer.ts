@@ -10,13 +10,20 @@ const INKS = [
 export function renderBenday(
   ctx: CanvasRenderingContext2D,
   res: BendayResult,
-  _settings: Settings,
+  settings: Settings,
   palette: string[],
   width: number,
   height: number,
 ): void {
   ctx.fillStyle = palette[palette.length - 1];
   ctx.fillRect(0, 0, width, height);
+
+  const rot = settings.animOffset * Math.PI;
+  const animate = rot !== 0;
+  const cx = width / 2;
+  const cy = height / 2;
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
 
   ctx.save();
   ctx.globalCompositeOperation = 'multiply';
@@ -26,8 +33,16 @@ export function renderBenday(
     for (let i = 0; i < data.length; i += 3) {
       const r = data[i + 2];
       if (r < 0.3) continue;
+      let x = data[i];
+      let y = data[i + 1];
+      if (animate) {
+        const ox = x - cx;
+        const oy = y - cy;
+        x = cx + ox * cos - oy * sin;
+        y = cy + ox * sin + oy * cos;
+      }
       ctx.beginPath();
-      ctx.arc(data[i], data[i + 1], r, 0, Math.PI * 2, false);
+      ctx.arc(x, y, r, 0, Math.PI * 2, false);
       ctx.fill();
     }
   }

@@ -53,7 +53,7 @@ function cellHatch(L: number, cell: number): CellHatch {
 export function renderCrossHatch(
   ctx: CanvasRenderingContext2D,
   res: HatchResult,
-  _settings: Settings,
+  settings: Settings,
   palette: string[],
   width: number,
   height: number,
@@ -63,6 +63,7 @@ export function renderCrossHatch(
   const ch = height / rows;
   const cell = Math.min(cw, ch);
   const halfDiag = Math.hypot(cw, ch) / 2;
+  const rot = settings.animOffset * Math.PI;
 
   ctx.fillStyle = palette[palette.length - 1];
   ctx.fillRect(0, 0, width, height);
@@ -83,7 +84,7 @@ export function renderCrossHatch(
       const maxY = minY + ch;
       ctx.beginPath();
       for (let k = 0; k < layers; k++) {
-        const ang = ANGLES[k];
+        const ang = ANGLES[k] + rot;
         const dx = Math.cos(ang);
         const dy = Math.sin(ang);
         const nx = -dy;
