@@ -360,4 +360,12 @@ export const zhTW: Record<string, string> = {
   'Layered engraving linework': '分層版畫線條',
   'Custom shapes scaled by luminance': '依亮度縮放的自訂形狀',
   'Op-art optical phase patterns': '歐普藝術光學相位圖樣',
+
+  // Engine picker groups
+  'Favorites': '收藏',
+  'Add to favorites': '加入收藏',
+  'Remove from favorites': '移除收藏',
+  'Halftone': '半色調',
+  'Geometry': '幾何',
+  'Paint': '點繪',
 };

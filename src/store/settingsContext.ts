@@ -112,6 +112,8 @@ export interface SettingsContextValue {
   movePalette: (id: string, dir: -1 | 1) => void;
   togglePaletteFeatured: (id: string) => void;
   featured: string[];
+  favoriteEngines: string[];
+  toggleEngineFavorite: (id: string) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;

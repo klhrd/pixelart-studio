@@ -14,6 +14,7 @@ import { DEFAULT_SETTINGS, DEFAULT_FEATURED, DEFAULT_PALETTE_ORDER, SettingsCont
 
 const ORDER_KEY = 'pixelcraft-palette-order';
 const FEATURED_KEY = 'pixelcraft-palette-featured';
+const ENGINE_FAV_KEY = 'pixelcraft-engine-favorites';
 const SETTINGS_KEY = 'pixelcraft-settings';
 const ENGINE_KEY = 'pixelcraft-engine';
 const PRESETS_KEY = 'pixelcraft-presets';
@@ -144,6 +145,9 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     const stored = loadIdList(FEATURED_KEY);
     return stored.length > 0 ? stored : DEFAULT_FEATURED;
   });
+  const [favoriteEngines, setFavoriteEngines] = useState<string[]>(() =>
+    loadIdList(ENGINE_FAV_KEY),
+  );
   const [customSheetOpen, setCustomSheetOpen] = useState(false);
   const [editingPaletteId, setEditingPaletteId] = useState<string | null>(null);
   const [history, setHistory] = useState<Settings[]>([]);
@@ -328,6 +332,16 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const toggleEngineFavorite = useCallback((id: string) => {
+    setFavoriteEngines((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((v) => v !== id)
+        : [id, ...prev];
+      persistIdList(ENGINE_FAV_KEY, next);
+      return next;
+    });
+  }, []);
+
   const savePreset = useCallback(
     (name: string) => {
       setPresets((prev) => {
@@ -428,6 +442,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       movePalette,
       togglePaletteFeatured,
       featured,
+      favoriteEngines,
+      toggleEngineFavorite,
       canUndo,
       canRedo,
       presets,
@@ -458,6 +474,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       movePalette,
       togglePaletteFeatured,
       featured,
+      favoriteEngines,
+      toggleEngineFavorite,
       canUndo,
       canRedo,
       presets,
