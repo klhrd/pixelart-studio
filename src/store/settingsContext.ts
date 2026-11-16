@@ -48,6 +48,7 @@ export const DEFAULT_SETTINGS: Settings = {
   moirePattern: 'rings',
   moireFreq: 1.2,
   moirePhase: 3,
+  kaleidoSegments: 6,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

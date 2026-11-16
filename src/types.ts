@@ -17,7 +17,8 @@ export type EngineId =
   | 'pixelsort'
   | 'hatch'
   | 'glyphs'
-  | 'moire';
+  | 'moire'
+  | 'kaleidoscope';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -83,6 +84,7 @@ export interface Settings {
   moirePattern: 'lines' | 'rings' | 'spiral';
   moireFreq: number;
   moirePhase: number;
+  kaleidoSegments: number;
   maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;

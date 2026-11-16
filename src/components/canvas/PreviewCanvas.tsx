@@ -188,6 +188,9 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
       ],
     },
   ],
+  kaleidoscope: [
+    { key: 'kaleidoSegments', label: 'Segments', min: 3, max: 16, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

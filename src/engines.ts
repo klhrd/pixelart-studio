@@ -122,6 +122,12 @@ export const ENGINES: EngineMeta[] = [
     name: 'Moiré Interference',
     tagline: 'Op-art optical phase patterns',
   },
+  {
+    id: 'kaleidoscope',
+    code: 'T',
+    name: 'Kaleidoscope',
+    tagline: 'Radial wedge mirror symmetry',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

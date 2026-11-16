@@ -556,6 +556,16 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'kaleidoscope' && (
+        <PanelSection title="Kaleidoscope">
+          <Slider label="Segments" min={3} max={16} value={settings.kaleidoSegments}
+            onChange={(v) => update({ kaleidoSegments: v })} display={`${settings.kaleidoSegments}`} />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Mirrors the image into radial wedge segments around the centre.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

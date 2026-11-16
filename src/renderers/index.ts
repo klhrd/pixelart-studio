@@ -102,6 +102,7 @@ export function renderResult(
       break;
     case 'dither':
     case 'scanline':
+    case 'kaleidoscope':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -321,6 +322,7 @@ export function renderSVG(
       );
     case 'dither':
     case 'scanline':
+    case 'kaleidoscope':
       return renderImageSVG(
         result as DitherResult,
         settings,

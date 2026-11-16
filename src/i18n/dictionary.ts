@@ -124,6 +124,10 @@ export const zhTW: Record<string, string> = {
   'Cross-Hatching': '交叉排線',
   'Glyph Halftone': '字符半色調',
   'Moiré Interference': '摩爾紋干涉',
+  'Kaleidoscope': '萬花筒',
+  'Radial wedge mirror symmetry': '放射楔形鏡射對稱',
+  'Segments': '分段數',
+  'Mirrors the image into radial wedge segments around the centre.': '把影像鏡射成繞中心的放射楔形分段。',
 
   // Engine panel labels
   'Reset': '重設',

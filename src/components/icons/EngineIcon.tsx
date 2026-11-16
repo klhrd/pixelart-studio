@@ -243,5 +243,16 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <path {...stroke} d="M4 13h6v6H4z" fill="currentColor" opacity="0.45" />
         </svg>
       );
+    case 'kaleidoscope':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="12" cy="12" r="9" {...stroke} />
+          <path
+            {...stroke}
+            d="M12 12l9 0M12 12l6.4 6.4M12 12l0 9M12 12l-6.4 6.4M12 12l-9 0M12 12l-6.4-6.4M12 12l0-9M12 12l6.4-6.4"
+          />
+          <circle cx="12" cy="12" r="2" fill="currentColor" />
+        </svg>
+      );
   }
 }
