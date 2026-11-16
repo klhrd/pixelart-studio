@@ -15,6 +15,13 @@ export function renderFlow(
   ctx.fillRect(0, 0, width, height);
   ctx.lineCap = 'round';
 
+  const rot = settings.animOffset * Math.PI;
+  const animate = rot !== 0;
+  const cx = width / 2;
+  const cy = height / 2;
+  const cos = Math.cos(rot);
+  const sin = Math.sin(rot);
+
   for (let p = 0; p < starts.length; p++) {
     const start = starts[p];
     const len = lengths[p];
@@ -29,9 +36,22 @@ export function renderFlow(
     );
 
     ctx.beginPath();
-    ctx.moveTo(coords[start * 2], coords[start * 2 + 1]);
-    for (let v = 1; v < len; v++) {
-      ctx.lineTo(coords[(start + v) * 2], coords[(start + v) * 2 + 1]);
+    if (animate) {
+      const ox = coords[start * 2] - cx;
+      const oy = coords[start * 2 + 1] - cy;
+      ctx.moveTo(cx + ox * cos - oy * sin, cy + ox * sin + oy * cos);
+      for (let v = 1; v < len; v++) {
+        const px = coords[(start + v) * 2];
+        const py = coords[(start + v) * 2 + 1];
+        const rx = px - cx;
+        const ry = py - cy;
+        ctx.lineTo(cx + rx * cos - ry * sin, cy + rx * sin + ry * cos);
+      }
+    } else {
+      ctx.moveTo(coords[start * 2], coords[start * 2 + 1]);
+      for (let v = 1; v < len; v++) {
+        ctx.lineTo(coords[(start + v) * 2], coords[(start + v) * 2 + 1]);
+      }
     }
     ctx.stroke();
   }

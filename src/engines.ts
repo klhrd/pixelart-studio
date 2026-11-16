@@ -130,4 +130,5 @@ export function engineMeta(id: EngineId): EngineMeta {
 
 export const ANIMATABLE_ENGINES: EngineId[] = [
   'moon', 'wave', 'moire', 'truchet', 'benday', 'hatch', 'contour', 'glyphs',
+  'flow', 'voronoi',
 ];
