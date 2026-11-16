@@ -64,6 +64,10 @@ export const zhTW: Record<string, string> = {
   '{n} images': '{n} 張圖片',
   'Processing': '處理中',
   'Process all': '全部處理',
+  'Include': '包含',
+  'Use global': '使用全域',
+  'Override engine': '覆寫引擎',
+  'Override palette': '覆寫色盤',
   'Applies the current engine, settings and palette to every image, then packages all results into a single ZIP file.':
     '對每一張圖片套用目前的引擎、設定與調色盤，最後把所有結果打包成一個 ZIP 檔下載。',
   'Upload': '上傳',

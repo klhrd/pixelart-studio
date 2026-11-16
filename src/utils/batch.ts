@@ -14,6 +14,13 @@ export interface BatchOptions {
   layers?: ({ engine: EngineId; result: EngineResult } | null)[];
 }
 
+export interface BatchItem {
+  file: File;
+  skip?: boolean;
+  engine?: EngineId;
+  paletteId?: string;
+}
+
 function safe(s: string, max: number): string {
   return s.replace(/[\\/:*?"<>|]/g, '').trim().slice(0, max);
 }
@@ -23,33 +30,38 @@ function safe(s: string, max: number): string {
  * all results into a single ZIP download (no repeated download prompts).
  */
 export async function processBatch(
-  files: File[],
+  items: BatchItem[],
   engine: EngineId,
   settings: Settings,
-  palette: string[],
+  resolvePalette: (paletteId: string | undefined) => string[],
   opts: BatchOptions,
   onProgress?: (done: number, total: number) => void,
 ): Promise<{ ok: number; failed: number; fileName: string | null }> {
   let ok = 0;
   let failed = 0;
-  const total = files.length;
+  let done = 0;
+  const total = items.reduce((n, item) => (item.skip ? n : n + 1), 0);
   const base = safe(opts.filenameBase, 40) || 'pixelcraft';
   const entries: Record<string, Uint8Array> = {};
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    if (item.skip) continue;
+    const file = item.file;
+    const effEngine = item.engine ?? engine;
+    const effPalette = resolvePalette(item.paletteId);
     try {
       const bitmap = await createImageBitmap(file);
       const source = bitmapToSource(bitmap);
       bitmap.close();
-      const result = await getClient(engine).run({
+      const result = await getClient(effEngine).run({
         width: source.width,
         height: source.height,
         bytes: source.bytes,
         settings,
-        palette,
+        palette: effPalette,
       });
-      const blob = await renderResultBlob(source, engine, result, settings, palette, {
+      const blob = await renderResultBlob(source, effEngine, result, settings, effPalette, {
         scale: opts.scale,
         format: opts.format,
         quality: opts.quality,
@@ -70,7 +82,8 @@ export async function processBatch(
       console.warn('Batch item failed:', file.name, err);
       failed++;
     }
-    onProgress?.(i + 1, total);
+    done++;
+    onProgress?.(done, total);
     // brief pause to keep the UI responsive between items
     await new Promise((r) => setTimeout(r, 0));
   }
