@@ -7,6 +7,7 @@ import { CustomPaletteSheet } from './components/controls/CustomPaletteSheet';
 import { EngineSheet } from './components/controls/EngineSheet';
 import { ExportSheet } from './components/controls/ExportSheet';
 import { BottomBar } from './components/layout/BottomBar';
+import { PwaPrompts } from './components/layout/PwaPrompts';
 import { Sheet } from './components/layout/Sheet';
 import { TopBar } from './components/layout/TopBar';
 import { useImageProcessor } from './hooks/useImageProcessor';
@@ -404,6 +405,7 @@ function Studio() {
         <ShortcutsList />
       </Sheet>
 
+      <PwaPrompts />
       <CustomPaletteSheetMount source={source} />
     </div>
   );

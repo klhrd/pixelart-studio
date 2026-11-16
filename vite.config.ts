@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['icons/pwa-192.png', 'icons/pwa-512.png', 'icons/maskable-512.png'],
       manifest: {
         name: 'PixelCraft Studio',
