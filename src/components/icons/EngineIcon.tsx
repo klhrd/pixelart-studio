@@ -254,5 +254,14 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <circle cx="12" cy="12" r="2" fill="currentColor" />
         </svg>
       );
+    case 'quadtree':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path {...stroke} d="M4 4h16v16H4z" />
+          <path {...stroke} d="M12 4v16M4 12h16" />
+          <path {...stroke} d="M16 4v8M12 8h8" />
+          <path d="M16 4h4v4h-4z" fill="currentColor" opacity="0.55" />
+        </svg>
+      );
   }
 }

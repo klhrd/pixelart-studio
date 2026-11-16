@@ -566,6 +566,16 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'quadtree' && (
+        <PanelSection title="Quadtree Mosaic">
+          <Slider label="Detail" min={1} max={9} value={settings.quadtreeDepth}
+            onChange={(v) => update({ quadtreeDepth: v })} display={`${settings.quadtreeDepth}`} />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Recursively subdivides the image; detailed regions split into smaller squares.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

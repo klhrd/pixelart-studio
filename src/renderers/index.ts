@@ -103,6 +103,7 @@ export function renderResult(
     case 'dither':
     case 'scanline':
     case 'kaleidoscope':
+    case 'quadtree':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -323,6 +324,7 @@ export function renderSVG(
     case 'dither':
     case 'scanline':
     case 'kaleidoscope':
+    case 'quadtree':
       return renderImageSVG(
         result as DitherResult,
         settings,

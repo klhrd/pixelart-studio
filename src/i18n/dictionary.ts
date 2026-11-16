@@ -134,6 +134,10 @@ export const zhTW: Record<string, string> = {
   'Radial wedge mirror symmetry': '放射楔形鏡射對稱',
   'Segments': '分段數',
   'Mirrors the image into radial wedge segments around the centre.': '把影像鏡射成繞中心的放射楔形分段。',
+  'Quadtree Mosaic': '四元樹馬賽克',
+  'Adaptive recursive subdivision': '自適應遞迴細分',
+  'Detail': '細節',
+  'Recursively subdivides the image; detailed regions split into smaller squares.': '遞迴細分影像；細節較多處會切成更小的方塊。',
 
   // Engine panel labels
   'Reset': '重設',

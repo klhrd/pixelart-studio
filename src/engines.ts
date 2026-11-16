@@ -128,6 +128,12 @@ export const ENGINES: EngineMeta[] = [
     name: 'Kaleidoscope',
     tagline: 'Radial wedge mirror symmetry',
   },
+  {
+    id: 'quadtree',
+    code: 'U',
+    name: 'Quadtree Mosaic',
+    tagline: 'Adaptive recursive subdivision',
+  },
 ];
 
 export function engineMeta(id: EngineId): EngineMeta {

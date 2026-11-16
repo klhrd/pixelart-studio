@@ -49,6 +49,7 @@ export const DEFAULT_SETTINGS: Settings = {
   moireFreq: 1.2,
   moirePhase: 3,
   kaleidoSegments: 6,
+  quadtreeDepth: 5,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

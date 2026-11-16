@@ -18,7 +18,8 @@ export type EngineId =
   | 'hatch'
   | 'glyphs'
   | 'moire'
-  | 'kaleidoscope';
+  | 'kaleidoscope'
+  | 'quadtree';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -85,6 +86,7 @@ export interface Settings {
   moireFreq: number;
   moirePhase: number;
   kaleidoSegments: number;
+  quadtreeDepth: number;
   maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;
