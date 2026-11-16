@@ -576,6 +576,16 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'chladni' && (
+        <PanelSection title="Chladni Patterns">
+          <Slider label="Mode M" min={1} max={12} value={settings.chladniM} onChange={(v) => update({ chladniM: v })} display={`${settings.chladniM}`} />
+          <Slider label="Mode N" min={1} max={12} value={settings.chladniN} onChange={(v) => update({ chladniN: v })} display={`${settings.chladniN}`} />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Standing-wave nodal lines displaced by image luminance.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

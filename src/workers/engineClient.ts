@@ -19,6 +19,7 @@ import GlyphsWorker from './glyphs.worker?worker';
 import MoireWorker from './moire.worker?worker';
 import KaleidoscopeWorker from './kaleidoscope.worker?worker';
 import QuadtreeWorker from './quadtree.worker?worker';
+import ChladniWorker from './chladni.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -50,6 +51,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   moire: MoireWorker,
   kaleidoscope: KaleidoscopeWorker,
   quadtree: QuadtreeWorker,
+  chladni: ChladniWorker,
 };
 
 const CACHE_MAX = 8;

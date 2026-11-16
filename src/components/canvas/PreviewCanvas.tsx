@@ -194,6 +194,10 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   quadtree: [
     { key: 'quadtreeDepth', label: 'Detail', min: 1, max: 9, step: 1, group: 'engine' },
   ],
+  chladni: [
+    { key: 'chladniM', label: 'Mode M', min: 1, max: 12, step: 1, group: 'engine' },
+    { key: 'chladniN', label: 'Mode N', min: 1, max: 12, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

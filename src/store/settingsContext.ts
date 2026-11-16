@@ -50,6 +50,8 @@ export const DEFAULT_SETTINGS: Settings = {
   moirePhase: 3,
   kaleidoSegments: 6,
   quadtreeDepth: 5,
+  chladniM: 3,
+  chladniN: 5,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

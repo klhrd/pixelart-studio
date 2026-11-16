@@ -156,6 +156,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Adaptive recursive subdivision',
     category: 'Geometry',
   },
+  {
+    id: 'chladni',
+    code: 'V',
+    name: 'Chladni Patterns',
+    tagline: 'Resonant nodal-line figures',
+    category: 'Geometry',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

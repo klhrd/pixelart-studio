@@ -263,5 +263,16 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <path d="M16 4h4v4h-4z" fill="currentColor" opacity="0.55" />
         </svg>
       );
+    case 'chladni':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <rect x="4" y="4" width="16" height="16" rx="2.5" {...stroke} />
+          <path
+            {...stroke}
+            d="M4 12c3-4 6 4 8 0s5-4 8 0M12 4c-4 3-4 6 0 8s4 5 0 8"
+          />
+          <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+        </svg>
+      );
   }
 }

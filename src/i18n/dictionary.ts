@@ -138,6 +138,11 @@ export const zhTW: Record<string, string> = {
   'Adaptive recursive subdivision': '自適應遞迴細分',
   'Detail': '細節',
   'Recursively subdivides the image; detailed regions split into smaller squares.': '遞迴細分影像；細節較多處會切成更小的方塊。',
+  'Chladni Patterns': '克拉尼圖形',
+  'Resonant nodal-line figures': '共振節線圖形',
+  'Mode M': '模態 M',
+  'Mode N': '模態 N',
+  'Standing-wave nodal lines displaced by image luminance.': '駐波節線，隨影像亮度位移。',
 
   // Engine panel labels
   'Reset': '重設',
