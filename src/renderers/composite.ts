@@ -19,6 +19,22 @@ export function blendOp(mode: string): GlobalCompositeOperation {
   return (mode || 'source-over') as GlobalCompositeOperation;
 }
 
+/** Human-readable blend formula per mode (a = base, b = layer). */
+export const BLEND_INFO: Record<string, { formula: string }> = {
+  'source-over': { formula: 'b' },
+  multiply: { formula: 'a × b' },
+  screen: { formula: '1 − (1 − a)(1 − b)' },
+  overlay: { formula: 'a < 0.5 ? 2ab : 1 − 2(1 − a)(1 − b)' },
+  darken: { formula: 'min(a, b)' },
+  lighten: { formula: 'max(a, b)' },
+  'soft-light': { formula: 'W3C soft-light' },
+  difference: { formula: '|a − b|' },
+};
+
+export function blendFormula(mode: string): string {
+  return BLEND_INFO[mode]?.formula ?? '';
+}
+
 let temp: HTMLCanvasElement | null = null;
 function styledCanvas(width: number, height: number): HTMLCanvasElement {
   if (!temp) temp = document.createElement('canvas');

@@ -194,6 +194,7 @@ export const zhTW: Record<string, string> = {
   'Soft Light': '柔光',
   'Difference': '差值',
   'Blends the styled layer over the original image.': '將效果圖層以混色模式疊在原圖上。',
+  'a = base colour, b = layer colour.': 'a = 底層顏色，b = 圖層顏色。',
   'Text': '文字',
   'Sticker': '貼圖',
   'Upload sticker': '上傳貼圖',

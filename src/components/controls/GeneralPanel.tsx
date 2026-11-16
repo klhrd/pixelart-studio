@@ -9,7 +9,8 @@ import {
   loadOverlayImageFromDataUrl,
   saveOverlayImageDataUrl,
 } from '../../renderers/overlayImage';
-import { BLEND_MODES } from '../../renderers/composite';
+import { BLEND_MODES, blendFormula } from '../../renderers/composite';
+import { BlendPreview } from './BlendPreview';
 import { PanelSection } from './PanelSection';
 import { Segmented } from './Segmented';
 import { Slider } from './Slider';
@@ -217,6 +218,12 @@ export function GeneralPanel() {
             </button>
           ))}
         </div>
+        <div className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-950/50 px-2 py-1.5">
+          <BlendPreview mode={settings.blendMode} />
+          <span className="min-w-0 truncate font-mono text-[10px] text-zinc-500">
+            {blendFormula(settings.blendMode)}
+          </span>
+        </div>
         <Slider
           label="Blend Opacity"
           min={0}
@@ -227,7 +234,8 @@ export function GeneralPanel() {
           display={`${Math.round(settings.blendOpacity * 100)}%`}
         />
         <p className="text-[11px] leading-relaxed text-zinc-500">
-          {t('Blends the styled layer over the original image.')}
+          {t('Blends the styled layer over the original image.')}{' '}
+          {t('a = base colour, b = layer colour.')}
         </p>
       </PanelSection>
 
@@ -367,6 +375,9 @@ export function GeneralPanel() {
                   </option>
                 ))}
               </select>
+              <p className="mt-1 font-mono text-[10px] text-zinc-500">
+                {blendFormula(settings.overlayBlend)}
+              </p>
             </label>
           </>
         )}
@@ -423,6 +434,9 @@ export function GeneralPanel() {
                     </option>
                   ))}
                 </select>
+                <p className="mt-1 font-mono text-[10px] text-zinc-500">
+                  {blendFormula(layer.blend)}
+                </p>
                 <Slider
                   label="Blend Opacity"
                   min={0}
