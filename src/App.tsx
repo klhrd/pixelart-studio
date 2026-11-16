@@ -142,6 +142,7 @@ function Studio() {
   const [sheet, setSheet] = useState<SheetId>(null);
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const snapKey = useRef('');
 
@@ -266,6 +267,11 @@ function Studio() {
       if (key === 'escape') {
         setSheet(null);
         setCustomSheetOpen(false);
+        setShowShortcuts(false);
+        return;
+      }
+      if (key === '?') {
+        setShowShortcuts((s) => !s);
         return;
       }
       if (e.ctrlKey && key === 'z') {
@@ -332,6 +338,7 @@ function Studio() {
         fullscreen={fullscreen}
         onCompare={() => setCompare((c) => !c)}
         onFullscreen={toggleFullscreen}
+        onShortcuts={() => setShowShortcuts(true)}
       />
 
       <main
@@ -389,7 +396,48 @@ function Studio() {
           layers={layers}
         />
       </Sheet>
+      <Sheet
+        open={showShortcuts}
+        title={t('Keyboard shortcuts')}
+        onClose={() => setShowShortcuts(false)}
+      >
+        <ShortcutsList />
+      </Sheet>
+
       <CustomPaletteSheetMount source={source} />
+    </div>
+  );
+}
+
+const SHORTCUTS: { keys: string; label: string }[] = [
+  { keys: '1 – 9', label: 'Switch engine' },
+  { keys: 'C', label: 'Toggle compare' },
+  { keys: 'F', label: 'Toggle fullscreen' },
+  { keys: 'S', label: 'Export PNG' },
+  { keys: 'O', label: 'Upload image' },
+  { keys: 'R', label: 'Reset settings' },
+  { keys: 'Ctrl + Z', label: 'Undo' },
+  { keys: 'Ctrl + Y', label: 'Redo' },
+  { keys: '← → ↑ ↓', label: 'Adjust / select parameters (canvas focused)' },
+  { keys: 'Esc', label: 'Close panel' },
+  { keys: '?', label: 'Show this help' },
+];
+
+function ShortcutsList() {
+  const { t } = useI18n();
+  return (
+    <div className="space-y-1.5">
+      {SHORTCUTS.map((s) => (
+        <div
+          key={s.label}
+          className="flex items-center justify-between gap-3 rounded-lg border border-zinc-800 bg-zinc-950/50 px-3 py-2"
+        >
+          <span className="text-sm text-zinc-300">{t(s.label)}</span>
+          <span className="shrink-0 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-0.5 font-mono text-[11px] text-zinc-400">
+            {s.keys}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

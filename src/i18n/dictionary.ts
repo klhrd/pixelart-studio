@@ -30,6 +30,15 @@ export const zhTW: Record<string, string> = {
   'Export': '匯出',
   'Custom Palette': '自訂調色盤',
   'Modules': '模組',
+  'Keyboard shortcuts': '鍵盤快速鍵',
+  'Switch engine': '切換引擎',
+  'Toggle compare': '切換對比',
+  'Toggle fullscreen': '切換全螢幕',
+  'Upload image': '上傳圖片',
+  'Reset settings': '重設設定',
+  'Adjust / select parameters (canvas focused)': '調整／選擇參數（畫布取得焦點時）',
+  'Close panel': '關閉面板',
+  'Show this help': '顯示此說明',
   'Close': '關閉',
 
   // Drop zone

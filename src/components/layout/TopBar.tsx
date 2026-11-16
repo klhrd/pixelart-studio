@@ -9,6 +9,7 @@ interface TopBarProps {
   fullscreen: boolean;
   onCompare: () => void;
   onFullscreen: () => void;
+  onShortcuts: () => void;
 }
 
 export function TopBar({
@@ -18,6 +19,7 @@ export function TopBar({
   fullscreen,
   onCompare,
   onFullscreen,
+  onShortcuts,
 }: TopBarProps) {
   const { undo, redo, canUndo, canRedo } = useSettings();
   const { t, lang, toggle } = useI18n();
@@ -47,6 +49,17 @@ export function TopBar({
         </span>
       </div>
       <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onShortcuts}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900/80 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-200 active:scale-95"
+          aria-label={t('Keyboard shortcuts')}
+          title={t('Keyboard shortcuts')}
+        >
+          <span className="material-symbols-rounded" aria-hidden="true">
+            keyboard
+          </span>
+        </button>
         <button
           type="button"
           onClick={toggle}
