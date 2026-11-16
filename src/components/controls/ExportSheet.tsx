@@ -40,6 +40,47 @@ const SCALES = [1, 2, 3, 4, 6, 8];
 const MAX_SCALE = 16;
 const TARGET_WIDTHS = [1080, 1920, 2560, 3840];
 
+interface ExportProfile {
+  id: string;
+  name: string;
+  scale: number;
+  format: ExportFormat;
+  quality: number;
+  transparent: boolean;
+}
+
+const PROFILES_KEY = 'pixelcraft-export-profiles';
+const PROFILES_MAX = 20;
+
+function loadProfiles(): ExportProfile[] {
+  try {
+    const raw = localStorage.getItem(PROFILES_KEY);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    if (!Array.isArray(list)) return [];
+    return list.filter(
+      (p): p is ExportProfile =>
+        !!p &&
+        typeof p.id === 'string' &&
+        typeof p.name === 'string' &&
+        typeof p.scale === 'number' &&
+        typeof p.format === 'string' &&
+        typeof p.quality === 'number' &&
+        typeof p.transparent === 'boolean',
+    );
+  } catch {
+    return [];
+  }
+}
+
+function persistProfiles(list: ExportProfile[]): void {
+  try {
+    localStorage.setItem(PROFILES_KEY, JSON.stringify(list));
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 export function ExportSheet({
   scale,
   onScale,
@@ -72,9 +113,43 @@ export function ExportSheet({
   const [linkState, setLinkState] = useState<'idle' | 'copied' | 'shared'>(
     'idle',
   );
+  const [profiles, setProfiles] = useState<ExportProfile[]>(loadProfiles);
+  const [profileName, setProfileName] = useState('');
 
   const lossy = format === 'jpeg' || format === 'webp';
   const supportsAlpha = format !== 'jpeg';
+
+  const saveProfile = () => {
+    setProfiles((prev) => {
+      const entry: ExportProfile = {
+        id: `exp-${Date.now()}`,
+        name: profileName.trim() || `Profile ${prev.length + 1}`,
+        scale,
+        format,
+        quality,
+        transparent,
+      };
+      const next = [entry, ...prev].slice(0, PROFILES_MAX);
+      persistProfiles(next);
+      return next;
+    });
+    setProfileName('');
+  };
+
+  const applyProfile = (p: ExportProfile) => {
+    onFormat(p.format);
+    onScale(p.scale);
+    onQuality(p.quality);
+    onTransparent(p.transparent);
+  };
+
+  const deleteProfile = (id: string) => {
+    setProfiles((prev) => {
+      const next = prev.filter((p) => p.id !== id);
+      persistProfiles(next);
+      return next;
+    });
+  };
 
   const handleExport = () => {
     onExport();
@@ -240,6 +315,75 @@ export function ExportSheet({
           className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
         />
       </label>
+
+      <div className="space-y-2 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3">
+        <span className="block text-xs text-zinc-400">{t('Profiles')}</span>
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={profileName}
+            maxLength={24}
+            placeholder={t('Profile name')}
+            onChange={(e) => setProfileName(e.target.value)}
+            className="min-w-0 flex-1 rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm text-zinc-200 outline-none focus:border-emerald-500"
+          />
+          <button type="button" className="btn" onClick={saveProfile}>
+            {t('Save profile')}
+          </button>
+        </div>
+        {profiles.length > 0 && (
+          <div className="space-y-1.5">
+            {profiles.map((p) => (
+              <div
+                key={p.id}
+                className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/50 p-2"
+              >
+                <button
+                  type="button"
+                  onClick={() => applyProfile(p)}
+                  className="min-w-0 flex-1 text-left"
+                >
+                  <span className="block truncate text-sm text-zinc-200">
+                    {p.name}
+                  </span>
+                  <span className="block truncate font-mono text-[11px] text-zinc-500">
+                    {p.format.toUpperCase()} · {p.scale}x
+                    {p.transparent ? ' · ' + t('Transparent background') : ''}
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => applyProfile(p)}
+                  className="rounded-md border border-zinc-700 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-wider text-zinc-300 transition hover:border-zinc-500 hover:text-zinc-100"
+                >
+                  {t('Apply')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteProfile(p.id)}
+                  aria-label={t('Delete')}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-red-300"
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <button
         type="button"
