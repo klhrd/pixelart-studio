@@ -26,7 +26,7 @@ import {
   renderResultBlob,
 } from './utils/exportImage';
 import type { ExportFormat } from './utils/exportImage';
-import { exportSvg } from './utils/exportSvg';
+import { exportSvg, composeSvg } from './utils/exportSvg';
 import { renderSVG } from './renderers';
 import { parseShareHash } from './utils/shareLink';
 import { paletteById } from './algorithms/palettes';
@@ -247,7 +247,7 @@ function Studio() {
   const handleExportSvg = () => {
     if (!source || !result || status !== 'ready') return;
     try {
-      const svg = renderSVG(
+      const engineSvg = renderSVG(
         engine,
         result,
         settings,
@@ -255,6 +255,7 @@ function Studio() {
         source.width,
         source.height,
       );
+      const svg = composeSvg(engineSvg, settings, source.width, source.height);
       void exportSvg(svg, exportName);
     } catch (err) {
       console.warn('SVG export not supported for this engine:', err);
