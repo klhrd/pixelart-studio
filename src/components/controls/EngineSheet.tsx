@@ -26,148 +26,85 @@ function saveView(mode: ViewMode): void {
   }
 }
 
-interface StarToggleProps {
-  favorite: boolean;
-  onToggle: () => void;
+interface EngineItemProps {
+  engine: EngineMeta;
+  active: boolean;
+  onPick: () => void;
 }
 
-function StarToggle({ favorite, onToggle }: StarToggleProps) {
+function EngineTile({ engine, active, onPick }: EngineItemProps) {
   const { t } = useI18n();
   return (
     <button
       type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        onToggle();
-      }}
-      aria-label={t(favorite ? 'Remove from favorites' : 'Add to favorites')}
-      className={`flex h-6 w-6 items-center justify-center rounded-md transition ${
-        favorite
-          ? 'text-amber-400 hover:text-amber-300'
-          : 'text-zinc-600 hover:text-zinc-300'
+      onClick={onPick}
+      className={`flex w-full touch-manipulation select-none flex-col items-center gap-2 rounded-xl border p-3 transition active:scale-[0.97] ${
+        active
+          ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-300'
+          : 'border-zinc-800 bg-zinc-950/50 text-zinc-300 hover:border-zinc-600'
       }`}
     >
-      <svg
-        viewBox="0 0 24 24"
-        fill={favorite ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth="1.7"
-        className="h-4 w-4"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-        />
-      </svg>
+      <EngineIcon
+        id={engine.id}
+        className={active ? 'h-7 w-7' : 'h-7 w-7 text-zinc-400'}
+      />
+      <span className="text-center text-[11px] font-medium leading-tight">
+        {t(engine.name)}
+      </span>
     </button>
   );
 }
 
-interface EngineItemProps {
-  engine: EngineMeta;
-  active: boolean;
-  favorite: boolean;
-  onPick: () => void;
-  onToggleFavorite: () => void;
-}
-
-function EngineTile({
-  engine,
-  active,
-  favorite,
-  onPick,
-  onToggleFavorite,
-}: EngineItemProps) {
+function EngineRow({ engine, active, onPick }: EngineItemProps) {
   const { t } = useI18n();
   return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={onPick}
-        className={`flex w-full touch-manipulation select-none flex-col items-center gap-2 rounded-xl border p-3 transition active:scale-[0.97] ${
+    <button
+      type="button"
+      onClick={onPick}
+      className={`flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border p-3 pr-12 text-left transition active:scale-[0.99] ${
+        active
+          ? 'border-emerald-500/60 bg-emerald-500/10'
+          : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-600'
+      }`}
+    >
+      <span
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
           active
-            ? 'border-emerald-500/60 bg-emerald-500/10 text-emerald-300'
-            : 'border-zinc-800 bg-zinc-950/50 text-zinc-300 hover:border-zinc-600'
+            ? 'bg-emerald-500/20 text-emerald-300'
+            : 'bg-zinc-800 text-zinc-400'
         }`}
       >
-        <EngineIcon
-          id={engine.id}
-          className={active ? 'h-7 w-7' : 'h-7 w-7 text-zinc-400'}
-        />
-        <span className="text-center text-[11px] font-medium leading-tight">
-          {t(engine.name)}
-        </span>
-      </button>
-      <div className="absolute right-1 top-1">
-        <StarToggle favorite={favorite} onToggle={onToggleFavorite} />
-      </div>
-    </div>
-  );
-}
-
-function EngineRow({
-  engine,
-  active,
-  favorite,
-  onPick,
-  onToggleFavorite,
-}: EngineItemProps) {
-  const { t } = useI18n();
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={onPick}
-        className={`flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border p-3 pr-12 text-left transition active:scale-[0.99] ${
-          active
-            ? 'border-emerald-500/60 bg-emerald-500/10'
-            : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-600'
-        }`}
-      >
+        <EngineIcon id={engine.id} className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
         <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
-            active
-              ? 'bg-emerald-500/20 text-emerald-300'
-              : 'bg-zinc-800 text-zinc-400'
+          className={`block text-sm font-medium ${
+            active ? 'text-emerald-300' : 'text-zinc-200'
           }`}
         >
-          <EngineIcon id={engine.id} className="h-5 w-5" />
+          {t(engine.name)}
         </span>
-        <span className="min-w-0 flex-1">
-          <span
-            className={`block text-sm font-medium ${
-              active ? 'text-emerald-300' : 'text-zinc-200'
-            }`}
-          >
-            {t(engine.name)}
-          </span>
-          <span className="block truncate text-xs text-zinc-500">
-            {t(engine.tagline)}
-          </span>
+        <span className="block truncate text-xs text-zinc-500">
+          {t(engine.tagline)}
         </span>
-        {active && (
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            className="h-5 w-5 shrink-0 text-emerald-400"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M4.5 12.75l6 6 9-13.5"
-            />
-          </svg>
-        )}
-      </button>
-      <div className="absolute right-2 top-1/2 -translate-y-1/2">
-        <StarToggle favorite={favorite} onToggle={onToggleFavorite} />
-      </div>
-    </div>
+      </span>
+      {active && (
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          className="h-5 w-5 shrink-0 text-emerald-400"
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4.5 12.75l6 6 9-13.5"
+          />
+        </svg>
+      )}
+    </button>
   );
 }
 
@@ -176,7 +113,7 @@ interface EngineSheetProps {
 }
 
 export function EngineSheet({ onPick }: EngineSheetProps) {
-  const { engine, favoriteEngines, toggleEngineFavorite } = useSettings();
+  const { engine } = useSettings();
   const { t } = useI18n();
   const [view, setView] = useState<ViewMode>(loadView);
 
@@ -185,12 +122,9 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
     saveView(mode);
   };
 
-  const favoriteSet = new Set(favoriteEngines);
-  const favorites = ENGINES.filter((e) => favoriteSet.has(e.id));
-  const rest = ENGINES.filter((e) => !favoriteSet.has(e.id));
   const groups = ENGINE_CATEGORIES.map((category) => ({
     label: category,
-    items: rest.filter((e) => e.category === category),
+    items: ENGINES.filter((e) => e.category === category),
   })).filter((g) => g.items.length > 0);
 
   const renderGroup = (label: string, items: EngineMeta[]) => (
@@ -208,9 +142,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
               key={e.id}
               engine={e}
               active={engine === e.id}
-              favorite={favoriteSet.has(e.id)}
               onPick={() => onPick(e.id)}
-              onToggleFavorite={() => toggleEngineFavorite(e.id)}
             />
           ))}
         </div>
@@ -221,9 +153,7 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
               key={e.id}
               engine={e}
               active={engine === e.id}
-              favorite={favoriteSet.has(e.id)}
               onPick={() => onPick(e.id)}
-              onToggleFavorite={() => toggleEngineFavorite(e.id)}
             />
           ))}
         </div>
@@ -288,7 +218,6 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
         </div>
       </div>
 
-      {favorites.length > 0 && renderGroup('Favorites', favorites)}
       {groups.map((g) => renderGroup(g.label, g.items))}
     </div>
   );

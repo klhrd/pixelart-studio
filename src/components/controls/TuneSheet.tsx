@@ -4,10 +4,19 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { EnginePanel } from './EnginePanel';
 import { GeneralPanel } from './GeneralPanel';
-import { GeneralMenu } from './GeneralMenu';
+import { EngineIcon } from '../icons/EngineIcon';
 
 type TuneView = 'menu' | 'general' | 'engine';
-type GeneralSubView = null | 'image' | 'animation' | 'mask' | 'blend' | 'overlay' | 'layers' | 'presets' | 'history';
+type GeneralSubView =
+  | null
+  | 'image'
+  | 'animation'
+  | 'mask'
+  | 'blend'
+  | 'overlay'
+  | 'layers'
+  | 'presets'
+  | 'history';
 
 function SubHeader({
   title,
@@ -37,6 +46,60 @@ function SubHeader({
   );
 }
 
+interface MenuItemProps {
+  label: string;
+  subtitle: string;
+  icon: JSX.Element;
+  active?: boolean;
+  onSelect: () => void;
+}
+
+function MenuItem({
+  label,
+  subtitle,
+  icon,
+  active = false,
+  onSelect,
+}: MenuItemProps) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border p-3.5 text-left transition active:scale-[0.99] ${
+        active
+          ? 'border-emerald-500/60 bg-emerald-500/10'
+          : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-600'
+      }`}
+    >
+      <span
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${
+          active
+            ? 'bg-emerald-500/20 text-emerald-300'
+            : 'bg-zinc-800 text-zinc-400'
+        }`}
+      >
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className={`block text-sm font-medium ${active ? 'text-emerald-300' : 'text-zinc-200'}`}>
+          {label}
+        </span>
+        <span className="block truncate text-xs text-zinc-500">{subtitle}</span>
+      </span>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        className="h-4 w-4 shrink-0 text-zinc-600"
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+      </svg>
+    </button>
+  );
+}
+
 export function TuneSheet() {
   const [view, setView] = useState<TuneView>('menu');
   const [generalSubView, setGeneralSubView] = useState<GeneralSubView>(null);
@@ -44,25 +107,106 @@ export function TuneSheet() {
   const { t } = useI18n();
   const meta = engineMeta(engine);
 
-  if (view === 'general') {
-    if (generalSubView === null) {
-      return (
-        <div className="space-y-3">
-          <SubHeader title={t('General Adjustments')} onBack={() => setView('menu')} />
-          <GeneralMenu onSelect={(id) => setGeneralSubView(id as GeneralSubView)} />
-        </div>
-      );
-    }
-    return (
-      <div className="space-y-3">
-        <SubHeader
-          title={t('General Adjustments')}
-          onBack={() => setGeneralSubView(null)}
-        />
-        <GeneralPanel subView={generalSubView} onBack={() => setGeneralSubView(null)} />
-      </div>
-    );
-  }
+  const isEngineActive = view === 'engine';
+  const activeGeneralSubView: GeneralSubView | null =
+    view === 'general' ? generalSubView : null;
+
+  const imageIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+      />
+    </svg>
+  );
+  const animationIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 2a4 4 0 00-4 4v4a4 4 0 004 4h4a4 4 0 004-4v-4a4 4 0 00-4-4h-4zM3.343 6.657l1.414-1.414M20.657 17.343l1.414 1.414M3.343 17.343l1.414 1.414M20.657 6.657l1.414-1.414"
+      />
+    </svg>
+  );
+  const maskIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16z"
+      />
+    </svg>
+  );
+  const blendIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 2a8 8 0 110 16 8 8 0 010-16zM7 12a5 5 0 015-5h.01M12 12a5 5 0 015 5v.01M12 17a5 5 0 01-5-5h-.01M12 7a5 5 0 00-5 5v.01"
+      />
+    </svg>
+  );
+  const overlayIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 3h18v18H3zM12 12m-3 0l3 3 3-3"
+      />
+    </svg>
+  );
+  const layersIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M3 3h18v18H3zM6 6h6v6H6zM12 12h6v6h-6zM18 18h6v6h-6z"
+      />
+    </svg>
+  );
+  const presetsIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+      />
+    </svg>
+  );
+  const historyIcon = (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm0 2a8 8 0 100 16 8 8 0 000-16zM12 16a4 4 0 110-8 4 4 0 000 8zm0-2a2 2 0 100-4 2 2 0 000 4z"
+      />
+    </svg>
+  );
 
   if (view === 'engine') {
     return (
@@ -76,89 +220,112 @@ export function TuneSheet() {
     );
   }
 
+  if (view === 'general') {
+    return (
+      <div className="space-y-3">
+        <SubHeader
+          title={t('General Adjustments')}
+          onBack={() => setView('menu')}
+        />
+        <GeneralPanel
+          subView={generalSubView as NonNullable<GeneralSubView>}
+          onBack={() => setView('menu')}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        onClick={() => setView('general')}
-        className="flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3.5 text-left transition hover:border-zinc-600 active:scale-[0.99]"
-      >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-zinc-300">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            className="h-5 w-5"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
-            />
-          </svg>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-zinc-100">
-            {t('General Adjustments')}
-          </span>
-          <span className="block truncate text-xs text-zinc-500">
-            {t('Brightness · Contrast · Saturation · Palette')}
-          </span>
-        </span>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="h-4 w-4 shrink-0 text-zinc-600"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
-
-      <button
-        type="button"
-        onClick={() => setView('engine')}
-        className="flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3.5 text-left transition hover:border-zinc-600 active:scale-[0.99]"
-      >
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-zinc-300">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            className="h-5 w-5"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M9.813 15.904L9.375 17.25a.75.75 0 01-1.5 0l-.438-1.346a4.5 4.5 0 00-2.841-2.84L3.25 12.625a.75.75 0 010-1.5l1.346-.438a4.5 4.5 0 002.84-2.841l.439-1.346a.75.75 0 011.5 0l.437 1.346a4.5 4.5 0 002.842 2.84l1.345.438a.75.75 0 010 1.5l-1.345.438a4.5 4.5 0 00-2.842 2.84zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"
-            />
-          </svg>
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-zinc-100">
-            {t('Engine Settings')}
-          </span>
-              <span className="block truncate text-xs text-zinc-500">
-                {t(meta.name)}
-              </span>
-        </span>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="h-4 w-4 shrink-0 text-zinc-600"
-          aria-hidden="true"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-        </svg>
-      </button>
+      <MenuItem
+        label={`${t('Engine Settings')}`}
+        subtitle={`${meta.code} · ${t(meta.name)}`}
+        icon={<EngineIcon id={engine} className="h-5 w-5" />}
+        active={isEngineActive}
+        onSelect={() => setView('engine')}
+      />
+      <div className="mt-2 space-y-2">
+        <MenuItem
+          label={t('Image Adjustments')}
+          subtitle={t('Brightness · Contrast · Saturation · Palette')}
+          icon={imageIcon}
+          active={activeGeneralSubView === 'image'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('image');
+          }}
+        />
+        <MenuItem
+          label={t('Animation')}
+          subtitle={t('Animates the current engine when it supports motion.')}
+          icon={animationIcon}
+          active={activeGeneralSubView === 'animation'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('animation');
+          }}
+        />
+        <MenuItem
+          label={t('Mask')}
+          subtitle={t('Ellipse · Rect · Linear · Brush')}
+          icon={maskIcon}
+          active={activeGeneralSubView === 'mask'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('mask');
+          }}
+        />
+        <MenuItem
+          label={t('Blend')}
+          subtitle={t('Mode · Opacity')}
+          icon={blendIcon}
+          active={activeGeneralSubView === 'blend'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('blend');
+          }}
+        />
+        <MenuItem
+          label={t('Overlay layer')}
+          subtitle={t('Text · Sticker · Position')}
+          icon={overlayIcon}
+          active={activeGeneralSubView === 'overlay'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('overlay');
+          }}
+        />
+        <MenuItem
+          label={t('Layers')}
+          subtitle={t('Stacks a second engine result over the first.')}
+          icon={layersIcon}
+          active={activeGeneralSubView === 'layers'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('layers');
+          }}
+        />
+        <MenuItem
+          label={t('Presets')}
+          subtitle={t('Save · Apply · Delete')}
+          icon={presetsIcon}
+          active={activeGeneralSubView === 'presets'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('presets');
+          }}
+        />
+        <MenuItem
+          label={t('History')}
+          subtitle={t('Snapshots')}
+          icon={historyIcon}
+          active={activeGeneralSubView === 'history'}
+          onSelect={() => {
+            setView('general');
+            setGeneralSubView('history');
+          }}
+        />
+      </div>
     </div>
   );
 }
