@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useI18n } from '../../i18n/core';
-import { useInstallPrompt } from '../../hooks/useInstallPrompt';
 import {
   applyUpdate,
   dismissOfflineReady,
@@ -12,9 +11,7 @@ import {
 export function PwaPrompts() {
   const { t } = useI18n();
   const [, force] = useState(0);
-  const [dismissedInstall, setDismissedInstall] = useState(false);
   const [dismissedOffline, setDismissedOffline] = useState(false);
-  const { canInstall, promptInstall } = useInstallPrompt();
 
   useEffect(() => subscribePwa(() => force((n) => n + 1)), []);
 
@@ -35,28 +32,6 @@ export function PwaPrompts() {
             onClick={applyUpdate}
           >
             {t('Refresh')}
-          </button>
-        </div>
-      )}
-      {canInstall && !dismissedInstall && !needRefresh && (
-        <div className={`${chip} border-zinc-700 bg-zinc-900/95`}>
-          <span className="text-xs text-zinc-200">
-            {t('Install PixelCraft Studio for offline use.')}
-          </span>
-          <button
-            type="button"
-            className="btn-primary px-3 py-1 text-xs"
-            onClick={() => void promptInstall()}
-          >
-            {t('Install app')}
-          </button>
-          <button
-            type="button"
-            aria-label={t('Dismiss')}
-            onClick={() => setDismissedInstall(true)}
-            className="text-zinc-500 transition hover:text-zinc-200"
-          >
-            ×
           </button>
         </div>
       )}

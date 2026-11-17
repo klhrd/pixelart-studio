@@ -4,6 +4,26 @@ import { useI18n } from '../../i18n/core';
 import { Sheet } from '../layout/Sheet';
 import type { Palette } from '../../algorithms/palettes';
 
+type ViewMode = 'grid' | 'list';
+
+const VIEW_KEY = 'pixelcraft-palette-view';
+
+function loadView(): ViewMode {
+  try {
+    return localStorage.getItem(VIEW_KEY) === 'list' ? 'list' : 'grid';
+  } catch {
+    return 'grid';
+  }
+}
+
+function saveView(mode: ViewMode): void {
+  try {
+    localStorage.setItem(VIEW_KEY, mode);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
 function StarIcon({ filled }: { filled: boolean }) {
   return (
     <svg
@@ -169,6 +189,12 @@ export function PalettePicker() {
   } = useSettings();
   const { t } = useI18n();
   const [manageOpen, setManageOpen] = useState(false);
+  const [view, setView] = useState<ViewMode>(loadView);
+
+  const switchView = (mode: ViewMode) => {
+    setView(mode);
+    saveView(mode);
+  };
 
   const openNewCustom = () => {
     setEditingPaletteId(null);
@@ -190,33 +216,111 @@ export function PalettePicker() {
           {t('Manage')}
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
-        {shown.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            onClick={() => update({ paletteId: p.id })}
-            className={`rounded-lg border p-1.5 text-left transition ${
-              settings.paletteId === p.id
-                ? 'border-emerald-500/70 bg-emerald-500/10'
-                : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'
-            }`}
+      <div className="flex rounded-lg border border-zinc-700 bg-zinc-950/60 p-0.5">
+        <button
+          type="button"
+          onClick={() => switchView('grid')}
+          aria-label={t('Grid view')}
+          className={`flex h-8 w-9 items-center justify-center rounded-md transition ${
+            view === 'grid'
+              ? 'bg-emerald-500/20 text-emerald-300'
+              : 'text-zinc-500 hover:text-zinc-300'
+          }`}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            className="h-4 w-4"
+            aria-hidden="true"
           >
-            <span className="mb-1 block truncate font-mono text-[10px] text-zinc-400">
-              {p.name}
-            </span>
-            <span className="flex h-3 overflow-hidden rounded-sm">
-              {p.colors.map((c, i) => (
-                <span
-                  key={`${p.id}-${i}`}
-                  className="flex-1"
-                  style={{ background: c }}
-                />
-              ))}
-            </span>
-          </button>
-        ))}
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0113.5 18v-2.25z"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={() => switchView('list')}
+          aria-label={t('List view')}
+          className={`flex h-8 w-9 items-center justify-center rounded-md transition ${
+            view === 'list'
+              ? 'bg-emerald-500/20 text-emerald-300'
+              : 'text-zinc-500 hover:text-zinc-300'
+          }`}
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.7"
+            className="h-4 w-4"
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+          </svg>
+        </button>
       </div>
+      {view === 'grid' ? (
+        <div className="grid grid-cols-2 gap-1.5">
+          {shown.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => update({ paletteId: p.id })}
+              className={`rounded-lg border p-1.5 text-left transition ${
+                settings.paletteId === p.id
+                  ? 'border-emerald-500/70 bg-emerald-500/10'
+                  : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'
+              }`}
+            >
+              <span className="mb-1 block truncate font-mono text-[10px] text-zinc-400">
+                {p.name}
+              </span>
+              <span className="flex h-3 overflow-hidden rounded-sm">
+                {p.colors.map((c, i) => (
+                  <span
+                    key={`${p.id}-${i}`}
+                    className="flex-1"
+                    style={{ background: c }}
+                  />
+                ))}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="space-y-1">
+          {shown.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => update({ paletteId: p.id })}
+              className={`flex items-center gap-2 rounded-lg border p-2 text-left transition ${
+                settings.paletteId === p.id
+                  ? 'border-emerald-500/60 bg-emerald-500/10'
+                  : 'border-zinc-800 bg-zinc-950/50 hover:border-zinc-600'
+              }`}
+            >
+              <span className="flex h-3 w-14 shrink-0 overflow-hidden rounded-sm">
+                {p.colors.map((c, i) => (
+                  <span key={i} className="flex-1" style={{ background: c }} />
+                ))}
+              </span>
+              <span className="truncate font-mono text-[10px] text-zinc-300">
+                {p.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
 
       <Sheet
         open={manageOpen}

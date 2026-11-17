@@ -98,7 +98,7 @@ export function TopBar({
           title={t('Menu')}
         >
           <span className="material-symbols-rounded" aria-hidden="true">
-            more_vert
+            menu
           </span>
         </button>
       </div>
