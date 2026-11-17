@@ -46,6 +46,7 @@ export const zhTW: Record<string, string> = {
   'Close panel': '關閉面板',
   'Show this help': '顯示此說明',
   'Close': '關閉',
+  'Back': '返回',
 
   // Drop zone
   'Drop an image to begin': '拖入圖片開始',
@@ -143,10 +144,12 @@ export const zhTW: Record<string, string> = {
   'Mode M': '模態 M',
   'Mode N': '模態 N',
   'Standing-wave nodal lines displaced by image luminance.': '駐波節線，隨影像亮度位移。',
+  'Posterize': '色階分帶',
 
   // Engine panel labels
   'Reset': '重設',
   'Cell Size': '網格大小',
+  'Bands': '色帶數',
   'Edge Sensitivity': '邊緣靈敏度',
   'Edge Bias': '邊緣偏重',
   'Staggered Grid': '交錯網格',
@@ -367,8 +370,25 @@ export const zhTW: Record<string, string> = {
   'Op-art optical phase patterns': '歐普藝術光學相位圖樣',
   'ASCII Art': 'ASCII 文字畫',
   'Brightness-mapped character ramp': '依亮度映射的字元階調',
+  'Luminance banded color reduction': '依亮度分帶的色彩簡化',
   'Maps each cell to an ASCII character by brightness — brighter cells use denser glyphs. Cell Size sets the character size.':
     '依亮度把每個網格對應到一個 ASCII 字元；越亮用越密的字元。網格大小決定字元大小。',
+  'Quantizes luminance into flat color bands drawn from the palette. Raising Bands adds finer gradations; fewer bands give a bold, posterized look.':
+    '將亮度量化為調色盤中的平坦色帶。提高色帶數會增加漸層細節，較少色帶則呈現大膽的海報化效果。',
+
+  // Batch export
+  'Folder Structure': '輸出資料夾結構',
+  'Naming Template': '命名樣板',
+  'Flat': '平展',
+  'Per Image': '每張圖片一個資料夾',
+  'By Engine': '依引擎分類',
+  'By Date': '依日期分類',
+  'PNG': 'PNG',
+  'JPEG': 'JPEG',
+  'WebP': 'WebP',
+  'SVG': 'SVG',
+  'Tokens: {engine}, {name}, {date}, {index}, {ext}, {scale}':
+    '代號：{engine}、{name}、{date}、{index}、{ext}、{scale}',
 
   // Engine picker groups
   'Favorites': '收藏',

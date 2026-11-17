@@ -6,20 +6,24 @@ import type {
 } from '../types';
 import { sourceToCanvas } from '../renderers/mask';
 import { renderComposite } from '../renderers/composite';
+import { renderSVG } from '../renderers';
+import { composeSvg } from './exportSvg';
 import { GIFEncoder, applyPalette, quantize } from 'gifenc';
 
-export type ExportFormat = 'png' | 'jpeg' | 'webp';
+export type ExportFormat = 'png' | 'jpeg' | 'webp' | 'svg';
 
 const MIME: Record<ExportFormat, string> = {
   png: 'image/png',
   jpeg: 'image/jpeg',
   webp: 'image/webp',
+  svg: 'image/svg+xml',
 };
 
-const EXT: Record<ExportFormat, string> = {
+export const EXT: Record<ExportFormat, string> = {
   png: 'png',
   jpeg: 'jpg',
   webp: 'webp',
+  svg: 'svg',
 };
 
 export interface RasterExportOptions {
@@ -127,6 +131,18 @@ export async function renderResultBlob(
   palette: string[],
   opts: RasterBlobOptions,
 ): Promise<Blob> {
+  if (opts.format === 'svg') {
+    const engineSvg = renderSVG(
+      engine,
+      result,
+      settings,
+      palette,
+      source.width,
+      source.height,
+    );
+    const composed = composeSvg(engineSvg, settings, source.width, source.height);
+    return new Blob([composed], { type: 'image/svg+xml;charset=utf-8' });
+  }
   const transparent = opts.transparent && opts.format !== 'jpeg';
   const canvas = renderToCanvas(
     source,

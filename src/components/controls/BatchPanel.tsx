@@ -1,12 +1,13 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { paletteById } from '../../algorithms/palettes';
 import { ENGINES, engineMeta } from '../../engines';
 import { processBatch } from '../../utils/batch';
-import type { BatchItem } from '../../utils/batch';
+import type { BatchFolderStructure, BatchItem } from '../../utils/batch';
 import type { ExportFormat } from '../../utils/exportImage';
 import type { EngineId, EngineResult } from '../../types';
+import { Segmented } from './Segmented';
 
 interface BatchPanelProps {
   scale: number;
@@ -16,6 +17,10 @@ interface BatchPanelProps {
   filenameBase: string;
   layers: ({ engine: EngineId; result: EngineResult } | null)[];
 }
+
+const TEMPLATE_STORAGE_KEY = 'pixelcraft-batch-template';
+const FOLDER_STORAGE_KEY = 'pixelcraft-batch-folder';
+const DEFAULT_TEMPLATE = '{name}-{engine}-{index}';
 
 export function BatchPanel({
   scale,
@@ -32,6 +37,36 @@ export function BatchPanel({
   const [progress, setProgress] = useState<{ done: number; total: number } | null>(
     null,
   );
+  const [folderStructure, setFolderStructure] = useState<BatchFolderStructure>(
+    'flat',
+  );
+  const [nameTemplate, setNameTemplate] = useState(DEFAULT_TEMPLATE);
+  const [batchFormat, setBatchFormat] = useState<ExportFormat>(format);
+
+  useEffect(() => {
+    try {
+      const tpl = localStorage.getItem(TEMPLATE_STORAGE_KEY);
+      if (tpl) setNameTemplate(tpl);
+      const fld = localStorage.getItem(FOLDER_STORAGE_KEY);
+      if (fld && ['flat', 'per-image', 'by-engine', 'by-date'].includes(fld))
+        setFolderStructure(fld as BatchFolderStructure);
+      const bf = localStorage.getItem('pixelcraft-batch-format');
+      if (bf && ['png', 'jpeg', 'webp', 'svg'].includes(bf))
+        setBatchFormat(bf as ExportFormat);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  const persist = () => {
+    try {
+      localStorage.setItem(TEMPLATE_STORAGE_KEY, nameTemplate);
+      localStorage.setItem(FOLDER_STORAGE_KEY, folderStructure);
+      localStorage.setItem('pixelcraft-batch-format', batchFormat);
+    } catch {
+      /* storage unavailable */
+    }
+  };
 
   const resolvePalette = useCallback(
     (paletteId: string | undefined) =>
@@ -50,13 +85,14 @@ export function BatchPanel({
 
   const run = async () => {
     if (included === 0) return;
+    persist();
     setProgress({ done: 0, total: included });
     await processBatch(
       items,
       engine,
       settings,
       resolvePalette,
-      { scale, format, quality, transparent, filenameBase, layers },
+      { scale, format: batchFormat, quality, transparent, filenameBase, folderStructure, nameTemplate, layers },
       (done, total) => setProgress({ done, total }),
     );
     setProgress(null);
@@ -155,6 +191,48 @@ export function BatchPanel({
           </ul>
         </>
       )}
+
+      <div className="rounded-xl border border-zinc-800 bg-zinc-950/50 p-3 space-y-3">
+        <span className="block text-xs text-zinc-400">{t('Format')}</span>
+        <Segmented
+          value={batchFormat}
+          onChange={(v) => setBatchFormat(v as ExportFormat)}
+          options={[
+            { value: 'png', label: t('PNG') },
+            { value: 'jpeg', label: t('JPEG') },
+            { value: 'webp', label: t('WebP') },
+            { value: 'svg', label: t('SVG') },
+          ]}
+        />
+        <span className="block text-xs text-zinc-400">
+          {t('Folder Structure')}
+        </span>
+        <Segmented
+          value={folderStructure}
+          onChange={(v) => setFolderStructure(v as BatchFolderStructure)}
+          options={[
+            { value: 'flat', label: t('Flat') },
+            { value: 'per-image', label: t('Per Image') },
+            { value: 'by-engine', label: t('By Engine') },
+            { value: 'by-date', label: t('By Date') },
+          ]}
+        />
+        <label className="block">
+          <span className="mb-1 block text-xs text-zinc-400">
+            {t('Naming Template')}
+          </span>
+          <input
+            type="text"
+            value={nameTemplate}
+            onChange={(e) => setNameTemplate(e.target.value)}
+            placeholder={DEFAULT_TEMPLATE}
+            className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-2 py-1.5 text-sm font-mono text-zinc-200 outline-none focus:border-emerald-500"
+          />
+          <p className="text-[10px] text-zinc-500 mt-1">
+            {t('Tokens: {engine}, {name}, {date}, {index}, {ext}, {scale}')}
+          </p>
+        </label>
+      </div>
 
       <button
         type="button"
