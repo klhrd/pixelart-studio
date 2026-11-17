@@ -304,5 +304,21 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <rect x="14" y="14" width="5" height="5" fill="currentColor" opacity="0.1" />
         </svg>
       );
+    case 'edge':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <path
+            {...stroke}
+            d="M4 4c0-1.1 0.9-2 2-2h2c1.1 0 2 0.9 2 2v2c0 1.1-0.9 2-2 2h-2c-1.1 0-2-0.9-2-2zM20 20c0-1.1 0.9-2 2-2h2c1.1 0 2 0.9 2 2v2c0 1.1-0.9 2-2 2h-2c-1.1 0-2-0.9-2-2zM12 12c0-1.1 0.9-2 2-2h2c1.1 0 2 0.9 2 2v2c0 1.1-0.9 2-2 2h-2c-1.1 0-2-0.9-2-2z"
+            fill="currentColor"
+          />
+          <path
+            {...stroke}
+            d="M4 20h16M20 4v16M4 4l8 8M20 20l-8-8"
+            strokeWidth="0.8"
+            opacity="0.4"
+          />
+        </svg>
+      );
   }
 }

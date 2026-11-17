@@ -610,6 +610,22 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'edge' && (
+        <PanelSection title="Edge Detection">
+          <Slider
+            label="Threshold"
+            min={0}
+            max={255}
+            value={settings.edgeThreshold}
+            onChange={(v) => update({ edgeThreshold: v })}
+            display={`${settings.edgeThreshold}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Sobel gradient magnitude edge detection. Pixels above the threshold are drawn in the last palette color; the rest use the first palette color. Cell Size scales the line width.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

@@ -53,6 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
   chladniM: 3,
   chladniN: 5,
   posterBands: 6,
+  edgeThreshold: 100,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

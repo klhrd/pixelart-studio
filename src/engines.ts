@@ -177,6 +177,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Luminance banded color reduction',
     category: 'Halftone',
   },
+  {
+    id: 'edge',
+    code: 'Y',
+    name: 'Edge Detection',
+    tagline: 'Sobel gradient edge lines',
+    category: 'Lines',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

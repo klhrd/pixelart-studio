@@ -401,4 +401,10 @@ export const zhTW: Record<string, string> = {
   // App menu
   'Menu': '選單',
   'Version': '版本',
+
+  // Edge Detection
+  'Edge Detection': '邊緣檢測',
+  'Sobel gradient edge lines': 'Sobel 梯度邊緣線',
+  'Sobel gradient magnitude edge detection. Pixels above the threshold are drawn in the last palette color; the rest use the first palette color. Cell Size scales the line width.':
+    'Sobel 梯度幅度邊緣檢測。高於閾值的像素以調色盤末色繪製，其餘以首色繪製。網格大小調整線寬。',
 };

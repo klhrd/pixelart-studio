@@ -3,6 +3,7 @@ import { DEFAULT_SETTINGS } from '../store/settingsContext';
 import { computeBraille } from './braille';
 import { computeHexDump } from './hexdump';
 import { computePosterize } from './posterize';
+import { computeEdge } from './edge';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -69,6 +70,54 @@ describe('computePosterize', () => {
   it('clamps bands to the configured maximum', () => {
     const many = { ...DEFAULT_SETTINGS, posterBands: 100 };
     const res = computePosterize(solid(8, 8, 128, 128, 128), 8, 8, many, palette);
+    expect(res.width).toBe(8);
+    expect(res.height).toBe(8);
+    expect(res.bytes.length).toBe(8 * 8 * 4);
+  });
+});
+
+describe('computeEdge', () => {
+  const base = { ...DEFAULT_SETTINGS, edgeThreshold: 100 };
+  const palette = ['#000000', '#ffffff'];
+
+  it('draws no edges on a uniform black image', () => {
+    const res = computeEdge(solid(16, 16, 0, 0, 0), 16, 16, base, palette);
+    for (let p = 0, i = 0; p < 16 * 16; p++, i += 4) {
+      expect(res.bytes[i]).toBe(0);
+      expect(res.bytes[i + 1]).toBe(0);
+      expect(res.bytes[i + 2]).toBe(0);
+    }
+  });
+
+  it('draws no edges on a uniform white image', () => {
+    const res = computeEdge(solid(16, 16, 255, 255, 255), 16, 16, base, palette);
+    for (let p = 0, i = 0; p < 16 * 16; p++, i += 4) {
+      expect(res.bytes[i]).toBe(0);
+      expect(res.bytes[i + 1]).toBe(0);
+      expect(res.bytes[i + 2]).toBe(0);
+    }
+  });
+
+  it('draws edges on a sharp black-white boundary', () => {
+    const px = new Uint8ClampedArray(16 * 16 * 4);
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        const i = (y * 16 + x) * 4;
+        const v = x < 8 ? 0 : 255;
+        px[i] = v; px[i + 1] = v; px[i + 2] = v; px[i + 3] = 255;
+      }
+    }
+    const res = computeEdge(px, 16, 16, base, palette);
+    // Boundary column (x=7/8) should have high gradient => edge color (white)
+    const edgeIdx = (7 * 16 + 7) * 4;
+    expect(res.bytes[edgeIdx]).toBe(255);
+    expect(res.bytes[edgeIdx + 1]).toBe(255);
+    expect(res.bytes[edgeIdx + 2]).toBe(255);
+  });
+
+  it('clamps threshold and produces valid output', () => {
+    const many = { ...DEFAULT_SETTINGS, edgeThreshold: 999 };
+    const res = computeEdge(solid(8, 8, 128, 128, 128), 8, 8, many, palette);
     expect(res.width).toBe(8);
     expect(res.height).toBe(8);
     expect(res.bytes.length).toBe(8 * 8 * 4);

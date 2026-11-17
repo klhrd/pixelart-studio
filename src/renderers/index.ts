@@ -108,6 +108,7 @@ export function renderResult(
     case 'quadtree':
     case 'chladni':
     case 'posterize':
+    case 'edge':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -341,6 +342,7 @@ export function renderSVG(
     case 'quadtree':
     case 'chladni':
     case 'posterize':
+    case 'edge':
       return renderImageSVG(
         result as DitherResult,
         settings,
