@@ -4,8 +4,10 @@ import { useSettings } from '../../store/settingsContext';
 import { useI18n } from '../../i18n/core';
 import { EnginePanel } from './EnginePanel';
 import { GeneralPanel } from './GeneralPanel';
+import { GeneralMenu } from './GeneralMenu';
 
 type TuneView = 'menu' | 'general' | 'engine';
+type GeneralSubView = null | 'image' | 'animation' | 'mask' | 'blend' | 'overlay' | 'layers' | 'presets' | 'history';
 
 function SubHeader({
   title,
@@ -37,15 +39,27 @@ function SubHeader({
 
 export function TuneSheet() {
   const [view, setView] = useState<TuneView>('menu');
+  const [generalSubView, setGeneralSubView] = useState<GeneralSubView>(null);
   const { engine } = useSettings();
   const { t } = useI18n();
   const meta = engineMeta(engine);
 
   if (view === 'general') {
+    if (generalSubView === null) {
+      return (
+        <div className="space-y-3">
+          <SubHeader title={t('General Adjustments')} onBack={() => setView('menu')} />
+          <GeneralMenu onSelect={(id) => setGeneralSubView(id as GeneralSubView)} />
+        </div>
+      );
+    }
     return (
       <div className="space-y-3">
-        <SubHeader title={t('General Adjustments')} onBack={() => setView('menu')} />
-        <GeneralPanel />
+        <SubHeader
+          title={t('General Adjustments')}
+          onBack={() => setGeneralSubView(null)}
+        />
+        <GeneralPanel subView={generalSubView} onBack={() => setGeneralSubView(null)} />
       </div>
     );
   }
