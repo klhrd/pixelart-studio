@@ -594,6 +594,22 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'posterize' && (
+        <PanelSection title="Posterize">
+          <Slider
+            label="Bands"
+            min={2}
+            max={16}
+            value={settings.posterBands}
+            onChange={(v) => update({ posterBands: v })}
+            display={`${settings.posterBands}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Quantizes luminance into flat color bands drawn from the palette. Raising Bands adds finer gradations; fewer bands give a bold, posterized look.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

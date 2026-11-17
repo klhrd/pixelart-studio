@@ -201,6 +201,10 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   ascii: [
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
   ],
+  posterize: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
+    { key: 'posterBands', label: 'Bands', min: 2, max: 16, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

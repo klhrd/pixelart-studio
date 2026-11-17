@@ -170,6 +170,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Brightness-mapped character ramp',
     category: 'Text',
   },
+  {
+    id: 'posterize',
+    code: 'X',
+    name: 'Posterize',
+    tagline: 'Luminance banded color reduction',
+    category: 'Halftone',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

@@ -21,6 +21,7 @@ import AsciiWorker from './ascii.worker?worker';
 import KaleidoscopeWorker from './kaleidoscope.worker?worker';
 import QuadtreeWorker from './quadtree.worker?worker';
 import ChladniWorker from './chladni.worker?worker';
+import PosterizeWorker from './posterize.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -54,6 +55,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   quadtree: QuadtreeWorker,
   chladni: ChladniWorker,
   ascii: AsciiWorker,
+  posterize: PosterizeWorker,
 };
 
 const CACHE_MAX = 8;

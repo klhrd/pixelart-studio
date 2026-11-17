@@ -290,5 +290,19 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <path {...stroke} d="M5 20h3M10.5 20h3M16 20h3" strokeWidth="1.4" />
         </svg>
       );
+    case 'posterize':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <rect x="4" y="4" width="5" height="5" fill="currentColor" opacity="0.9" />
+          <rect x="9" y="4" width="5" height="5" fill="currentColor" opacity="0.65" />
+          <rect x="14" y="4" width="5" height="5" fill="currentColor" opacity="0.4" />
+          <rect x="4" y="9" width="5" height="5" fill="currentColor" opacity="0.65" />
+          <rect x="9" y="9" width="5" height="5" fill="currentColor" opacity="0.4" />
+          <rect x="14" y="9" width="5" height="5" fill="currentColor" opacity="0.2" />
+          <rect x="4" y="14" width="5" height="5" fill="currentColor" opacity="0.4" />
+          <rect x="9" y="14" width="5" height="5" fill="currentColor" opacity="0.2" />
+          <rect x="14" y="14" width="5" height="5" fill="currentColor" opacity="0.1" />
+        </svg>
+      );
   }
 }

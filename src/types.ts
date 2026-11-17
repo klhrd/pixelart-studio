@@ -21,7 +21,8 @@ export type EngineId =
   | 'kaleidoscope'
   | 'quadtree'
   | 'chladni'
-  | 'ascii';
+  | 'ascii'
+  | 'posterize';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -91,6 +92,7 @@ export interface Settings {
   quadtreeDepth: number;
   chladniM: number;
   chladniN: number;
+  posterBands: number;
   maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;
@@ -259,6 +261,12 @@ export interface GlyphResult {
   luminance: Float32Array;
 }
 
+export interface PosterizeResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -277,7 +285,8 @@ export type EngineResult =
   | TuringResult
   | PixelSortResult
   | HatchResult
-  | GlyphResult;
+  | GlyphResult
+  | PosterizeResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

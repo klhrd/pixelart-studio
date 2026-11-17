@@ -52,6 +52,7 @@ export const DEFAULT_SETTINGS: Settings = {
   quadtreeDepth: 5,
   chladniM: 3,
   chladniN: 5,
+  posterBands: 6,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,
