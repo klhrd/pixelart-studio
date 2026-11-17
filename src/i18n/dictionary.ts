@@ -397,4 +397,8 @@ export const zhTW: Record<string, string> = {
   'Halftone': '半色調',
   'Geometry': '幾何',
   'Paint': '點繪',
+
+  // App menu
+  'Menu': '選單',
+  'Version': '版本',
 };

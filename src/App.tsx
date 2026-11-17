@@ -8,6 +8,7 @@ import { EngineSheet } from './components/controls/EngineSheet';
 import { ExportSheet } from './components/controls/ExportSheet';
 import { BottomBar } from './components/layout/BottomBar';
 import { PwaPrompts } from './components/layout/PwaPrompts';
+import { AppMenu } from './components/layout/AppMenu';
 import { Sheet } from './components/layout/Sheet';
 import { TopBar } from './components/layout/TopBar';
 import { useImageProcessor } from './hooks/useImageProcessor';
@@ -78,7 +79,7 @@ function ErrorFallback({
 }
 
 function Studio() {
-  const { t } = useI18n();
+  const { t, lang, toggle } = useI18n();
   const {
     engine,
     setEngine,
@@ -144,6 +145,7 @@ function Studio() {
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const snapKey = useRef('');
 
@@ -337,10 +339,8 @@ function Studio() {
         status={status}
         error={loadError ?? error}
         compare={compare}
-        fullscreen={fullscreen}
         onCompare={() => setCompare((c) => !c)}
-        onFullscreen={toggleFullscreen}
-        onShortcuts={() => setShowShortcuts(true)}
+        onMenu={() => setShowMenu(true)}
       />
 
       <main
@@ -404,6 +404,22 @@ function Studio() {
         onClose={() => setShowShortcuts(false)}
       >
         <ShortcutsList />
+      </Sheet>
+      <Sheet
+        open={showMenu}
+        title={t('Menu')}
+        onClose={() => setShowMenu(false)}
+      >
+        <AppMenu
+          open={showMenu}
+          onClose={() => setShowMenu(false)}
+          onShortcuts={() => setShowShortcuts(true)}
+          lang={lang}
+          toggleLang={toggle}
+          onFullscreen={toggleFullscreen}
+          fullscreen={fullscreen}
+          version={__APP_VERSION__}
+        />
       </Sheet>
 
       <PwaPrompts />

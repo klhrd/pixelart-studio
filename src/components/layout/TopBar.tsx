@@ -6,32 +6,25 @@ interface TopBarProps {
   status: ProcessorStatus;
   error: string | null;
   compare: boolean;
-  fullscreen: boolean;
   onCompare: () => void;
-  onFullscreen: () => void;
-  onShortcuts: () => void;
+  onMenu: () => void;
 }
 
 export function TopBar({
   status,
   error,
   compare,
-  fullscreen,
   onCompare,
-  onFullscreen,
-  onShortcuts,
+  onMenu,
 }: TopBarProps) {
   const { undo, redo, canUndo, canRedo } = useSettings();
-  const { t, lang, toggle } = useI18n();
+  const { t } = useI18n();
 
   return (
     <header className="flex items-center justify-between gap-2 border-b border-zinc-800/80 bg-zinc-950/90 px-3 py-2.5 sm:px-4">
       <div className="flex min-w-0 items-center gap-3">
         <span className="shrink-0 font-mono text-sm font-bold text-zinc-100">
           Pixel<span className="text-emerald-400">Craft</span>
-        </span>
-        <span className="shrink-0 font-mono text-[10px] text-zinc-600">
-          v{__APP_VERSION__}
         </span>
         {/* Fixed-size status slot so the processing/error chip never nudges the layout. */}
         <span className="flex h-6 w-24 shrink-0 items-center overflow-hidden">
@@ -51,31 +44,6 @@ export function TopBar({
       <div className="flex items-center gap-1.5">
         <button
           type="button"
-          onClick={onShortcuts}
-          className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900/80 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-200 active:scale-95"
-          aria-label={t('Keyboard shortcuts')}
-          title={t('Keyboard shortcuts')}
-        >
-          <span className="material-symbols-rounded" aria-hidden="true">
-            keyboard
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={toggle}
-          className="flex h-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900/80 px-2 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-200 active:scale-95"
-          aria-label={t('Language')}
-          title={t('Language')}
-        >
-          <span className="material-symbols-rounded mr-1 text-[16px]" aria-hidden="true">
-            translate
-          </span>
-          <span className="font-mono text-[11px] font-semibold">
-            {lang === 'en' ? 'EN' : '中'}
-          </span>
-        </button>
-        <button
-          type="button"
           onClick={onCompare}
           className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
             compare
@@ -88,22 +56,6 @@ export function TopBar({
         >
           <span className="material-symbols-rounded" aria-hidden="true">
             compare
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={onFullscreen}
-          className={`flex h-8 w-8 items-center justify-center rounded-md border transition active:scale-95 ${
-            fullscreen
-              ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
-              : 'border-zinc-700 bg-zinc-900/80 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200'
-          }`}
-          aria-pressed={fullscreen}
-          aria-label={fullscreen ? t('Exit fullscreen') : t('Enter fullscreen')}
-          title={t('Fullscreen (F)')}
-        >
-          <span className="material-symbols-rounded" aria-hidden="true">
-            {fullscreen ? 'fullscreen_exit' : 'fullscreen'}
           </span>
         </button>
         <button
@@ -136,6 +88,17 @@ export function TopBar({
         >
           <span className="material-symbols-rounded" aria-hidden="true">
             redo
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={onMenu}
+          className="flex h-8 w-8 items-center justify-center rounded-md border border-zinc-700 bg-zinc-900/80 text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-200 active:scale-95"
+          aria-label={t('Menu')}
+          title={t('Menu')}
+        >
+          <span className="material-symbols-rounded" aria-hidden="true">
+            more_vert
           </span>
         </button>
       </div>
