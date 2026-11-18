@@ -110,6 +110,7 @@ export function renderResult(
     case 'posterize':
     case 'edge':
     case 'duotone':
+    case 'solarize':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -345,6 +346,7 @@ export function renderSVG(
     case 'posterize':
     case 'edge':
     case 'duotone':
+    case 'solarize':
       return renderImageSVG(
         result as DitherResult,
         settings,

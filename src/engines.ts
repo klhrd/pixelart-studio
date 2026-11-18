@@ -191,6 +191,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Two-color luminance gradient',
     category: 'Halftone',
   },
+  {
+    id: 'solarize',
+    code: 'AA',
+    name: 'Solarize',
+    tagline: 'Tonal inversion above threshold',
+    category: 'Glitch',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

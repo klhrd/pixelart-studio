@@ -212,6 +212,10 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
   duotone: [
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
   ],
+  solarize: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
+    { key: 'solarizeThreshold', label: 'Threshold', min: 0, max: 255, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

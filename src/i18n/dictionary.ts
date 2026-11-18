@@ -415,4 +415,10 @@ export const zhTW: Record<string, string> = {
   'Highlight color': '高光顏色',
   'Maps luminance onto a two-color gradient between shadow and highlight colors.':
     '將亮度映射到陰影與高光顏色之間的兩色漸層。',
+
+  // Solarize
+  'Solarize': '曝光反轉',
+  'Tonal inversion above threshold': '閾值以上色調反轉',
+  'Tonal inversion: pixels brighter than the threshold are inverted, creating a solarized/solarization effect. Cell Size scales the effect granularity.':
+    '色調反轉：高於閾值的像素會被反相，產生曝光反轉效果。網格大小調整效果粒度。',
 };

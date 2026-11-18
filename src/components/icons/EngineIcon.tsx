@@ -328,5 +328,15 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           <rect x="8" y="16" width="4" height="4" fill="currentColor" opacity="0.5" />
         </svg>
       );
+    case 'solarize':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="12" cy="12" r="5" fill="currentColor" />
+          <path
+            {...stroke}
+            d="M12 2v2M12 20v2M2 12h2M20 12h2M6.34 6.34l1.41 1.41M17.66 17.66l1.41 1.41M6.34 17.66l-1.41 1.41M17.66 6.34l-1.41-1.41"
+          />
+        </svg>
+      );
   }
 }

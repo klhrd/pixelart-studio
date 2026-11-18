@@ -56,6 +56,7 @@ export const DEFAULT_SETTINGS: Settings = {
   edgeThreshold: 100,
   duotoneColor1: '#000000',
   duotoneColor2: '#ffffff',
+  solarizeThreshold: 128,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

@@ -654,6 +654,22 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'solarize' && (
+        <PanelSection title="Solarize">
+          <Slider
+            label="Threshold"
+            min={0}
+            max={255}
+            value={settings.solarizeThreshold}
+            onChange={(v) => update({ solarizeThreshold: v })}
+            display={`${settings.solarizeThreshold}`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Tonal inversion: pixels brighter than the threshold are inverted, creating a solarized/solarization effect. Cell Size scales the effect granularity.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

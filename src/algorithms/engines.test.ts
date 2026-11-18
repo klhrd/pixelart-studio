@@ -5,6 +5,7 @@ import { computeHexDump } from './hexdump';
 import { computePosterize } from './posterize';
 import { computeEdge } from './edge';
 import { computeDuotone } from './duotone';
+import { computeSolarize } from './solarize';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -168,5 +169,52 @@ describe('computeDuotone', () => {
     expect(white.bytes[0]).toBe(0);
     expect(white.bytes[1]).toBe(0);
     expect(white.bytes[2]).toBe(255);
+  });
+});
+
+describe('computeSolarize', () => {
+  const base = {
+    ...DEFAULT_SETTINGS,
+    contrast: 0,
+    solarizeThreshold: 128,
+  };
+
+  it('inverts pixels above threshold', () => {
+    const px = new Uint8ClampedArray(4 * 4 * 4);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      const v = p < 8 ? 0 : 255;
+      px[i] = v; px[i + 1] = v; px[i + 2] = v; px[i + 3] = 255;
+    }
+    const res = computeSolarize(px, 4, 4, base);
+    // First half: dark (below threshold), unchanged
+    expect(res.bytes[0]).toBe(0);
+    expect(res.bytes[1]).toBe(0);
+    expect(res.bytes[2]).toBe(0);
+    // Second half: bright (above threshold), inverted -> 0
+    const brightIdx = 8 * 4;
+    expect(res.bytes[brightIdx]).toBe(0);
+    expect(res.bytes[brightIdx + 1]).toBe(0);
+    expect(res.bytes[brightIdx + 2]).toBe(0);
+  });
+
+  it('does not invert pixels below threshold', () => {
+    const px = new Uint8ClampedArray(4 * 4 * 4);
+    for (let i = 0; i < px.length; i += 4) {
+      px[i] = 100; px[i + 1] = 100; px[i + 2] = 100; px[i + 3] = 255;
+    }
+    const res = computeSolarize(px, 4, 4, base);
+    for (let i = 0; i < px.length; i += 4) {
+      expect(res.bytes[i]).toBe(100);
+      expect(res.bytes[i + 1]).toBe(100);
+      expect(res.bytes[i + 2]).toBe(100);
+    }
+  });
+
+  it('clamps threshold and produces valid output', () => {
+    const many = { ...DEFAULT_SETTINGS, solarizeThreshold: 999 };
+    const res = computeSolarize(solid(8, 8, 128, 128, 128), 8, 8, many);
+    expect(res.width).toBe(8);
+    expect(res.height).toBe(8);
+    expect(res.bytes.length).toBe(8 * 8 * 4);
   });
 });
