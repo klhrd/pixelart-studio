@@ -212,6 +212,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'RGB channel inversion',
     category: 'Glitch',
   },
+  {
+    id: 'pixelate',
+    code: 'AD',
+    name: 'Pixelate',
+    tagline: 'Block mosaic averaging',
+    category: 'Glitch',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

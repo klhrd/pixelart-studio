@@ -224,6 +224,9 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
     { key: 'negativeInvert', label: 'Invert', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
   ],
+  pixelate: [
+    { key: 'cellSize', label: 'Cell Size', min: 2, max: 32, step: 1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

@@ -27,6 +27,7 @@ import DuotoneWorker from './duotone.worker?worker';
 import SolarizeWorker from './solarize.worker?worker';
 import EmbossWorker from './emboss.worker?worker';
 import NegativeWorker from './negative.worker?worker';
+import PixelateWorker from './pixelate.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -66,6 +67,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   solarize: SolarizeWorker,
   emboss: EmbossWorker,
   negative: NegativeWorker,
+  pixelate: PixelateWorker,
 };
 
 const CACHE_MAX = 8;

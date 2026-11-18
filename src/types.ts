@@ -27,7 +27,8 @@ export type EngineId =
   | 'duotone'
   | 'solarize'
   | 'emboss'
-  | 'negative';
+  | 'negative'
+  | 'pixelate';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -308,6 +309,12 @@ export interface NegativeResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface PixelateResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -332,7 +339,8 @@ export type EngineResult =
   | DuotoneResult
   | SolarizeResult
   | EmbossResult
-  | NegativeResult;
+  | NegativeResult
+  | PixelateResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

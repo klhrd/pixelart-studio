@@ -8,6 +8,7 @@ import { computeDuotone } from './duotone';
 import { computeSolarize } from './solarize';
 import { computeEmboss } from './emboss';
 import { computeNegative } from './negative';
+import { computePixelate } from './pixelate';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -310,6 +311,50 @@ describe('computeNegative', () => {
 
   it('produces valid output dimensions', () => {
     const res = computeNegative(solid(8, 8, 128, 128, 128), 8, 8, base);
+    expect(res.width).toBe(8);
+    expect(res.height).toBe(8);
+    expect(res.bytes.length).toBe(8 * 8 * 4);
+  });
+});
+
+describe('computePixelate', () => {
+  const base = {
+    ...DEFAULT_SETTINGS,
+    contrast: 0,
+    brightness: 0,
+    saturation: 0,
+    cellSize: 4,
+  };
+
+  it('averages a uniform image to the same colour', () => {
+    const res = computePixelate(solid(8, 8, 100, 150, 200), 8, 8, base);
+    for (let p = 0, i = 0; p < 8 * 8; p++, i += 4) {
+      expect(res.bytes[i]).toBe(100);
+      expect(res.bytes[i + 1]).toBe(150);
+      expect(res.bytes[i + 2]).toBe(200);
+      expect(res.bytes[i + 3]).toBe(255);
+    }
+  });
+
+  it('creates distinct blocks for a checkerboard pattern', () => {
+    const px = new Uint8ClampedArray(8 * 8 * 4);
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        const i = (y * 8 + x) * 4;
+        const v = (x < 4 && y < 4) || (x >= 4 && y >= 4) ? 255 : 0;
+        px[i] = v; px[i + 1] = v; px[i + 2] = v; px[i + 3] = 255;
+      }
+    }
+    const res = computePixelate(px, 8, 8, base);
+    const topLeft = res.bytes[0];
+    const topRight = res.bytes[4 * 4]; // pixel (0, 4)
+    expect(topLeft).toBe(255);
+    expect(topRight).toBe(0);
+  });
+
+  it('clamps cellSize and produces valid output', () => {
+    const many = { ...DEFAULT_SETTINGS, cellSize: 999 };
+    const res = computePixelate(solid(8, 8, 128, 128, 128), 8, 8, many);
     expect(res.width).toBe(8);
     expect(res.height).toBe(8);
     expect(res.bytes.length).toBe(8 * 8 * 4);

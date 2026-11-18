@@ -362,6 +362,27 @@ export function EngineIcon({ id, className }: EngineIconProps) {
             strokeWidth="1"
             opacity="0.6"
           />
+          </svg>
+      );
+    case 'pixelate':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <rect x="4" y="4" width="4" height="4" fill="currentColor" opacity="0.9" />
+          <rect x="8" y="4" width="4" height="4" fill="currentColor" opacity="0.6" />
+          <rect x="12" y="4" width="4" height="4" fill="currentColor" opacity="0.3" />
+          <rect x="16" y="4" width="4" height="4" fill="currentColor" opacity="0.1" />
+          <rect x="4" y="8" width="4" height="4" fill="currentColor" opacity="0.6" />
+          <rect x="8" y="8" width="4" height="4" fill="currentColor" opacity="0.3" />
+          <rect x="12" y="8" width="4" height="4" fill="currentColor" opacity="0.1" />
+          <rect x="16" y="8" width="4" height="4" fill="currentColor" opacity="0.9" />
+          <rect x="4" y="12" width="4" height="4" fill="currentColor" opacity="0.3" />
+          <rect x="8" y="12" width="4" height="4" fill="currentColor" opacity="0.1" />
+          <rect x="12" y="12" width="4" height="4" fill="currentColor" opacity="0.9" />
+          <rect x="16" y="12" width="4" height="4" fill="currentColor" opacity="0.6" />
+          <rect x="4" y="16" width="4" height="4" fill="currentColor" opacity="0.1" />
+          <rect x="8" y="16" width="4" height="4" fill="currentColor" opacity="0.9" />
+          <rect x="12" y="16" width="4" height="4" fill="currentColor" opacity="0.6" />
+          <rect x="16" y="16" width="4" height="4" fill="currentColor" opacity="0.3" />
         </svg>
       );
   }

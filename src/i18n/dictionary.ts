@@ -434,4 +434,11 @@ export const zhTW: Record<string, string> = {
   'RGB channel inversion': 'RGB 通道反相',
   'RGB channel inversion: flips every colour channel (255 − value) for a negative film effect. Cell Size scales the effect granularity.':
     'RGB 通道反相：將每個色彩通道翻轉（255 − 值）以產生負片效果。網格大小調整效果粒度。',
+
+  // Pixelate
+  'Pixelate': '像素化',
+  'Block mosaic averaging': '塊狀馬賽克平均',
+  'Block Size': '塊大小',
+  'Block mosaic: averages each cell block into a single solid colour. Cell Size sets the block width/height in pixels.':
+    '塊狀馬賽克：將每個單元格區塊平均為單一實心顏色。單元格大小設定區塊寬高（像素）。',
 };

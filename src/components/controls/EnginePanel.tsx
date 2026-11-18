@@ -700,6 +700,22 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'pixelate' && (
+        <PanelSection title="Pixelate">
+          <Slider
+            label="Block Size"
+            min={2}
+            max={32}
+            value={settings.cellSize}
+            onChange={(v) => update({ cellSize: v })}
+            display={`${settings.cellSize}px`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Block mosaic: averages each cell block into a single solid colour. Cell Size sets the block width/height in pixels.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }
