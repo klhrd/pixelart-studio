@@ -25,7 +25,8 @@ export type EngineId =
   | 'posterize'
   | 'edge'
   | 'duotone'
-  | 'solarize';
+  | 'solarize'
+  | 'emboss';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -100,6 +101,7 @@ export interface Settings {
   duotoneColor1: string;
   duotoneColor2: string;
   solarizeThreshold: number;
+  embossStrength: number;
   maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;
@@ -292,6 +294,12 @@ export interface SolarizeResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface EmbossResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -314,7 +322,8 @@ export type EngineResult =
   | PosterizeResult
   | EdgeResult
   | DuotoneResult
-  | SolarizeResult;
+  | SolarizeResult
+  | EmbossResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }

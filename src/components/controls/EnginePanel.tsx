@@ -670,6 +670,23 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'emboss' && (
+        <PanelSection title="Emboss">
+          <Slider
+            label="Strength"
+            min={0}
+            max={4}
+            step={0.1}
+            value={settings.embossStrength}
+            onChange={(v) => update({ embossStrength: v })}
+            display={`${settings.embossStrength.toFixed(1)}x`}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Relief embossing kernel: highlights edges with a 3D relief effect. Strength scales the emboss kernel magnitude; Cell Size controls the kernel reach.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

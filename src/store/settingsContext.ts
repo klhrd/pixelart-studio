@@ -57,6 +57,7 @@ export const DEFAULT_SETTINGS: Settings = {
   duotoneColor1: '#000000',
   duotoneColor2: '#ffffff',
   solarizeThreshold: 128,
+  embossStrength: 1,
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

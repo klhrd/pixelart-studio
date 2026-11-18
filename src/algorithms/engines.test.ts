@@ -6,6 +6,7 @@ import { computePosterize } from './posterize';
 import { computeEdge } from './edge';
 import { computeDuotone } from './duotone';
 import { computeSolarize } from './solarize';
+import { computeEmboss } from './emboss';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -213,6 +214,52 @@ describe('computeSolarize', () => {
   it('clamps threshold and produces valid output', () => {
     const many = { ...DEFAULT_SETTINGS, solarizeThreshold: 999 };
     const res = computeSolarize(solid(8, 8, 128, 128, 128), 8, 8, many);
+    expect(res.width).toBe(8);
+    expect(res.height).toBe(8);
+    expect(res.bytes.length).toBe(8 * 8 * 4);
+  });
+});
+
+describe('computeEmboss', () => {
+  const base = {
+    ...DEFAULT_SETTINGS,
+    contrast: 0,
+    embossStrength: 1,
+  };
+
+  it('produces gray background for uniform image', () => {
+    const res = computeEmboss(solid(16, 16, 128, 128, 128), 16, 16, base);
+    for (let p = 0, i = 0; p < 16 * 16; p++, i += 4) {
+      expect(res.bytes[i]).toBe(128);
+      expect(res.bytes[i + 1]).toBe(128);
+      expect(res.bytes[i + 2]).toBe(128);
+    }
+  });
+
+  it('detects edge between black and white regions', () => {
+    const px = new Uint8ClampedArray(16 * 16 * 4);
+    for (let y = 0; y < 16; y++) {
+      for (let x = 0; x < 16; x++) {
+        const i = (y * 16 + x) * 4;
+        const v = x < 8 ? 0 : 255;
+        px[i] = v; px[i + 1] = v; px[i + 2] = v; px[i + 3] = 255;
+      }
+    }
+    const res = computeEmboss(px, 16, 16, base);
+    // Edge region should produce non-128 values (embossed contrast)
+    let hasEdge = false;
+    for (let p = 0; p < 16 * 16; p++) {
+      if (res.bytes[p * 4] !== 128) {
+        hasEdge = true;
+        break;
+      }
+    }
+    expect(hasEdge).toBe(true);
+  });
+
+  it('clamps strength and produces valid output', () => {
+    const many = { ...DEFAULT_SETTINGS, embossStrength: 999 };
+    const res = computeEmboss(solid(8, 8, 128, 128, 128), 8, 8, many);
     expect(res.width).toBe(8);
     expect(res.height).toBe(8);
     expect(res.bytes.length).toBe(8 * 8 * 4);

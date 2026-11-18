@@ -25,6 +25,7 @@ import PosterizeWorker from './posterize.worker?worker';
 import EdgeWorker from './edge.worker?worker';
 import DuotoneWorker from './duotone.worker?worker';
 import SolarizeWorker from './solarize.worker?worker';
+import EmbossWorker from './emboss.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -62,6 +63,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   edge: EdgeWorker,
   duotone: DuotoneWorker,
   solarize: SolarizeWorker,
+  emboss: EmbossWorker,
 };
 
 const CACHE_MAX = 8;

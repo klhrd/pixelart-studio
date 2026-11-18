@@ -216,6 +216,10 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
     { key: 'solarizeThreshold', label: 'Threshold', min: 0, max: 255, step: 1, group: 'engine' },
   ],
+  emboss: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
+    { key: 'embossStrength', label: 'Strength', min: 0, max: 4, step: 0.1, group: 'engine' },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

@@ -198,6 +198,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Tonal inversion above threshold',
     category: 'Glitch',
   },
+  {
+    id: 'emboss',
+    code: 'AB',
+    name: 'Emboss',
+    tagline: 'Relief embossing kernel',
+    category: 'Lines',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

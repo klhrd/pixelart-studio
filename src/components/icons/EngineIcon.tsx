@@ -336,6 +336,19 @@ export function EngineIcon({ id, className }: EngineIconProps) {
             {...stroke}
             d="M12 2v2M12 20v2M2 12h2M20 12h2M6.34 6.34l1.41 1.41M17.66 17.66l1.41 1.41M6.34 17.66l-1.41 1.41M17.66 6.34l-1.41-1.41"
           />
+          </svg>
+      );
+    case 'emboss':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <rect x="6" y="6" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+          <rect x="7" y="7" width="10" height="10" fill="currentColor" opacity="0.3" />
+          <path
+            {...stroke}
+            d="M6 6l2 2M18 18l-2-2M18 6l-2 2M6 18l2-2"
+            strokeWidth="1"
+            opacity="0.6"
+          />
         </svg>
       );
   }
