@@ -113,6 +113,7 @@ export function renderResult(
     case 'solarize':
     case 'emboss':
     case 'negative':
+    case 'pixelate':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -351,6 +352,7 @@ export function renderSVG(
     case 'solarize':
     case 'emboss':
     case 'negative':
+    case 'pixelate':
       return renderImageSVG(
         result as DitherResult,
         settings,
