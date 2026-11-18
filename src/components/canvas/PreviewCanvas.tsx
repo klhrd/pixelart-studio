@@ -220,6 +220,10 @@ const ENGINE_GESTURE_ITEMS: Record<string, GestureItem[]> = {
     { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
     { key: 'embossStrength', label: 'Strength', min: 0, max: 4, step: 0.1, group: 'engine' },
   ],
+  negative: [
+    { key: 'cellSize', label: 'Cell Size', min: 4, max: 32, step: 1, group: 'engine' },
+    { key: 'negativeInvert', label: 'Invert', min: 0, max: 1, step: 1, group: 'engine', toggle: true },
+  ],
 };
 
 function getGestureItems(engine: EngineId): GestureItem[] {

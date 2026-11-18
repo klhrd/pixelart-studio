@@ -351,5 +351,18 @@ export function EngineIcon({ id, className }: EngineIconProps) {
           />
         </svg>
       );
+    case 'negative':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+          <rect x="6" y="6" width="12" height="12" fill="currentColor" opacity="0.25" />
+          <path
+            {...stroke}
+            d="M6 18l12-12M18 18l-12-12"
+            strokeWidth="1"
+            opacity="0.6"
+          />
+        </svg>
+      );
   }
 }

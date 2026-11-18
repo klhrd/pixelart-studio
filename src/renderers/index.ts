@@ -112,6 +112,7 @@ export function renderResult(
     case 'duotone':
     case 'solarize':
     case 'emboss':
+    case 'negative':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -349,6 +350,7 @@ export function renderSVG(
     case 'duotone':
     case 'solarize':
     case 'emboss':
+    case 'negative':
       return renderImageSVG(
         result as DitherResult,
         settings,

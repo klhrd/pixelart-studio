@@ -205,6 +205,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Relief embossing kernel',
     category: 'Lines',
   },
+  {
+    id: 'negative',
+    code: 'AC',
+    name: 'Negative',
+    tagline: 'RGB channel inversion',
+    category: 'Glitch',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

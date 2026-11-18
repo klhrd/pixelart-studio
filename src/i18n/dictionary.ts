@@ -428,4 +428,10 @@ export const zhTW: Record<string, string> = {
   'Strength': '強度',
   'Relief embossing kernel: highlights edges with a 3D relief effect. Strength scales the emboss kernel magnitude; Cell Size controls the kernel reach.':
     '浮雕浮凸核：強調邊緣並產生 3D 浮凸效果。強度調整浮雕核的幅度；網格大小控制核的範圍。',
+
+  // Negative
+  'Negative': '負片',
+  'RGB channel inversion': 'RGB 通道反相',
+  'RGB channel inversion: flips every colour channel (255 − value) for a negative film effect. Cell Size scales the effect granularity.':
+    'RGB 通道反相：將每個色彩通道翻轉（255 − 值）以產生負片效果。網格大小調整效果粒度。',
 };

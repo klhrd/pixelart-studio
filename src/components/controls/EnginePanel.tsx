@@ -687,6 +687,19 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'negative' && (
+        <PanelSection title="Negative">
+          <Switch
+            label="Invert"
+            checked={settings.negativeInvert}
+            onChange={(v) => update({ negativeInvert: v })}
+          />
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('RGB channel inversion: flips every colour channel (255 − value) for a negative film effect. Cell Size scales the effect granularity.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

@@ -7,6 +7,7 @@ import { computeEdge } from './edge';
 import { computeDuotone } from './duotone';
 import { computeSolarize } from './solarize';
 import { computeEmboss } from './emboss';
+import { computeNegative } from './negative';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -260,6 +261,55 @@ describe('computeEmboss', () => {
   it('clamps strength and produces valid output', () => {
     const many = { ...DEFAULT_SETTINGS, embossStrength: 999 };
     const res = computeEmboss(solid(8, 8, 128, 128, 128), 8, 8, many);
+    expect(res.width).toBe(8);
+    expect(res.height).toBe(8);
+    expect(res.bytes.length).toBe(8 * 8 * 4);
+  });
+});
+
+describe('computeNegative', () => {
+  const base = {
+    ...DEFAULT_SETTINGS,
+    contrast: 0,
+    brightness: 0,
+    saturation: 0,
+    negativeInvert: true,
+  };
+
+  it('inverts white to black', () => {
+    const res = computeNegative(solid(4, 4, 255, 255, 255), 4, 4, base);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      expect(res.bytes[i]).toBe(0);
+      expect(res.bytes[i + 1]).toBe(0);
+      expect(res.bytes[i + 2]).toBe(0);
+      expect(res.bytes[i + 3]).toBe(255);
+    }
+  });
+
+  it('inverts black to white', () => {
+    const res = computeNegative(solid(4, 4, 0, 0, 0), 4, 4, base);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      expect(res.bytes[i]).toBe(255);
+      expect(res.bytes[i + 1]).toBe(255);
+      expect(res.bytes[i + 2]).toBe(255);
+      expect(res.bytes[i + 3]).toBe(255);
+    }
+  });
+
+  it('passes through unchanged when invert is false', () => {
+    const off = { ...base, negativeInvert: false };
+    const px = solid(4, 4, 10, 20, 30);
+    const res = computeNegative(px, 4, 4, off);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      expect(res.bytes[i]).toBe(10);
+      expect(res.bytes[i + 1]).toBe(20);
+      expect(res.bytes[i + 2]).toBe(30);
+      expect(res.bytes[i + 3]).toBe(255);
+    }
+  });
+
+  it('produces valid output dimensions', () => {
+    const res = computeNegative(solid(8, 8, 128, 128, 128), 8, 8, base);
     expect(res.width).toBe(8);
     expect(res.height).toBe(8);
     expect(res.bytes.length).toBe(8 * 8 * 4);
