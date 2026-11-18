@@ -4,6 +4,7 @@ import { computeBraille } from './braille';
 import { computeHexDump } from './hexdump';
 import { computePosterize } from './posterize';
 import { computeEdge } from './edge';
+import { computeDuotone } from './duotone';
 
 function solid(w: number, h: number, r: number, g: number, b: number): Uint8ClampedArray {
   const px = new Uint8ClampedArray(w * h * 4);
@@ -121,5 +122,51 @@ describe('computeEdge', () => {
     expect(res.width).toBe(8);
     expect(res.height).toBe(8);
     expect(res.bytes.length).toBe(8 * 8 * 4);
+  });
+});
+
+describe('computeDuotone', () => {
+  const base = {
+    ...DEFAULT_SETTINGS,
+    duotoneColor1: '#000000',
+    duotoneColor2: '#ffffff',
+  };
+
+  it('maps black to color1 and white to color2', () => {
+    const black = computeDuotone(solid(4, 4, 0, 0, 0), 4, 4, base);
+    const white = computeDuotone(solid(4, 4, 255, 255, 255), 4, 4, base);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      expect(black.bytes[i]).toBe(0);
+      expect(black.bytes[i + 1]).toBe(0);
+      expect(black.bytes[i + 2]).toBe(0);
+      expect(white.bytes[i]).toBe(255);
+      expect(white.bytes[i + 1]).toBe(255);
+      expect(white.bytes[i + 2]).toBe(255);
+    }
+  });
+
+  it('interpolates mid gray between colors', () => {
+    const mid = computeDuotone(solid(4, 4, 128, 128, 128), 4, 4, base);
+    for (let p = 0, i = 0; p < 4 * 4; p++, i += 4) {
+      expect(mid.bytes[i]).toBe(128);
+      expect(mid.bytes[i + 1]).toBe(128);
+      expect(mid.bytes[i + 2]).toBe(128);
+    }
+  });
+
+  it('uses custom palette colors', () => {
+    const custom = {
+      ...base,
+      duotoneColor1: '#ff0000',
+      duotoneColor2: '#0000ff',
+    };
+    const black = computeDuotone(solid(2, 2, 0, 0, 0), 2, 2, custom);
+    const white = computeDuotone(solid(2, 2, 255, 255, 255), 2, 2, custom);
+    expect(black.bytes[0]).toBe(255);
+    expect(black.bytes[1]).toBe(0);
+    expect(black.bytes[2]).toBe(0);
+    expect(white.bytes[0]).toBe(0);
+    expect(white.bytes[1]).toBe(0);
+    expect(white.bytes[2]).toBe(255);
   });
 });

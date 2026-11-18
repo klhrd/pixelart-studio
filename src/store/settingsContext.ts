@@ -54,6 +54,8 @@ export const DEFAULT_SETTINGS: Settings = {
   chladniN: 5,
   posterBands: 6,
   edgeThreshold: 100,
+  duotoneColor1: '#000000',
+  duotoneColor2: '#ffffff',
   maskShape: 'none',
   maskX: 0.5,
   maskY: 0.5,

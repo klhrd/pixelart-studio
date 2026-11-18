@@ -109,6 +109,7 @@ export function renderResult(
     case 'chladni':
     case 'posterize':
     case 'edge':
+    case 'duotone':
       renderPixels(
         ctx,
         result as DitherResult,
@@ -343,6 +344,7 @@ export function renderSVG(
     case 'chladni':
     case 'posterize':
     case 'edge':
+    case 'duotone':
       return renderImageSVG(
         result as DitherResult,
         settings,

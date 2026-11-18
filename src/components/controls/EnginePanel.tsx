@@ -626,6 +626,34 @@ export function EnginePanel() {
           </p>
         </PanelSection>
       )}
+
+      {engine === 'duotone' && (
+        <PanelSection title="Duotone">
+          <div className="flex gap-3">
+            <label className="flex flex-col gap-1">
+              <span className="text-[10px] text-zinc-400">{t('Shadow color')}</span>
+              <input
+                type="color"
+                value={settings.duotoneColor1}
+                onChange={(e) => update({ duotoneColor1: e.target.value })}
+                className="h-8 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900"
+              />
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[10px] text-zinc-400">{t('Highlight color')}</span>
+              <input
+                type="color"
+                value={settings.duotoneColor2}
+                onChange={(e) => update({ duotoneColor2: e.target.value })}
+                className="h-8 w-12 cursor-pointer rounded-md border border-zinc-700 bg-zinc-900"
+              />
+            </label>
+          </div>
+          <p className="text-[11px] leading-relaxed text-zinc-500">
+            {t('Maps luminance onto a two-color gradient between shadow and highlight colors.')}
+          </p>
+        </PanelSection>
+      )}
     </>
   );
 }

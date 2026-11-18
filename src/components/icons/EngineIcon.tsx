@@ -318,6 +318,14 @@ export function EngineIcon({ id, className }: EngineIconProps) {
             strokeWidth="0.8"
             opacity="0.4"
           />
+          </svg>
+      );
+    case 'duotone':
+      return (
+        <svg viewBox="0 0 24 24" className={cls} aria-hidden="true">
+          <rect x="6" y="4" width="12" height="16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+          <rect x="8" y="8" width="8" height="8" fill="currentColor" opacity="0.9" />
+          <rect x="8" y="16" width="4" height="4" fill="currentColor" opacity="0.5" />
         </svg>
       );
   }

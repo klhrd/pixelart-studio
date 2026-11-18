@@ -23,6 +23,7 @@ import QuadtreeWorker from './quadtree.worker?worker';
 import ChladniWorker from './chladni.worker?worker';
 import PosterizeWorker from './posterize.worker?worker';
 import EdgeWorker from './edge.worker?worker';
+import DuotoneWorker from './duotone.worker?worker';
 import type {
   EngineId,
   EngineResult,
@@ -58,6 +59,7 @@ const FACTORIES: Record<EngineId, WorkerFactory> = {
   ascii: AsciiWorker,
   posterize: PosterizeWorker,
   edge: EdgeWorker,
+  duotone: DuotoneWorker,
 };
 
 const CACHE_MAX = 8;

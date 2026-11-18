@@ -407,4 +407,12 @@ export const zhTW: Record<string, string> = {
   'Sobel gradient edge lines': 'Sobel 梯度邊緣線',
   'Sobel gradient magnitude edge detection. Pixels above the threshold are drawn in the last palette color; the rest use the first palette color. Cell Size scales the line width.':
     'Sobel 梯度幅度邊緣檢測。高於閾值的像素以調色盤末色繪製，其餘以首色繪製。網格大小調整線寬。',
+
+  // Duotone
+  'Duotone': '雙色調',
+  'Two-color luminance gradient': '兩色亮度漸層',
+  'Shadow color': '陰影顏色',
+  'Highlight color': '高光顏色',
+  'Maps luminance onto a two-color gradient between shadow and highlight colors.':
+    '將亮度映射到陰影與高光顏色之間的兩色漸層。',
 };

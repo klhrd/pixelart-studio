@@ -184,6 +184,13 @@ export const ENGINES: EngineMeta[] = [
     tagline: 'Sobel gradient edge lines',
     category: 'Lines',
   },
+  {
+    id: 'duotone',
+    code: 'Z',
+    name: 'Duotone',
+    tagline: 'Two-color luminance gradient',
+    category: 'Halftone',
+  },
 ];
 
 export const ENGINE_CATEGORIES: string[] = ['Halftone', 'Geometry', 'Text', 'Lines', 'Paint', 'Glitch'];

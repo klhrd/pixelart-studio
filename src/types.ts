@@ -23,7 +23,8 @@ export type EngineId =
   | 'chladni'
   | 'ascii'
   | 'posterize'
-  | 'edge';
+  | 'edge'
+  | 'duotone';
 
 export type VoronoiMode = 'voronoi' | 'delaunay';
 
@@ -95,6 +96,8 @@ export interface Settings {
   chladniN: number;
   posterBands: number;
   edgeThreshold: number;
+  duotoneColor1: string;
+  duotoneColor2: string;
   maskShape: 'none' | 'ellipse' | 'rect' | 'linear' | 'brush';
   maskX: number;
   maskY: number;
@@ -275,6 +278,12 @@ export interface EdgeResult {
   bytes: Uint8ClampedArray;
 }
 
+export interface DuotoneResult {
+  width: number;
+  height: number;
+  bytes: Uint8ClampedArray;
+}
+
 export type EngineResult =
   | MoonResult
   | TruchetResult
@@ -295,7 +304,8 @@ export type EngineResult =
   | HatchResult
   | GlyphResult
   | PosterizeResult
-  | EdgeResult;
+  | EdgeResult
+  | DuotoneResult;
 
 export type WorkerResponse =
   | { id: number; ok: true; result: unknown }
