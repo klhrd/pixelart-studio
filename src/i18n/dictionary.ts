@@ -407,6 +407,10 @@ export const zhTW: Record<string, string> = {
   'Tools': '工具',
   'Tune Image': '影像微調',
   'Select parameter': '選擇參數',
+  'Create': '建立',
+  'Subject': '主體',
+  'Background': '背景',
+  'Radial': '放射狀',
 
   // Edge Detection
   'Edge Detection': '邊緣檢測',

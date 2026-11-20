@@ -16,6 +16,45 @@ import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
 
+function MaskPresetIcon({
+  id,
+}: {
+  id: 'subject' | 'background' | 'radial' | 'linear';
+}) {
+  const stroke = {
+    fill: 'none' as const,
+    stroke: 'currentColor',
+    strokeWidth: 1.6,
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+  };
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      {id === 'subject' && (
+        <path {...stroke} d="M12 11a4 4 0 100-8 4 4 0 000 8zm-7 10a7 7 0 0114 0" />
+      )}
+      {id === 'background' && (
+        <>
+          <path {...stroke} d="M12 11a4 4 0 100-8 4 4 0 000 8zm-7 10a7 7 0 0114 0" />
+          <path {...stroke} d="M4 4l16 16" strokeWidth="1.2" opacity="0.7" />
+        </>
+      )}
+      {id === 'radial' && (
+        <>
+          <ellipse cx="12" cy="12" rx="9" ry="7" {...stroke} />
+          <ellipse cx="12" cy="12" rx="3.5" ry="2.5" {...stroke} />
+        </>
+      )}
+      {id === 'linear' && (
+        <>
+          <rect x="4" y="5" width="16" height="14" rx="1.5" {...stroke} />
+          <path {...stroke} d="M4 12h16" />
+        </>
+      )}
+    </svg>
+  );
+}
+
 export interface GeneralPanelProps {
   /** When set, only this category is rendered (Snapseed-style drill-down).
    *  When undefined, all categories are shown (legacy full view). */
@@ -151,6 +190,49 @@ export function GeneralPanel({
 
   const mask = (
     <PanelSection title="Mask">
+      <span className="mb-1.5 block text-xs text-zinc-400">{t('Create')}</span>
+      <div className="grid grid-cols-2 gap-1.5">
+        {([
+          {
+            id: 'subject',
+            label: 'Subject',
+            active: settings.maskShape === 'brush' && !settings.maskInvert,
+            apply: () => update({ maskShape: 'brush', maskInvert: false }),
+          },
+          {
+            id: 'background',
+            label: 'Background',
+            active: settings.maskShape === 'brush' && settings.maskInvert,
+            apply: () => update({ maskShape: 'brush', maskInvert: true }),
+          },
+          {
+            id: 'radial',
+            label: 'Radial',
+            active: settings.maskShape === 'ellipse',
+            apply: () => update({ maskShape: 'ellipse' }),
+          },
+          {
+            id: 'linear',
+            label: 'Linear',
+            active: settings.maskShape === 'linear',
+            apply: () => update({ maskShape: 'linear' }),
+          },
+        ] as const).map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            onClick={preset.apply}
+            className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-xs transition ${
+              preset.active
+                ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
+                : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
+            }`}
+          >
+            <MaskPresetIcon id={preset.id} />
+            {t(preset.label)}
+          </button>
+        ))}
+      </div>
       <Segmented
         value={settings.maskShape}
         onChange={(v) => update({ maskShape: v })}
