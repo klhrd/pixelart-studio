@@ -411,6 +411,9 @@ export const zhTW: Record<string, string> = {
   'Subject': '主體',
   'Background': '背景',
   'Radial': '放射狀',
+  'Photo': '相片',
+  'Use the Erase switch to subtract areas from the mask.':
+    '使用「擦除」開關即可從遮罩減去區域。',
 
   // Edge Detection
   'Edge Detection': '邊緣檢測',
