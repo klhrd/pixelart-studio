@@ -110,9 +110,10 @@ function EngineRow({ engine, active, onPick }: EngineItemProps) {
 
 interface EngineSheetProps {
   onPick: (id: EngineId) => void;
+  onTune?: () => void;
 }
 
-export function EngineSheet({ onPick }: EngineSheetProps) {
+export function EngineSheet({ onPick, onTune }: EngineSheetProps) {
   const { engine } = useSettings();
   const { t } = useI18n();
   const [view, setView] = useState<ViewMode>(loadView);
@@ -217,6 +218,77 @@ export function EngineSheet({ onPick }: EngineSheetProps) {
           </button>
         </div>
       </div>
+
+      {onTune && (
+        <section>
+          <div className="mb-2 mt-3 flex items-center gap-2">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-zinc-500">
+              {t('Tune Image')}
+            </span>
+            <span className="h-px flex-1 bg-zinc-800" />
+          </div>
+          {view === 'grid' ? (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              <button
+                type="button"
+                onClick={onTune}
+                className="flex w-full touch-manipulation select-none flex-col items-center gap-2 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3 text-zinc-300 transition hover:border-zinc-600 active:scale-[0.97]"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  className="h-7 w-7 text-zinc-400"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                  />
+                </svg>
+                <span className="text-center text-[11px] font-medium leading-tight">
+                  {t('Tune Image')}
+                </span>
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={onTune}
+                className="flex w-full touch-manipulation select-none items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/50 p-3 pr-12 text-left transition hover:border-zinc-600 active:scale-[0.99]"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-800 text-zinc-400">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    className="h-5 w-5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                    />
+                  </svg>
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-medium text-zinc-200">
+                    {t('Tune Image')}
+                  </span>
+                  <span className="block truncate text-xs text-zinc-500">
+                    {t('Brightness · Contrast · Saturation · Palette')}
+                  </span>
+                </span>
+              </button>
+            </div>
+          )}
+        </section>
+      )}
 
       {groups.map((g) => renderGroup(g.label, g.items))}
     </div>

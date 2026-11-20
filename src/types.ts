@@ -348,4 +348,4 @@ export type WorkerResponse =
 
 export type ProcessorStatus = 'idle' | 'processing' | 'ready' | 'error';
 
-export type SheetId = 'engines' | 'adjust' | 'export' | null;
+export type SheetId = 'engines' | 'adjust' | 'export' | 'presets' | null;

@@ -402,6 +402,12 @@ export const zhTW: Record<string, string> = {
   'Menu': '選單',
   'Version': '版本',
 
+  // Snapseed-style navigation
+  'Looks': '樣式',
+  'Tools': '工具',
+  'Tune Image': '影像微調',
+  'Select parameter': '選擇參數',
+
   // Edge Detection
   'Edge Detection': '邊緣檢測',
   'Sobel gradient edge lines': 'Sobel 梯度邊緣線',

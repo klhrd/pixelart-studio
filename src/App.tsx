@@ -6,6 +6,8 @@ import { TuneSheet } from './components/controls/TuneSheet';
 import { CustomPaletteSheet } from './components/controls/CustomPaletteSheet';
 import { EngineSheet } from './components/controls/EngineSheet';
 import { ExportSheet } from './components/controls/ExportSheet';
+import { PresetsSheet } from './components/controls/PresetsSheet';
+import { ParameterBar } from './components/canvas/ParameterBar';
 import { BottomBar } from './components/layout/BottomBar';
 import { PwaPrompts } from './components/layout/PwaPrompts';
 import { AppMenu } from './components/layout/AppMenu';
@@ -365,12 +367,19 @@ function Studio() {
           <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
         )}
       </main>
+      {source && <ParameterBar />}
       <BottomBar active={sheet} onSelect={(id) => setSheet(id)} />
-      <Sheet open={sheet === 'engines'} title={t('Algorithms')} onClose={closeSheet}>
-        <EngineSheet onPick={(id) => { setEngine(id); closeSheet(); }} />
+      <Sheet open={sheet === 'engines'} title={t('Tools')} onClose={closeSheet}>
+        <EngineSheet
+          onPick={(id) => { setEngine(id); closeSheet(); }}
+          onTune={() => setSheet('adjust')}
+        />
       </Sheet>
       <Sheet open={sheet === 'adjust'} title={t('Tune')} onClose={closeSheet}>
         <TuneSheet />
+      </Sheet>
+      <Sheet open={sheet === 'presets'} title={t('Presets')} onClose={closeSheet}>
+        <PresetsSheet />
       </Sheet>
       <Sheet open={sheet === 'export'} title={t('Export')} onClose={closeSheet}>
         <ExportSheet
