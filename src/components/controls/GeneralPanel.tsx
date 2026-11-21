@@ -16,48 +16,6 @@ import { Segmented } from './Segmented';
 import { Slider } from './Slider';
 import { Switch } from './Switch';
 
-function MaskPresetIcon({
-  id,
-}: {
-  id: 'subject' | 'background' | 'radial' | 'linear' | 'rect';
-}) {
-  const stroke = {
-    fill: 'none' as const,
-    stroke: 'currentColor',
-    strokeWidth: 1.6,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
-      {id === 'subject' && (
-        <path {...stroke} d="M12 11a4 4 0 100-8 4 4 0 000 8zm-7 10a7 7 0 0114 0" />
-      )}
-      {id === 'background' && (
-        <>
-          <path {...stroke} d="M12 11a4 4 0 100-8 4 4 0 000 8zm-7 10a7 7 0 0114 0" />
-          <path {...stroke} d="M4 4l16 16" strokeWidth="1.2" opacity="0.7" />
-        </>
-      )}
-      {id === 'radial' && (
-        <>
-          <ellipse cx="12" cy="12" rx="9" ry="7" {...stroke} />
-          <ellipse cx="12" cy="12" rx="3.5" ry="2.5" {...stroke} />
-        </>
-      )}
-      {id === 'linear' && (
-        <>
-          <rect x="4" y="5" width="16" height="14" rx="1.5" {...stroke} />
-          <path {...stroke} d="M4 12h16" />
-        </>
-      )}
-      {id === 'rect' && (
-        <rect x="5" y="5" width="14" height="14" rx="1.5" {...stroke} />
-      )}
-    </svg>
-  );
-}
-
 export interface GeneralPanelProps {
   /** When set, only this category is rendered (Snapseed-style drill-down).
    *  When undefined, all categories are shown (legacy full view). */
@@ -191,112 +149,8 @@ export function GeneralPanel({
     </PanelSection>
   );
 
-  const maskIconId: 'subject' | 'radial' | 'rect' | 'linear' =
-    settings.maskShape === 'brush'
-      ? 'subject'
-      : settings.maskShape === 'ellipse'
-        ? 'radial'
-        : settings.maskShape === 'rect'
-          ? 'rect'
-          : 'linear';
-  const maskLabel =
-    settings.maskShape === 'brush'
-      ? 'Brush'
-      : settings.maskShape === 'ellipse'
-        ? 'Ellipse'
-        : settings.maskShape === 'rect'
-          ? 'Rect'
-          : 'Linear';
-
   const mask = (
     <PanelSection title="Mask">
-      <span className="mb-1.5 block text-xs text-zinc-400">{t('Create')}</span>
-      <div className="grid grid-cols-2 gap-1.5">
-        {([
-          {
-            id: 'subject',
-            label: 'Subject',
-            active: settings.maskShape === 'brush' && !settings.maskInvert,
-            apply: () => update({ maskShape: 'brush', maskInvert: false }),
-          },
-          {
-            id: 'background',
-            label: 'Background',
-            active: settings.maskShape === 'brush' && settings.maskInvert,
-            apply: () => update({ maskShape: 'brush', maskInvert: true }),
-          },
-          {
-            id: 'radial',
-            label: 'Radial',
-            active: settings.maskShape === 'ellipse',
-            apply: () => update({ maskShape: 'ellipse' }),
-          },
-          {
-            id: 'linear',
-            label: 'Linear',
-            active: settings.maskShape === 'linear',
-            apply: () => update({ maskShape: 'linear' }),
-          },
-        ] as const).map((preset) => (
-          <button
-            key={preset.id}
-            type="button"
-            onClick={preset.apply}
-            className={`flex items-center justify-center gap-1.5 rounded-lg border py-2.5 text-xs transition ${
-              preset.active
-                ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-300'
-                : 'border-zinc-800 bg-zinc-950/50 text-zinc-400 hover:border-zinc-600'
-            }`}
-          >
-            <MaskPresetIcon id={preset.id} />
-            {t(preset.label)}
-          </button>
-        ))}
-      </div>
-      <div className="space-y-1.5">
-        {settings.maskShape !== 'none' && (
-          <div className="flex items-center gap-2.5 rounded-lg border border-emerald-500/60 bg-emerald-500/10 p-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-zinc-800 text-emerald-300">
-              <MaskPresetIcon id={maskIconId} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-sm font-medium text-zinc-100">
-                {t('Mask')} 1
-              </span>
-              <span className="block text-[11px] text-zinc-500">
-                {t(maskLabel)}
-              </span>
-            </span>
-            <button
-              type="button"
-              aria-label={t('Delete')}
-              onClick={() => update({ maskShape: 'none' })}
-              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-zinc-500 transition hover:bg-zinc-800 hover:text-red-300"
-            >
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-        )}
-        <div className="flex items-center gap-2.5 rounded-lg border border-zinc-800 bg-zinc-950/50 p-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-zinc-800 text-zinc-400">
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </span>
-          <span className="min-w-0 flex-1 text-sm text-zinc-200">
-            {t('Photo')}
-          </span>
-        </div>
-      </div>
       <Segmented
         value={settings.maskShape}
         onChange={(v) => update({ maskShape: v })}
@@ -333,9 +187,6 @@ export function GeneralPanel({
           </button>
           <p className="text-[11px] leading-relaxed text-zinc-500">
             {t('Tap the brush button on the canvas, then drag on the image to paint where the effect applies.')}
-          </p>
-          <p className="text-[11px] leading-relaxed text-zinc-500">
-            {t('Use the Erase switch to subtract areas from the mask.')}
           </p>
         </>
       )}

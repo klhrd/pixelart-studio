@@ -402,19 +402,6 @@ export const zhTW: Record<string, string> = {
   'Menu': '選單',
   'Version': '版本',
 
-  // Snapseed-style navigation
-  'Looks': '樣式',
-  'Tools': '工具',
-  'Tune Image': '影像微調',
-  'Select parameter': '選擇參數',
-  'Create': '建立',
-  'Subject': '主體',
-  'Background': '背景',
-  'Radial': '放射狀',
-  'Photo': '相片',
-  'Use the Erase switch to subtract areas from the mask.':
-    '使用「擦除」開關即可從遮罩減去區域。',
-
   // Edge Detection
   'Edge Detection': '邊緣檢測',
   'Sobel gradient edge lines': 'Sobel 梯度邊緣線',
