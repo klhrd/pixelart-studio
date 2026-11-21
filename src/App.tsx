@@ -1,6 +1,7 @@
 import { Component, useCallback, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { PreviewCanvas } from './components/canvas/PreviewCanvas';
+import type { AdjustCategory } from './components/canvas/gestureItems';
 import { DropZone } from './components/canvas/DropZone';
 import { TuneSheet } from './components/controls/TuneSheet';
 import { CustomPaletteSheet } from './components/controls/CustomPaletteSheet';
@@ -142,6 +143,9 @@ function Studio() {
   const [exportQuality, setExportQuality] = useState(0.92);
   const [exportTransparent, setExportTransparent] = useState(false);
   const [sheet, setSheet] = useState<SheetId>(null);
+  const [adjustCategory, setAdjustCategory] = useState<AdjustCategory | null>(
+    null,
+  );
   const [compare, setCompare] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -272,6 +276,7 @@ function Studio() {
         setSheet(null);
         setCustomSheetOpen(false);
         setShowShortcuts(false);
+        setAdjustCategory(null);
         return;
       }
       if (key === '?') {
@@ -360,17 +365,34 @@ function Studio() {
             palette={palette}
             compare={compare}
             layers={layers}
+            adjustCategory={adjustCategory}
           />
         ) : (
           <DropZone onFile={(f) => void loadFile(f)} onSample={loadSample} />
         )}
       </main>
-      <BottomBar active={sheet} onSelect={(id) => setSheet(id)} />
+      <BottomBar
+        active={sheet}
+        adjustActive={!!adjustCategory}
+        onSelect={(id) => {
+          if (id === 'adjust') {
+            if (adjustCategory) setAdjustCategory(null);
+            else setSheet('adjust');
+          } else {
+            setSheet(id);
+          }
+        }}
+      />
       <Sheet open={sheet === 'engines'} title={t('Algorithms')} onClose={closeSheet}>
         <EngineSheet onPick={(id) => { setEngine(id); closeSheet(); }} />
       </Sheet>
       <Sheet open={sheet === 'adjust'} title={t('Tune')} onClose={closeSheet}>
-        <TuneSheet />
+        <TuneSheet
+          onAdjust={(category) => {
+            setAdjustCategory(category);
+            setSheet(null);
+          }}
+        />
       </Sheet>
       <Sheet open={sheet === 'export'} title={t('Export')} onClose={closeSheet}>
         <ExportSheet

@@ -5,6 +5,13 @@ import { useI18n } from '../../i18n/core';
 import { EnginePanel } from './EnginePanel';
 import { GeneralPanel } from './GeneralPanel';
 import { EngineIcon } from '../icons/EngineIcon';
+import type { AdjustCategory } from '../canvas/gestureItems';
+
+interface TuneSheetProps {
+  /** Called when a gesture-adjustable category is picked; the sheet closes
+   *  and the canvas gesture adjuster takes over with that category's items. */
+  onAdjust: (category: AdjustCategory) => void;
+}
 
 type TuneView = 'menu' | 'general' | 'engine';
 type GeneralSubView =
@@ -164,7 +171,7 @@ function TuneTile({
   );
 }
 
-export function TuneSheet() {
+export function TuneSheet({ onAdjust }: TuneSheetProps) {
   const [view, setView] = useState<TuneView>('menu');
   const [viewMode, setViewMode] = useState<ViewMode>(loadTuneView);
 
@@ -284,18 +291,15 @@ const switchTuneView = (mode: ViewMode) => {
       subtitle: `${meta.code} · ${t(meta.name)}`,
       icon: <EngineIcon id={engine} className="h-5 w-5" />,
       active: isEngineActive,
-      onSelect: () => setView('engine'),
+      onSelect: () => onAdjust('engine'),
       id: 'engine',
     },
     {
       label: t('Image Adjustments'),
-      subtitle: t('Brightness · Contrast · Saturation · Palette'),
+      subtitle: t('Brightness · Contrast · Saturation'),
       icon: imageIcon,
       active: activeGeneralSubView === 'image',
-      onSelect: () => {
-        setView('general');
-        setGeneralSubView('image');
-      },
+      onSelect: () => onAdjust('image'),
       id: 'image',
     },
     {
@@ -303,10 +307,7 @@ const switchTuneView = (mode: ViewMode) => {
       subtitle: t('Animates the current engine when it supports motion.'),
       icon: animationIcon,
       active: activeGeneralSubView === 'animation',
-      onSelect: () => {
-        setView('general');
-        setGeneralSubView('animation');
-      },
+      onSelect: () => onAdjust('animation'),
       id: 'animation',
     },
     {
@@ -314,10 +315,7 @@ const switchTuneView = (mode: ViewMode) => {
       subtitle: t('Ellipse · Rect · Linear · Brush'),
       icon: maskIcon,
       active: activeGeneralSubView === 'mask',
-      onSelect: () => {
-        setView('general');
-        setGeneralSubView('mask');
-      },
+      onSelect: () => onAdjust('mask'),
       id: 'mask',
     },
     {
@@ -325,11 +323,16 @@ const switchTuneView = (mode: ViewMode) => {
       subtitle: t('Mode · Opacity'),
       icon: blendIcon,
       active: activeGeneralSubView === 'blend',
-      onSelect: () => {
-        setView('general');
-        setGeneralSubView('blend');
-      },
+      onSelect: () => onAdjust('blend'),
       id: 'blend',
+    },
+    {
+      label: t('Palette'),
+      subtitle: t('Palette & detailed controls'),
+      icon: presetsIcon,
+      active: isEngineActive,
+      onSelect: () => setView('engine'),
+      id: 'palette',
     },
     {
       label: t('Overlay layer'),

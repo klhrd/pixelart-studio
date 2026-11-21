@@ -21,7 +21,7 @@ const NAV_ITEMS: {
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+          d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0113.5 18v-2.25z"
         />
       </svg>
     ),
@@ -71,30 +71,39 @@ const NAV_ITEMS: {
 interface BottomBarProps {
   active: SheetId;
   onSelect: (id: Exclude<SheetId, null>) => void;
+  /** Highlights the Tune tab while canvas gesture-adjust mode is active. */
+  adjustActive?: boolean;
 }
 
-export function BottomBar({ active, onSelect }: BottomBarProps) {
+export function BottomBar({ active, onSelect, adjustActive }: BottomBarProps) {
   const { t } = useI18n();
   return (
-    <nav className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur" aria-label={t('Modules')}>
+    <nav
+      className="border-t border-zinc-800 bg-zinc-900/95 backdrop-blur"
+      aria-label={t('Modules')}
+    >
       <div className="mx-auto flex max-w-md">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => onSelect(item.id)}
-            className={`flex flex-1 touch-manipulation select-none flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition active:scale-95 ${
-              active === item.id
-                ? 'text-emerald-300'
-                : 'text-zinc-400 hover:text-zinc-200'
-            }`}
-            aria-pressed={active === item.id}
-            aria-label={t(item.label)}
-          >
-            {item.icon}
-            <span className="sr-only">{t(item.label)}</span>
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const highlighted =
+            item.id === 'adjust' ? adjustActive === true : active === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onSelect(item.id)}
+              className={`flex flex-1 touch-manipulation select-none flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition active:scale-95 ${
+                highlighted
+                  ? 'text-emerald-300'
+                  : 'text-zinc-400 hover:text-zinc-200'
+              }`}
+              aria-pressed={highlighted}
+              aria-label={t(item.label)}
+            >
+              {item.icon}
+              <span className="sr-only">{t(item.label)}</span>
+            </button>
+          );
+        })}
       </div>
     </nav>
   );

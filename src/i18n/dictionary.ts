@@ -108,6 +108,7 @@ export const zhTW: Record<string, string> = {
   'Brightness': '亮度',
   'Contrast': '對比',
   'Saturation': '飽和度',
+  'Palette & detailed controls': '調色盤與詳細控制',
 
   // Engine panel section titles
   'Grid': '網格',
